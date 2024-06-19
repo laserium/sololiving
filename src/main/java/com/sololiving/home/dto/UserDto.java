@@ -10,4 +10,12 @@ public class UserDto {
         private String userId;
         private String userPwd;
     }
+
+    // 로그인 RequestDto
+    @Getter 
+    public static class SignInRequest {
+        private String userId;
+        private String userPwd;
+    }
+
 }
