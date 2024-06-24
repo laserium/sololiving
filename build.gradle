@@ -45,6 +45,6 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-bootJar {
-    mainClassName = 'com.sololiving.home'
+springBoot {
+    mainClass = 'com.sololiving.home'
 }
