@@ -34,7 +34,7 @@ phases:
 
 artifacts:
   files:
-    - build/libs/sololiving.jar
+    - build/libs/*.jar
     - appspec.yml
     - scripts/**
 
