@@ -2,31 +2,38 @@ version: 0.2
 
 env:
   variables:
-    SPRING_PROFILES_ACTIVE: test # 테스트 프로필 설정
-    SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
-    SPRING_DATASOURCE_USERNAME: sa
-    SPRING_DATASOURCE_PASSWORD:
+    SPRING_PROFILES_ACTIVE: test
 
 phases:
   install:
     runtime-versions:
       java: corretto17
+    commands:
+      - echo "Installing dependencies..."
+      - chmod +x ./gradlew
+      - ./gradlew dependencies
   pre_build:
     commands:
-      - echo "Preparing to build..."
-      - echo "Setting execute permissions for gradlew..."
-      - chmod +x ./gradlew
-      - echo "Installing dependencies..."
-      - ./gradlew dependencies
+      - echo "Cleaning up old files..."
+      - rm -rf /path/to/old/deployments/*
+      - echo "Restoring cache..."
+      - cp -R /root/.gradle/cache /codebuild/output/.cache/ || true
   build:
     commands:
       - echo "Building the project..."
-      - ./gradlew build -x test
+      - ./gradlew build -x test &
+      - ./gradlew anotherTask & # 추가적인 병렬 작업이 있다면 여기에 추가
+      - wait
   post_build:
     commands:
       - echo "Build completed on `date`"
       - echo "Running tests..."
       - ./gradlew test
+      - echo "Saving cache..."
+      - cp -R /codebuild/output/.cache /root/.gradle/cache
+      - echo "Deploying the project..."
+      - cp -R /path/to/new/deployment/files/* /path/to/deployment/
+
 artifacts:
   files:
     - build/libs/sololiving.jar
@@ -35,4 +42,9 @@ artifacts:
 
 cache:
   paths:
-    - /root/.gradle/**/*
+    - /root/.gradle/cache
+
+reports:
+  junit:
+    files:
+      - build/reports/tests/test/*.xml
