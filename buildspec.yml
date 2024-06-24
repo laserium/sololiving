@@ -11,6 +11,8 @@ phases:
   pre_build:
     commands:
       - echo "Preparing to build..."
+      - echo "Setting execute permissions for gradlew..."
+      - chmod +x ./gradlew # 실행 권한 부여
       - echo "Installing dependencies..."
       - ./gradlew dependencies
   build:
