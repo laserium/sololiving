@@ -1,0 +1,33 @@
+version: 0.2
+
+env:
+  variables:
+    SPRING_PROFILES_ACTIVE: prod # 프로필 설정 (필요에 따라 변경)
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11 # Amazon Corretto 11 사용 (필요에 따라 변경)
+  pre_build:
+    commands:
+      - echo "Preparing to build..."
+      - echo "Installing dependencies..."
+      - ./gradlew dependencies
+  build:
+    commands:
+      - echo "Building the project..."
+      - ./gradlew build -x test
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+      - echo "Running tests..."
+      - ./gradlew test
+artifacts:
+  files:
+    - build/libs/sololiving.jar
+    - appspec.yml
+    - scripts/**
+
+cache:
+  paths:
+    - /root/.gradle/**/* # Gradle 캐시 경로

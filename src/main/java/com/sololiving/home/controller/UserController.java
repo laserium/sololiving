@@ -16,14 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/test")
 public class UserController {
 
     private final UserService userService;
-    
+
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
         UserVO userVO = new UserVO(signUpRequest.getUserId(), signUpRequest.getUserPwd());
@@ -31,11 +30,4 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS");
     }
 
-    @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody SignInRequest signInRequest) {
-        
-        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS");
-    }
-    
-    
 }
