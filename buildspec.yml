@@ -12,23 +12,27 @@ phases:
       - echo "Installing dependencies..."
       - chmod +x ./gradlew
       - ./gradlew dependencies
+
   pre_build:
     commands:
       - echo "Cleaning up old files..."
       - rm -rf /path/to/old/deployments/*
-      - echo "Restoring cache..."
+      - echo "Restoring cache..." # 이 부분은 수정되어야 할 필요가 있습니다.
+      - mkdir -p /codebuild/output/.cache # 캐시 디렉토리를 생성합니다.
       - cp -R /root/.gradle/cache /codebuild/output/.cache/ || true
+
   build:
     commands:
       - echo "Building the project..."
       - ./gradlew build -x test
+
   post_build:
     commands:
       - echo "Build completed on `date`"
       - echo "Running tests..."
       - ./gradlew test
-      - echo "Saving cache..."
-      - cp -R /codebuild/output/.cache /root/.gradle/cache
+      - echo "Saving cache..." # 이 부분도 수정되어야 할 필요가 있습니다.
+      - cp -R /codebuild/output/.cache /root/.gradle/cache || true
       - echo "Deploying the project..."
       - cp -R /path/to/new/deployment/files/* /path/to/deployment/
 
@@ -41,8 +45,3 @@ artifacts:
 cache:
   paths:
     - /root/.gradle/cache
-
-reports:
-  junit:
-    files:
-      - build/reports/tests/test/*.xml
