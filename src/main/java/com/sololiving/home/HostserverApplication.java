@@ -5,7 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-// cicd
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @MapperScan("com.sololiving.home.mapper")
 public class HostserverApplication {
