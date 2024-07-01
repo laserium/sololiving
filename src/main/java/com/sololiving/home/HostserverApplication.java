@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @MapperScan("com.sololiving.home.mapper")
 public class HostserverApplication {
-
+	// ㅇㄹ
 	public static void main(String[] args) {
 		SpringApplication.run(HostserverApplication.class, args);
 	}
