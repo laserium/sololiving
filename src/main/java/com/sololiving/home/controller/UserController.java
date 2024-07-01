@@ -3,7 +3,6 @@ package com.sololiving.home.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sololiving.home.dto.UserDto.SignInRequest;
 import com.sololiving.home.dto.UserDto.SignUpRequest;
 import com.sololiving.home.service.UserService;
 import com.sololiving.home.vo.UserVO;
