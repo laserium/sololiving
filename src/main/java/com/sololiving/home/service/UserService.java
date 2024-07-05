@@ -16,4 +16,5 @@ public class UserService {
     public void addUser(UserVO userVO) {
         userMapper.save(userVO);
     }
+
 }

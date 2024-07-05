@@ -1,6 +1,5 @@
 package com.sololiving.home.vo;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,5 +15,5 @@ public class UserVO {
     public UserVO(String userId, String userPwd) {
         this.userId = userId;
         this.userPwd = userPwd;
-    }   
+    }
 }
