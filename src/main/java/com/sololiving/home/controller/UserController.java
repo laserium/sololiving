@@ -21,6 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
         UserVO userVO = new UserVO(signUpRequest.getUserId(), signUpRequest.getUserPwd());
