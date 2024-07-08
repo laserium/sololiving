@@ -1,9 +1,9 @@
-package com.sololiving.home.mapper;
+package com.sololiving.domain.auth.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.sololiving.home.vo.UserVO;
+import com.sololiving.domain.vo.UserVO;
 
 @Mapper
 public interface UserMapper {

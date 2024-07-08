@@ -1,4 +1,4 @@
-package com.sololiving.home.vo;
+package com.sololiving.domain.vo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
