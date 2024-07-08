@@ -57,5 +57,5 @@ tasks.withType(Test) {
 }
 
 springBoot {
-    mainClass = 'com.sololiving.home.HostserverApplication'
+    mainClass = 'com.sololiving.SoloLivingApiApplication'
 }

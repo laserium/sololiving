@@ -1,14 +1,9 @@
 package com.sololiving.domain.auth.service;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
