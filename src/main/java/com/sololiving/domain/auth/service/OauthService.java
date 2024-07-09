@@ -1,11 +1,10 @@
 package com.sololiving.domain.auth.service;
 
-
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sololiving.domain.auth.dto.KakaoTokenResponseDto;
@@ -30,44 +29,39 @@ public class OauthService {
         this.redirectUri = env.getProperty("spring.security.oauth2.client.registration.kakao.redirect-uri", "");
         this.authorizationUri = env.getProperty("spring.security.oauth2.client.provider.kakao.authorization-uri", "");
         this.tokenUri = env.getProperty("spring.security.oauth2.client.provider.kakao.token-uri", "");
-
-        if (clientId == null || clientSecret == null || redirectUri == null || tokenUri == null) {
+        
+        if (clientId.isEmpty() || clientSecret.isEmpty() || redirectUri.isEmpty() || tokenUri.isEmpty()) {
             throw new IllegalArgumentException("Missing OAuth2 configuration properties");
         }
     }
 
-    public void getKakaoAuthCode() {
-        RestTemplate restTemplate = new RestTemplate();
-        String requestUrl = authorizationUri
-                + "?client_id=" + clientId
-                + "&redirect_uri=" + redirectUri
-                + "&response_type=code";
-        restTemplate.getForEntity(requestUrl, Object.class);
-    }
+    public String getKakaoToken(String authCode) {
+        WebClient webClient = WebClient.builder()
+                .baseUrl(tokenUri)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+                .build();
 
-    public String getKakaoToken(String authcode) {
-        KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create().post()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .path(tokenUri)
-                        .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", clientId)
-                        .queryParam("code", authcode)
-                        .build(true))
-                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+        KakaoTokenResponseDto kakaoTokenResponseDto = webClient.post()
+                .uri(uriBuilder -> uriBuilder.build())
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("client_id", clientId)
+                        .with("redirect_uri", redirectUri)
+                        .with("code", authCode)
+                        .with("client_secret", clientSecret))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .bodyToMono(KakaoTokenResponseDto.class)
                 .block();
 
-
-        log.info(" [Kakao Service] Access Token ------> {}", kakaoTokenResponseDto.getAccessToken());
-        log.info(" [Kakao Service] Refresh Token ------> {}", kakaoTokenResponseDto.getRefreshToken());
-        //제공 조건: OpenID Connect가 활성화 된 앱의 토큰 발급 요청인 경우 또는 scope에 openid를 포함한 추가 항목 동의 받기 요청을 거친 토큰 발급 요청인 경우
-        log.info(" [Kakao Service] Id Token ------> {}", kakaoTokenResponseDto.getIdToken());
-        log.info(" [Kakao Service] Scope ------> {}", kakaoTokenResponseDto.getScope());
-
-        return kakaoTokenResponseDto.getAccessToken();
+        if (kakaoTokenResponseDto != null) {
+            log.info(" [Kakao Service] Access Token ------> {}", kakaoTokenResponseDto.getAccessToken());
+            log.info(" [Kakao Service] Refresh Token ------> {}", kakaoTokenResponseDto.getRefreshToken());
+            log.info(" [Kakao Service] Id Token ------> {}", kakaoTokenResponseDto.getIdToken());
+            log.info(" [Kakao Service] Scope ------> {}", kakaoTokenResponseDto.getScope());
+            return kakaoTokenResponseDto.getAccessToken();
+        } else {
+            throw new RuntimeException("Failed to retrieve Kakao token");
+        }
     }
 }

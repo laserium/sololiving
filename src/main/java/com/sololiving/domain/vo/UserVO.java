@@ -1,19 +1,30 @@
 package com.sololiving.domain.vo;
 
+import com.sololiving.global.common.enums.Gender;
+import com.sololiving.global.common.enums.UserType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
-@RequiredArgsConstructor
-public class UserVO {
+@Builder
+public class UserVo {
 
     private String userId;
     private String userPwd;
+    private String nickName;
+    private String contact;
+    private String email;
+    private Gender gender;
+    private String address;
+    private LocalDate birth;
+    private boolean is_active;
+    private String followersCnt;
+    private String followingCnt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private UserType userType;
 
-    public UserVO(String userId, String userPwd) {
-        this.userId = userId;
-        this.userPwd = userPwd;
-    }
 }

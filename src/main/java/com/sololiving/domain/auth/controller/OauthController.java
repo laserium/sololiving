@@ -15,21 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth/oauth")
+@RequestMapping("/oauth")
 public class OauthController {
 
     private final OauthService oAuthService;
 
-    @GetMapping("/kakao/auth-code")
-    public ResponseEntity<?> getKakaoAuthCode() {
-        oAuthService.getKakaoAuthCode();
-        return ResponseEntity.status(HttpStatus.OK).body(null);
-    }
-
     @GetMapping("/kakao/token")
     public ResponseEntity<?> getKakaoToken(@RequestParam("code") String authcode) {
         String accessToken = oAuthService.getKakaoToken(authcode);
-        System.out.println(accessToken);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
     
