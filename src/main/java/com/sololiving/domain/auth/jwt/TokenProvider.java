@@ -20,7 +20,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -81,12 +80,12 @@ public class TokenProvider {
     }
 
     // refresh token => DB에 저장
-    // private void saveRefreshToken(String userId, String newRefreshToken) {
-    //     RefreshToken refreshtoken = refreshTokenMapper.findByUserId(userId)
-    //             .map(entity -> entity.update(newRefreshToken))
-    //             .orElse(new RefreshToken(userId, newRefreshToken));
-    //     refreshTokenMapper.save(refreshtoken);
-    // }
+    private void saveRefreshToken(String userId, String newRefreshToken) {
+        RefreshToken refreshtoken = refreshTokenMapper.findByUserId(userId)
+                .map(entity -> entity.update(newRefreshToken))
+                .orElse(new RefreshToken(userId, newRefreshToken));
+        refreshTokenMapper.save(refreshtoken);
+    }
 
     // AT로 유저 아이디 추출
     public String getUserId(String token) {

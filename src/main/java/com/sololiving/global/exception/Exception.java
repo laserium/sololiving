@@ -3,16 +3,16 @@ package com.sololiving.global.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class CustomException extends RuntimeException {
-    private final GlobalErrorCode errorCode;
+import lombok.Getter;
 
-    public CustomException(GlobalErrorCode errorCode) {
+@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+@Getter
+public class Exception extends RuntimeException {
+
+    private final ErrorCode errorCode;
+
+    public Exception(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
-    }
-
-    public GlobalErrorCode getErrorCode() {
-        return errorCode;
     }
 }
