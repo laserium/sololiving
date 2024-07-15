@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
     
     private final AuthService authService;
@@ -35,7 +34,6 @@ public class AuthController {
     
     @PostMapping("/signup")
     public ResponseEntity<?> postSignUp(@RequestBody SignUpRequest signUpRequest) {
-        authService.signUp(signUpRequest);
         authService.signUp(signUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS TO SIGNUP");
     }

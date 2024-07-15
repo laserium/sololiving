@@ -5,10 +5,14 @@
 
 <mapper namespace="com.sololiving.domain.auth.mapper.RefreshTokenMapper">
 
-    <update id="updateRefreshToken">
-        UPDATE users
-        SET refresh_token = #{refreshToken}
-        WHERE user_id = #{userId}
-    </update>
+    <select id="findByUserId" parameterType="String" resultType="com.sololiving.domain.vo.RefreshTokenVo">
+        SELECT * FROM REFRESH_TOKEN WHERE user_id = #{userId}
+    </select>
+
+    <insert id="save" parameterType="com.sololiving.domain.vo.RefreshTokenVo">
+        INSERT INTO REFRESH_TOKEN (user_id, refresh_token, expired_at, issued_at, token_status, client_id, created_at, updated_at)
+        VALUES (#{userId}, #{refreshToken}, #{expiredAt}, #{issuedAt}, #{tokenStatus}, #{clientId}, #{createdAt}, #{updatedAt})
+    </insert>
+
 
 </mapper>

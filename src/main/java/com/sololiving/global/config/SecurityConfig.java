@@ -18,8 +18,10 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> 
                 authorize
+                    .requestMatchers("/**").permitAll()
                     .anyRequest().permitAll()
             )
+            .csrf((csrfConfig) -> csrfConfig.disable()) 
             .oauth2Login(withDefaults());
         return http.build();
     }

@@ -33,6 +33,6 @@ public class AuthDto {
         private String contact;
         private String email;
         private UserType userType;
-}
+    }
 
 }

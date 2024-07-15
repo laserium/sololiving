@@ -77,7 +77,7 @@ public class AuthService {
                 .nickName(USER_NICK_NAME)
                 .contact(signUpRequest.getContact())
                 .email(signUpRequest.getEmail())
-                .gender(Gender.OTHERS)
+                .gender(Gender.DEFAULT)
                 .address(null)
                 .birth(null)
                 .is_active(true)

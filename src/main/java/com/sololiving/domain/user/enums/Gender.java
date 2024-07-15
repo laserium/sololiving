@@ -3,7 +3,7 @@ package com.sololiving.domain.user.enums;
 public enum Gender {
     MALE("남성"),
     FEMALE("여성"),
-    OTHERS("기타");
+    DEFAULT("선택");
 
     private final String description;
 

@@ -6,7 +6,7 @@
 <mapper namespace="com.sololiving.domain.user.mapper.UserMapper">
 
     <select id="findByUserId" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
-        SELECT * FROM users WHERE user_id = #{userId}
+        SELECT * FROM USER WHERE user_id = #{userId}
     </select>
 
 </mapper>
