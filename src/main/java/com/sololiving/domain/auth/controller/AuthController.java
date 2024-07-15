@@ -2,6 +2,8 @@ package com.sololiving.domain.auth.controller;
 
 import java.time.Duration;
 
+import java.time.Duration;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,7 @@ public class AuthController {
     
     @PostMapping("/signup")
     public ResponseEntity<?> postSignUp(@RequestBody SignUpRequest signUpRequest) {
+        authService.signUp(signUpRequest);
         authService.signUp(signUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS TO SIGNUP");
     }

@@ -6,7 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 public class TokenDto {
-    
+
+    // 토큰 생성 ResponseDto
     @Getter
     @Builder
     public static class CreateTokensResponse {
