@@ -1,4 +1,4 @@
-package com.sololiving.global.common.enums;
+package com.sololiving.domain.user.enums;
 
 public enum Gender {
     MALE("남성"),

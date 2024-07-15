@@ -2,6 +2,7 @@ package com.sololiving.domain.auth.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -11,9 +12,12 @@ import javax.crypto.SecretKey;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import com.sololiving.domain.auth.enums.ClientId;
+import com.sololiving.domain.auth.enums.TokenStatus;
 import com.sololiving.domain.auth.mapper.RefreshTokenMapper;
+import com.sololiving.domain.vo.RefreshTokenVo;
 import com.sololiving.domain.vo.UserVo;
 
 import io.jsonwebtoken.Claims;
@@ -32,12 +36,12 @@ public class TokenProvider {
     private final RefreshTokenMapper refreshTokenMapper;
 
     // 토큰 생성
-    public String generateToken(UserVo user, Duration expiredAt) {
+    public String generateToken(UserVo userVo, Duration expiredAt) {
         Date now = new Date();
-        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), user);
+        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), userVo);
     }
 
-    private String makeToken(Date expiry, UserVo user) {
+    private String makeToken(Date expiry, UserVo userVo) {
         Date now = new Date();
         SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 
@@ -45,8 +49,8 @@ public class TokenProvider {
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiration(expiry)
-                .subject(user.getEmail())
-                .claim("id", user.getUserId())
+                .subject(userVo.getEmail())
+                .claim("id", userVo.getUserId())
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
@@ -76,17 +80,27 @@ public class TokenProvider {
     // refresh token 생성
     public String makeRefreshToken(UserVo user) {
         String refreshToken = this.generateToken(user, REFRESH_TOKEN_DURATION);
-        // saveRefreshToken(user.getUserId(), refreshToken);
+        saveRefreshToken(user.getUserId(), refreshToken);
         return refreshToken;
     }
 
     // refresh token => DB에 저장
-    // private void saveRefreshToken(String userId, String newRefreshToken) {
-    //     RefreshToken refreshtoken = refreshTokenMapper.findByUserId(userId)
-    //             .map(entity -> entity.update(newRefreshToken))
-    //             .orElse(new RefreshToken(userId, newRefreshToken));
-    //     refreshTokenMapper.save(refreshtoken);
-    // }
+    @Transactional
+    private void saveRefreshToken(String userId, String newRefreshToken) {
+        RefreshTokenVo refreshTokenVo = refreshTokenMapper.findByUserId(userId)
+                .map(entity -> entity.update(newRefreshToken))
+                .orElse(RefreshTokenVo.builder()
+                        .userId(userId)
+                        .refreshToken(newRefreshToken)
+                        .expiresIn(LocalDate.now().plusDays(1)) // 예시로 1개월 후 만료
+                        .issuedAt(LocalDate.now())
+                        .tokenStatus(TokenStatus.VALID)
+                        .clientId(ClientId.SOLOLIVING) // 여기에 실제 ClientId 값을 넣어야 합니다.
+                        .createdAt(LocalDate.now())
+                        .updatedAt(LocalDate.now())
+                        .build());
+        refreshTokenMapper.save(refreshTokenVo);
+    }
 
     // AT로 유저 아이디 추출
     public String getUserId(String token) {

@@ -1,6 +1,6 @@
 package com.sololiving.domain.vo;
 
-import com.sololiving.global.common.enums.Gender;
+import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.global.common.enums.UserType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
