@@ -18,12 +18,13 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.vo.UserVo;
 import com.sololiving.global.common.enums.UserType;
-import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.Exception;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -97,7 +98,6 @@ public class AuthService {
         // 아이디와 비밀번호 체크
         UserVo userVo = userMapper.findByUserId(signInRequest.getUserId()).orElseThrow(() -> new Exception(UserErrorCode.USER_NOT_FOUND));
         this.verifyPassword(userVo, signInRequest.getUserPwd());
-
         // Refresh Token 발급 + DB에 저장
         String refreshToken = tokenProvider.makeRefreshToken(userVo);       
         Duration expiresIn = Duration.ofMinutes(30);

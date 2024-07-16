@@ -1,10 +1,8 @@
 package com.sololiving.domain.vo;
 
-import java.time.LocalDate;
-
+import java.time.LocalDateTime;
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.enums.TokenStatus;
-
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,24 +13,20 @@ public class RefreshTokenVo {
     private Long id;
     private String userId;
     private String refreshToken;
-    private LocalDate expiresIn;
-    private LocalDate issuedAt; // 토큰 발급 시간
+    private LocalDateTime expiresIn;
+    private LocalDateTime issuedAt; // 토큰 발급 시간
     private TokenStatus tokenStatus;
     private ClientId clientId;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public RefreshTokenVo update(String newRefreshToken) {
         return RefreshTokenVo.builder()
-                .id(this.id)
-                .userId(this.userId)
                 .refreshToken(newRefreshToken)
-                .expiresIn(this.expiresIn)
-                .issuedAt(this.issuedAt)
+                .expiresIn(expiresIn)
+                .issuedAt(issuedAt)
                 .tokenStatus(TokenStatus.VALID)
-                .clientId(this.clientId)
-                .createdAt(this.createdAt)
-                .updatedAt(LocalDate.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 

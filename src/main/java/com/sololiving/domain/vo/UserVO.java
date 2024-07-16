@@ -26,9 +26,6 @@ public class UserVo {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserType userType;
-    public UserVo orElseThrow(Object object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
-    }
+
 
 }

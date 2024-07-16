@@ -23,9 +23,11 @@ import com.sololiving.global.common.enums.UserType;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/auth")
 public class AuthController {
     
@@ -43,6 +45,7 @@ public class AuthController {
         HttpServletResponse httpServletRequest) {
         CreateTokensResponse tokensResponse = authService.signIn(signInRequest);
         String refreshToken = tokensResponse.getRefreshToken();
+        log.info("ddddd");
         String accessToken = tokensResponse.getAccessToken();
         Duration expiresIn = tokensResponse.getExpiresIn();
         UserType userType = userService.findByUserId(signInRequest.getUserId()).getUserType();

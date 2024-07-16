@@ -2,9 +2,10 @@ package com.sololiving.domain.auth.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.crypto.SecretKey;
@@ -22,12 +23,13 @@ import com.sololiving.domain.vo.UserVo;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class TokenProvider {
 
     public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(1);
@@ -80,26 +82,34 @@ public class TokenProvider {
     public String makeRefreshToken(UserVo user) {
         String refreshToken = this.generateToken(user, REFRESH_TOKEN_DURATION);
         saveRefreshToken(user.getUserId(), refreshToken);
+
         return refreshToken;
     }
 
     // refresh token => DB에 저장
     @Transactional
     private void saveRefreshToken(String userId, String newRefreshToken) {
-        RefreshTokenVo refreshTokenVo = refreshTokenMapper.findByUserId(userId)
-                .map(entity -> entity.update(newRefreshToken))
-                .orElse(RefreshTokenVo.builder()
-                        .userId(userId)
-                        .refreshToken(newRefreshToken)
-                        .expiresIn(LocalDate.now().plusDays(1)) // 예시로 1개월 후 만료
-                        .issuedAt(LocalDate.now())
-                        .tokenStatus(TokenStatus.VALID)
-                        .clientId(ClientId.SOLOLIVING) // 여기에 실제 ClientId 값을 넣어야 합니다.
-                        .createdAt(LocalDate.now())
-                        .updatedAt(LocalDate.now())
-                        .build());
-        refreshTokenMapper.save(refreshTokenVo);
+        log.info("aa");
+        Optional<RefreshTokenVo> existingToken = refreshTokenMapper.findRefreshTokenByUserId(userId);
+        log.info("bb");
+        if (existingToken.isPresent()) {
+            RefreshTokenVo updatedToken = existingToken.get().update(newRefreshToken);
+            refreshTokenMapper.update(updatedToken);
+        } else {
+            RefreshTokenVo newToken = RefreshTokenVo.builder()
+                    .userId(userId)
+                    .refreshToken(newRefreshToken)
+                    .expiresIn(LocalDateTime.now().plusDays(1)) 
+                    .issuedAt(LocalDateTime.now())
+                    .tokenStatus(TokenStatus.VALID)
+                    .clientId(ClientId.SOLOLIVING)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+            refreshTokenMapper.insert(newToken);
+        }
     }
+    
 
     // AT로 유저 아이디 추출
     public String getUserId(String token) {

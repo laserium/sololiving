@@ -9,6 +9,9 @@ import com.sololiving.domain.vo.RefreshTokenVo;
 
 @Mapper
 public interface RefreshTokenMapper {
-    Optional<RefreshTokenVo> findByUserId(@Param("userId") String userId);
-    void save(@Param("refreshToken") RefreshTokenVo refreshToken);
+    Optional<RefreshTokenVo> findRefreshTokenByUserId(@Param("userId") String userId);
+    
+    void insert(RefreshTokenVo refreshToken);
+    
+    void update(RefreshTokenVo refreshToken);
 }
