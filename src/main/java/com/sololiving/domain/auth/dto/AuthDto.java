@@ -2,9 +2,11 @@ package com.sololiving.domain.auth.dto;
 
 import java.time.Duration;
 
+
+import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.global.common.enums.UserType;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 public class AuthDto {
@@ -18,11 +20,12 @@ public class AuthDto {
 
     // 로그인 ResponseDto
     @Getter
-    @AllArgsConstructor
+    @Builder
     public static class SignInResponse {
-        private String accessTokne;
-        private UserType userType;
+        private String accessToken;
         private Duration expiresIn;
+        private UserType userType;
+        private ClientId clientId;
     }
 
     // 회원가입 RequestDto

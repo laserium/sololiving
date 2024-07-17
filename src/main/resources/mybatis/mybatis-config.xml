@@ -14,8 +14,8 @@
     </typeAliases>
 
     <typeHandlers>
-        <typeHandler handler="com.sololiving.domain.auth.enums.handlers.TokenStatusEnumHandler" javaType="com.sololiving.domain.auth.enums.TokenStatus"/>
-        <typeHandler handler="com.sololiving.domain.auth.enums.handlers.ClientIdEnumHandler" javaType="com.sololiving.domain.auth.enums.ClientId"/>
+        <typeHandler javaType="com.sololiving.domain.auth.enums.TokenStatus" handler="com.sololiving.global.handlers.MybatisEnumHandler"/>
+        <typeHandler javaType="com.sololiving.domain.auth.enums.ClientId" handler="com.sololiving.global.handlers.MybatisEnumHandler"/>
     </typeHandlers>
 
     <mappers>

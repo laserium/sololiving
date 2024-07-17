@@ -3,11 +3,16 @@ package com.sololiving.domain.vo;
 import java.time.LocalDateTime;
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.enums.TokenStatus;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RefreshTokenVo {
 
     private Long id;

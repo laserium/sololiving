@@ -2,12 +2,10 @@ package com.sololiving.domain.auth.controller;
 
 import java.time.Duration;
 
-import java.time.Duration;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,22 +15,26 @@ import com.sololiving.domain.auth.dto.AuthDto.SignInRequest;
 import com.sololiving.domain.auth.dto.AuthDto.SignInResponse;
 import com.sololiving.domain.auth.dto.AuthDto.SignUpRequest;
 import com.sololiving.domain.auth.dto.TokenDto.CreateTokensResponse;
+import com.sololiving.domain.auth.enums.ClientId;
+import com.sololiving.domain.auth.exception.AuthErrorCode;
+import com.sololiving.domain.auth.mapper.RefreshTokenMapper;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.vo.RefreshTokenVo;
+import com.sololiving.domain.vo.UserVo;
 import com.sololiving.global.common.enums.UserType;
+import com.sololiving.global.exception.Exception;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     
     private final AuthService authService;
-    private final UserService userService;
     
     @PostMapping("/signup")
     public ResponseEntity<?> postSignUp(@RequestBody SignUpRequest signUpRequest) {
@@ -41,24 +43,20 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> postSignIn(@RequestBody SignInRequest signInRequest,
-        HttpServletResponse httpServletRequest) {
+    public ResponseEntity<SignInResponse> postSignIn(@RequestBody SignInRequest signInRequest) {
         CreateTokensResponse tokensResponse = authService.signIn(signInRequest);
-        String refreshToken = tokensResponse.getRefreshToken();
-        log.info("ddddd");
-        String accessToken = tokensResponse.getAccessToken();
-        Duration expiresIn = tokensResponse.getExpiresIn();
-        UserType userType = userService.findByUserId(signInRequest.getUserId()).getUserType();
-        ResponseCookie cookie = ResponseCookie
-                .from("refreshToken", refreshToken)
-                .path("/")
-                .httpOnly(true)
-                .sameSite("none")
-                // .secure(true) // HTTPS 환경에서만 사용
-                .maxAge(24 * 60 * 60) // 쿠키 유효 시간 (예: 1일)
-                .build();
+        ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokensResponse.getRefreshToken());
+        SignInResponse signInResponse;
+        try {
+            signInResponse = authService.createSignInResponse(signInRequest, tokensResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Set-Cookie", cookie.toString())
-                .body(new SignInResponse(accessToken, userType, expiresIn));
+                .header("Set-Cookie", refreshTokenCookie.toString())
+                .body(signInResponse);
     }
+
+
 }

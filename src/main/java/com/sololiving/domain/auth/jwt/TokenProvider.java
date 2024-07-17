@@ -89,9 +89,7 @@ public class TokenProvider {
     // refresh token => DB에 저장
     @Transactional
     private void saveRefreshToken(String userId, String newRefreshToken) {
-        log.info("aa");
         Optional<RefreshTokenVo> existingToken = refreshTokenMapper.findRefreshTokenByUserId(userId);
-        log.info("bb");
         if (existingToken.isPresent()) {
             RefreshTokenVo updatedToken = existingToken.get().update(newRefreshToken);
             refreshTokenMapper.update(updatedToken);
