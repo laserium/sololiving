@@ -96,10 +96,11 @@ public class AuthService {
     @Transactional
     public CreateTokensResponse signIn(SignInRequest signInRequest) {
         // 아이디와 비밀번호 체크
-        UserVo userVo = userMapper.findByUserId(signInRequest.getUserId()).orElseThrow(() -> new Exception(UserErrorCode.USER_NOT_FOUND));
+        UserVo userVo = userMapper.findByUserId(signInRequest.getUserId())
+                .orElseThrow(() -> new Exception(UserErrorCode.USER_NOT_FOUND));
         this.verifyPassword(userVo, signInRequest.getUserPwd());
         // Refresh Token 발급 + DB에 저장
-        String refreshToken = tokenProvider.makeRefreshToken(userVo);       
+        String refreshToken = tokenProvider.makeRefreshToken(userVo);
         Duration expiresIn = Duration.ofMinutes(30);
         // Duration expiresIn = Duration.ofSeconds(10);
         String accessToken = tokenProvider.generateToken(userVo, expiresIn);
@@ -116,7 +117,5 @@ public class AuthService {
             throw new Exception(AuthErrorCode.PASSWORD_INCORRECT);
         }
     }
-
-
 
 }
