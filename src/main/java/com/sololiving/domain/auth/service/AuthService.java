@@ -8,10 +8,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sololiving.domain.auth.dto.AuthDto.SignInRequest;
-import com.sololiving.domain.auth.dto.AuthDto.SignInResponse;
-import com.sololiving.domain.auth.dto.AuthDto.SignUpRequest;
-import com.sololiving.domain.auth.dto.TokenDto.CreateTokensResponse;
+import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
+import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
+import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
+import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
@@ -43,16 +43,16 @@ public class AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 회원가입
-    public void signUp(SignUpRequest signUpRequest) {
-        validateSignUpRequest(signUpRequest);
-        saveUser(signUpRequest);
+    public void signUp(SignUpRequestDto signUpRequestDto) {
+        validateSignUpRequest(signUpRequestDto);
+        saveUser(signUpRequestDto);
     }
 
     // 회원가입 - 1. 중복데이터 검증
-    private void validateSignUpRequest(SignUpRequest signUpRequest) {
-        validateUniqueField(signUpRequest.getUserId(), this::isUserIdAvailable, AuthErrorCode.ID_ALREADY_EXISTS);
-        validateUniqueField(signUpRequest.getEmail(), this::isUserEmailAvailable, AuthErrorCode.EMAIL_ALREADY_EXISTS);
-        validateUniqueField(signUpRequest.getContact(), this::isUserContactAvailable, AuthErrorCode.CONTACT_ALREADY_EXISTS);
+    private void validateSignUpRequest(SignUpRequestDto signUpRequestDto) {
+        validateUniqueField(signUpRequestDto.getUserId(), this::isUserIdAvailable, AuthErrorCode.ID_ALREADY_EXISTS);
+        validateUniqueField(signUpRequestDto.getEmail(), this::isUserEmailAvailable, AuthErrorCode.EMAIL_ALREADY_EXISTS);
+        validateUniqueField(signUpRequestDto.getContact(), this::isUserContactAvailable, AuthErrorCode.CONTACT_ALREADY_EXISTS);
     }
     // 필드의 유일성 검증
     private void validateUniqueField(String fieldValue, Validator validator, AuthErrorCode errorCode) {
@@ -83,13 +83,13 @@ public class AuthService {
 
     // 회원가입 - 2. 저장
     @Transactional
-    private void saveUser(SignUpRequest signUpRequest) {
+    private void saveUser(SignUpRequestDto signUpRequestDto) {
         UserVo user = UserVo.builder()
-                .userId(signUpRequest.getUserId())
-                .userPwd(bCryptPasswordEncoder.encode(signUpRequest.getUserPwd()))
+                .userId(signUpRequestDto.getUserId())
+                .userPwd(bCryptPasswordEncoder.encode(signUpRequestDto.getUserPwd()))
                 .nickName(USER_NICK_NAME)
-                .contact(signUpRequest.getContact())
-                .email(signUpRequest.getEmail())
+                .contact(signUpRequestDto.getContact())
+                .email(signUpRequestDto.getEmail())
                 .gender(Gender.DEFAULT)
                 .address(null)
                 .birth(null)
@@ -106,7 +106,7 @@ public class AuthService {
 
     // 로그인(RT, AT 발급)
     @Transactional
-    public CreateTokensResponse signIn(SignInRequest signInRequest) {
+    public CreateTokenResponse signIn(SignInRequestDto signInRequest) {
         // 아이디와 비밀번호 체크
         UserVo userVo = userMapper.findByUserId(signInRequest.getUserId()).orElseThrow(() -> new Exception(UserErrorCode.USER_NOT_FOUND));
         this.verifyPassword(userVo, signInRequest.getUserPwd());
@@ -115,7 +115,7 @@ public class AuthService {
         Duration expiresIn = Duration.ofMinutes(30);
         // Duration expiresIn = Duration.ofSeconds(10);
         String accessToken = tokenProvider.generateToken(userVo, expiresIn);
-        return CreateTokensResponse.builder()
+        return CreateTokenResponse.builder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
                 .expiresIn(expiresIn)
@@ -126,7 +126,7 @@ public class AuthService {
         return CookieUtil.createRefreshTokenCookie(refreshToken);
     }
 
-    public SignInResponse createSignInResponse(SignInRequest signInRequest, CreateTokensResponse tokensResponse) {
+    public SignInResponseDto createSignInResponse(SignInRequestDto signInRequest, CreateTokenResponse tokensResponse) {
         String accessToken = tokensResponse.getAccessToken();
         Duration expiresIn = tokensResponse.getExpiresIn();
         UserVo userVo = userService.findByUserId(signInRequest.getUserId());
@@ -135,7 +135,7 @@ public class AuthService {
                                               .map(RefreshTokenVo::getClientId)
                                               .orElseThrow(() -> new Exception(AuthErrorCode.CANNOT_FIND_RT));
         
-        return SignInResponse.builder()
+        return SignInResponseDto.builder()
                 .accessToken(accessToken)
                 .expiresIn(expiresIn)
                 .userType(userType)

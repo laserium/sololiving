@@ -15,7 +15,9 @@ public enum AuthErrorCode implements ErrorCode {
     PASSWORD_INCORRECT("AUTH004", "비밀번호가 일치하지 않습니다."),
     CANNOT_FIND_RT("AUTH005", "해당하는 유저의 RefreshToken을 찾을 수 없습니다."),
     FAIL_TO_RETRIVE_KAKAO_TOKEN("AUTH006", "카카오 로그인 관련 토큰을 회수할 수 없습니다."),
-    MISSING_OAUTH2_CONFIGURATION_PROPERTIES("AUTH007", "OAUTH2 관련 정보를 찾을 수 없습니다.");
+    MISSING_OAUTH2_CONFIGURATION_PROPERTIES("AUTH007", "OAUTH2 관련 정보를 찾을 수 없습니다."),
+    FAIL_TO_RETRIEVE_USER_INFO("AUTH008", "사용자 정보 조회 실패(OAuth2.0, NAVER)"),
+    NO_VALID_DATA_IN_SESSION("AUTH009", "세션 만료");
 
     private final String code;
     private final String message;
