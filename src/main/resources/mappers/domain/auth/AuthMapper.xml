@@ -7,8 +7,8 @@
 
   <!--회원가입-->
   <insert id="insertUser">
-      INSERT INTO USER (user_id, user_pwd, nickname, contact, email, gender, address, birth, is_active, followers_cnt, following_cnt, created_at, updated_at, user_type)
-      VALUES (#{userId}, #{userPwd}, #{nickName}, #{contact}, #{email}, #{gender}, #{address}, #{birth}, #{is_active}, #{followersCnt}, #{followingCnt}, #{createdAt}, #{updatedAt}, #{userType})
+      INSERT INTO USER (user_id, user_pwd, oauth2_user_id, nickname, contact, email, gender, address, birth, is_active, followers_cnt, following_cnt, created_at, updated_at, user_type)
+      VALUES (#{userId}, #{userPwd}, #{oauth2UserId}, #{nickName}, #{contact}, #{email}, #{gender}, #{address}, #{birth}, #{is_active}, #{followersCnt}, #{followingCnt}, #{createdAt}, #{updatedAt}, #{userType})
   </insert>
 
   <!--중복검사 : 아이디-->

@@ -14,6 +14,7 @@ public class UserVo {
 
     private String userId;
     private String userPwd;
+    private String oauth2UserId;
     private String nickName;
     private String contact;
     private String email;

@@ -4,39 +4,51 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NaverUserInfoResponseDto {
-    
+
     @JsonProperty("resultcode")
     private String resultCode;
 
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("response")
+    private Response response;
 
-    @JsonProperty("age")
-    private String age;
+    @Getter
+    @Setter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Response {
+        @JsonProperty("id")
+        private String id;
 
-    @JsonProperty("gender")
-    private String gender;
+        @JsonProperty("age")
+        private String age;
 
-    @JsonProperty("email")
-    private String email;
+        @JsonProperty("gender")
+        private String gender;
 
-    @JsonProperty("mobile")
-    private String mobile;
+        @JsonProperty("email")
+        private String email;
 
-    @JsonProperty("name")
-    private String name;
+        @JsonProperty("mobile")
+        private String mobile;
 
-    @JsonProperty("birthday")
-    private String birthday;
+        @JsonProperty("name")
+        private String name;
 
-    @JsonProperty("birthyear")
-    private String birthyear;
+        @JsonProperty("birthday")
+        private String birthday;
 
+        @JsonProperty("birthyear")
+        private String birthyear;
+
+        @JsonProperty("profile_image")
+        private String profileImage;
+    }
 }

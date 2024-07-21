@@ -15,16 +15,16 @@ import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
-
+import com.sololiving.domain.auth.exception.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
-
+import com.sololiving.global.exception.ErrorResponse;
 import com.sololiving.global.exception.Exception;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
     
     private final AuthService authService;
@@ -32,7 +32,11 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> postSignUp(@RequestBody SignUpRequestDto signUpRequestDto) {
         authService.signUp(signUpRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS TO SIGNUP");
+        ErrorResponse errorResponse = ErrorResponse.builder()
+        .code((AuthSuccessCode.SIGN_UP_SUCCESS).getCode())
+        .message((AuthSuccessCode.SIGN_UP_SUCCESS).getMessage())
+        .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(errorResponse);
     }
 
     @PostMapping("/signin")

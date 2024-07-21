@@ -87,6 +87,7 @@ public class AuthService {
         UserVo user = UserVo.builder()
                 .userId(signUpRequestDto.getUserId())
                 .userPwd(bCryptPasswordEncoder.encode(signUpRequestDto.getUserPwd()))
+                .oauth2UserId(signUpRequestDto.getOauth2UserId())
                 .nickName(USER_NICK_NAME)
                 .contact(signUpRequestDto.getContact())
                 .email(signUpRequestDto.getEmail())
@@ -109,9 +110,12 @@ public class AuthService {
     public CreateTokenResponse signIn(SignInRequestDto signInRequest) {
         // 아이디와 비밀번호 체크
         UserVo userVo = userMapper.findByUserId(signInRequest.getUserId()).orElseThrow(() -> new Exception(UserErrorCode.USER_NOT_FOUND));
-        this.verifyPassword(userVo, signInRequest.getUserPwd());
+        ClientId clientId = signInRequest.getClientId();
+        if(clientId == ClientId.SOLOLIVING) {
+            this.verifyPassword(userVo, signInRequest.getUserPwd());
+        } 
         // Refresh Token 발급 + DB에 저장
-        String refreshToken = tokenProvider.makeRefreshToken(userVo);       
+        String refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());       
         Duration expiresIn = Duration.ofMinutes(30);
         // Duration expiresIn = Duration.ofSeconds(10);
         String accessToken = tokenProvider.generateToken(userVo, expiresIn);

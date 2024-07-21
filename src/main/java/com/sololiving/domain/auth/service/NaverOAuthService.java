@@ -6,23 +6,21 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
-import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
+import com.sololiving.domain.auth.dto.oauth.response.NaverRequestTokenRefreshDto;
 import com.sololiving.domain.auth.dto.oauth.response.NaverTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.NaverUserInfoResponseDto;
-import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
+import com.sololiving.domain.auth.dto.oauth.response.OauthUserExistenceResponseDto;
+import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.vo.UserVo;
-import com.sololiving.global.common.enums.UserType;
 import com.sololiving.global.config.properties.NaverOAuthRegistrationProperties;
 import com.sololiving.global.exception.Exception;
 import lombok.RequiredArgsConstructor;
@@ -43,48 +41,25 @@ public class NaverOAuthService {
     @Value("${naver.oauth2.state}")
     private String state;
 
-    @Transactional
-    public CreateTokenResponse naverSignIn(String authCode) {
-        NaverUserInfoResponseDto userInfo = getUserInfo(authCode);
-        String naverUserId = NAVER_ID_PREFIX + userInfo.getId();
-
-        return userMapper.findByUserId(naverUserId)
-                .map(this::handleExistingUser)
-                .orElseGet(() -> handleNewUser(userInfo));
+    public OauthUserExistenceResponseDto checkOauthUserExistence(String authCode) {
+        String oauth2UserId = NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(authCode)).getResponse().getId();
+        log.info(oauth2UserId);
+        Optional<UserVo> userOptional = userMapper.findByOauth2UserId(oauth2UserId);
+        if (userOptional.isPresent()) {
+            SignInRequestDto signInRequestDto = SignInRequestDto.builder()
+                                                .userId(userOptional.get().getUserId())
+                                                .userPwd(null)
+                                                .clientId(ClientId.NAVER)
+                                                .build();
+            authService.signIn(signInRequestDto);
+            return OauthUserExistenceResponseDto.builder().isOauthUser("true").oauth2UserId(oauth2UserId).build();
+        } else {
+            return OauthUserExistenceResponseDto.builder().isOauthUser("false").oauth2UserId(oauth2UserId).build();
+        }
+        
     }
 
-    public SignInRequestDto naverSignInRequest(String authCode) {
-        NaverUserInfoResponseDto userInfo = getUserInfo(authCode);
-        return SignInRequestDto.builder()
-                .userId(NAVER_ID_PREFIX + userInfo.getId())
-                .userPwd(state)
-                .build();
-    }
-
-    private NaverUserInfoResponseDto getUserInfo(String authCode) {
-        String accessToken = postNaverToken(authCode);
-        return getUserInfoByNaverAccessToken(accessToken);
-    }
-
-    private CreateTokenResponse handleExistingUser(UserVo user) {
-        SignInRequestDto signInRequest = SignInRequestDto.builder()
-                .userId(user.getUserId())
-                .userPwd(null)
-                .build();
-        return authService.signIn(signInRequest);
-    }
-
-    private CreateTokenResponse handleNewUser(NaverUserInfoResponseDto userInfo) {
-        SignUpRequestDto signUpRequestDto = createSignUpRequest(userInfo);
-        userMapper.saveUser(signUpRequestDto);
-        SignInRequestDto signInRequestDto = SignInRequestDto.builder()
-                .userId(signUpRequestDto.getUserId())
-                .userPwd(null)
-                .build();
-        return authService.signIn(signInRequestDto);
-    }
-
-    private String postNaverToken(String authCode) {
+    private String getTokenByCode(String authCode) {
         String encodedState = encodeState(state);
         WebClient webClient = webClientBuilder.build();
         NaverTokenResponseDto naverTokenResponseDto = webClient.post()
@@ -97,20 +72,20 @@ public class NaverOAuthService {
                 .retrieve()
                 .bodyToMono(NaverTokenResponseDto.class)
                 .block();
-
+        
         if (naverTokenResponseDto == null) {
             throw new Exception(AuthErrorCode.FAIL_TO_RETRIVE_KAKAO_TOKEN);
         }
-
-        if ("invalid_request".equals(naverTokenResponseDto.getError()) && "no valid data in session".equals(naverTokenResponseDto.getErrorDescription())) {
-            throw new Exception(AuthErrorCode.NO_VALID_DATA_IN_SESSION);
+        
+        if (naverTokenResponseDto.getError() == "invalid_request") {
+            throw new Exception(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
         }
-
+        // log
         logNaverTokenResponse(naverTokenResponseDto);
-        return naverTokenResponseDto.getAccessToken();
+        return requestTokenRefresh(naverTokenResponseDto.getRefreshToken());
     }
 
-    private NaverUserInfoResponseDto getUserInfoByNaverAccessToken(String accessToken) {
+    private NaverUserInfoResponseDto getUserInfoByToken(String accessToken) {
         WebClient webClient = webClientBuilder.build();
         String response = webClient.get()
                 .uri("https://openapi.naver.com/v1/nid/me")
@@ -118,8 +93,6 @@ public class NaverOAuthService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-
-        log.info("Naver User Info Response: {}", response);
 
         if (response == null) {
             throw new Exception(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
@@ -129,22 +102,31 @@ public class NaverOAuthService {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(response, NaverUserInfoResponseDto.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse Naver user info response", e);
+            throw new RuntimeException("사용자 정보 조회 파싱 중 오류 발생", e);
         }
     }
 
-    private SignUpRequestDto createSignUpRequest(NaverUserInfoResponseDto userInfo) {
-        log.info(userInfo.getMobile());
-        String sanitizedContact = userInfo.getMobile().replaceAll("-", "");
-        log.info(sanitizedContact);
-        return SignUpRequestDto.builder()
-                .userId(NAVER_ID_PREFIX + userInfo.getId())
-                .userPwd(null)
-                .contact(sanitizedContact)
-                .email(userInfo.getEmail())
-                .userType(UserType.GENERAL)
-                .build();
-    }
+    private String requestTokenRefresh(String refreshToken) {
+        WebClient webClient = webClientBuilder.build();
+        NaverRequestTokenRefreshDto response = webClient.post()
+                .uri("https://nid.naver.com/oauth2.0/token")
+                .body(BodyInserters.fromFormData("grant_type", "refresh_token")
+                        .with("client_id", naverOAuthRegistrationProperties.getClientId())
+                        .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
+                        .with("refresh_token", refreshToken)
+                )
+                .retrieve()
+                .bodyToMono(NaverRequestTokenRefreshDto.class)
+                .block();
+        if(response == null) {
+            throw new Exception(AuthErrorCode.CANNOT_REFRESH_TOKEN);
+        }
+        // log.info(response.getError());
+        // log.info(response.getErrorDescription());
+        return response.getAccessToken();
+
+    } 
+
 
     private void logNaverTokenResponse(NaverTokenResponseDto naverTokenResponseDto) {
         log.info("Access Token: {}", naverTokenResponseDto.getAccessToken());

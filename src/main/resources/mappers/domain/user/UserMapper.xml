@@ -5,13 +5,11 @@
 
 <mapper namespace="com.sololiving.domain.user.mapper.UserMapper">
 
-    <insert id="saveUser" parameterType="com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto">
-        INSERT INTO USER (user_id, user_pwd, contact, email, user_type)
-        VALUES (#{userId}, #{userPwd}, #{contact}, #{email}, #{userType})
-    </insert>
-
     <select id="findByUserId" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
         SELECT * FROM USER WHERE user_id = #{userId}
     </select>
-
+    
+    <select id="findByOauth2UserId" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
+        SELECT * FROM USER WHERE oauth2_user_id = #{oauth2UserId}
+    </select>
 </mapper>

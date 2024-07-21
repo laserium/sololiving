@@ -79,16 +79,16 @@ public class TokenProvider {
     }
 
     // refresh token 생성
-    public String makeRefreshToken(UserVo user) {
+    public String makeRefreshToken(UserVo user, ClientId clientId) {
         String refreshToken = this.generateToken(user, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(user.getUserId(), refreshToken);
+        saveRefreshToken(user.getUserId(), refreshToken, clientId);
 
         return refreshToken;
     }
 
     // refresh token => DB에 저장
     @Transactional
-    private void saveRefreshToken(String userId, String newRefreshToken) {
+    private void saveRefreshToken(String userId, String newRefreshToken, ClientId clientId) {
         Optional<RefreshTokenVo> existingToken = refreshTokenMapper.findRefreshTokenByUserId(userId);
         if (existingToken.isPresent()) {
             RefreshTokenVo updatedToken = existingToken.get().update(newRefreshToken);
