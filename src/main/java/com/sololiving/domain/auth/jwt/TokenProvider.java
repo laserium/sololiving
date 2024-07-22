@@ -25,11 +25,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j
 public class TokenProvider {
 
     public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(1);
@@ -79,19 +77,17 @@ public class TokenProvider {
     }
 
     // refresh token 생성
-    public String makeRefreshToken(UserVo user) {
+    public String makeRefreshToken(UserVo user, ClientId clientId) {
         String refreshToken = this.generateToken(user, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(user.getUserId(), refreshToken);
+        saveRefreshToken(user.getUserId(), refreshToken, clientId);
 
         return refreshToken;
     }
 
     // refresh token => DB에 저장
     @Transactional
-    private void saveRefreshToken(String userId, String newRefreshToken) {
-        log.info("aa");
+    private void saveRefreshToken(String userId, String newRefreshToken, ClientId clientId) {
         Optional<RefreshTokenVo> existingToken = refreshTokenMapper.findRefreshTokenByUserId(userId);
-        log.info("bb");
         if (existingToken.isPresent()) {
             RefreshTokenVo updatedToken = existingToken.get().update(newRefreshToken);
             refreshTokenMapper.update(updatedToken);

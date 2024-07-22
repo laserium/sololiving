@@ -8,5 +8,8 @@
     <select id="findByUserId" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
         SELECT * FROM USER WHERE user_id = #{userId}
     </select>
-
+    
+    <select id="findByOauth2UserId" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
+        SELECT * FROM USER WHERE oauth2_user_id = #{oauth2UserId}
+    </select>
 </mapper>

@@ -12,4 +12,5 @@ public interface UserMapper {
 
     Optional<UserVo> findByUserId(@Param("userId") String userId);
     
+    Optional<UserVo> findByOauth2UserId(@Param("oauth2UserId") String oauth2UserId);
 }
