@@ -1,7 +1,5 @@
 package com.sololiving.domain.auth.service;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,16 +11,19 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
-import com.sololiving.domain.auth.dto.oauth.response.NaverRequestTokenRefreshDto;
-import com.sololiving.domain.auth.dto.oauth.response.NaverTokenResponseDto;
-import com.sololiving.domain.auth.dto.oauth.response.NaverUserInfoResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.OauthUserExistenceResponseDto;
+import com.sololiving.domain.auth.dto.oauth.response.naver.NaverRequestTokenRefreshDto;
+import com.sololiving.domain.auth.dto.oauth.response.naver.NaverTokenResponseDto;
+import com.sololiving.domain.auth.dto.oauth.response.naver.NaverUserInfoResponseDto;
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.vo.UserVo;
+import com.sololiving.global.config.properties.NaverOAuthProviderProperties;
 import com.sololiving.global.config.properties.NaverOAuthRegistrationProperties;
 import com.sololiving.global.exception.Exception;
+import com.sololiving.global.util.OauthUtil;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 public class NaverOAuthService {
 
     private final NaverOAuthRegistrationProperties naverOAuthRegistrationProperties;
+    private final NaverOAuthProviderProperties naverOAuthProviderProperties;
     private final UserMapper userMapper;
     private final AuthService authService;
     private final WebClient.Builder webClientBuilder;
+    private final OauthUtil oauthUtil;
 
     private static final String NAVER_ID_PREFIX = "NAVER_";
 
@@ -60,10 +63,10 @@ public class NaverOAuthService {
     }
 
     private String getTokenByCode(String authCode) {
-        String encodedState = encodeState(state);
+        String encodedState = oauthUtil.encodeState(state);
         WebClient webClient = webClientBuilder.build();
         NaverTokenResponseDto naverTokenResponseDto = webClient.post()
-                .uri("https://nid.naver.com/oauth2.0/token")
+                .uri(naverOAuthProviderProperties.getTokenUri())
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", naverOAuthRegistrationProperties.getClientId())
                         .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
@@ -81,14 +84,14 @@ public class NaverOAuthService {
             throw new Exception(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
         }
         // log
-        logNaverTokenResponse(naverTokenResponseDto);
+        oauthUtil.logNaverTokenResponse(naverTokenResponseDto);
         return requestTokenRefresh(naverTokenResponseDto.getRefreshToken());
     }
 
     private NaverUserInfoResponseDto getUserInfoByToken(String accessToken) {
         WebClient webClient = webClientBuilder.build();
         String response = webClient.get()
-                .uri("https://openapi.naver.com/v1/nid/me")
+                .uri(naverOAuthProviderProperties.getAuthorizationUri())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
                 .bodyToMono(String.class)
@@ -109,7 +112,7 @@ public class NaverOAuthService {
     private String requestTokenRefresh(String refreshToken) {
         WebClient webClient = webClientBuilder.build();
         NaverRequestTokenRefreshDto response = webClient.post()
-                .uri("https://nid.naver.com/oauth2.0/token")
+                .uri(naverOAuthProviderProperties.getTokenUri())
                 .body(BodyInserters.fromFormData("grant_type", "refresh_token")
                         .with("client_id", naverOAuthRegistrationProperties.getClientId())
                         .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
@@ -128,19 +131,4 @@ public class NaverOAuthService {
     } 
 
 
-    private void logNaverTokenResponse(NaverTokenResponseDto naverTokenResponseDto) {
-        log.info("Access Token: {}", naverTokenResponseDto.getAccessToken());
-        log.info("Refresh Token: {}", naverTokenResponseDto.getRefreshToken());
-        log.info("Expires In: {}", naverTokenResponseDto.getExpiresIn());
-        log.info("Error: {}", naverTokenResponseDto.getError());
-        log.info("Error Description: {}", naverTokenResponseDto.getErrorDescription());
-    }
-
-    private String encodeState(String state) {
-        try {
-            return URLEncoder.encode(state, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Failed to encode state parameter", e);
-        }
-    }
 }

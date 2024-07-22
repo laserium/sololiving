@@ -1,4 +1,4 @@
-package com.sololiving.domain.auth.dto.oauth.response;
+package com.sololiving.domain.auth.dto.oauth.response.naver;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +15,7 @@ public class NaverRequestTokenRefreshDto {
     public String tokenType;
 
     @JsonProperty("expires_in")
-    public String expiresIn;
+    public Integer expiresIn;
 
     @JsonProperty("error")
     public String error;

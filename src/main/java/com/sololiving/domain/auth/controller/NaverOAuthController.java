@@ -28,7 +28,6 @@ public class NaverOAuthController {
     // 네이버 토큰 요청 + 자동 회원가입 or 자동 로그인 핸들링
     @PostMapping("/token")
     public ResponseEntity<OauthUserExistenceResponseDto> postNaverToken(@RequestBody CreateOAuthTokenRequest createOAuthTokenRequest) {
-    
         return ResponseEntity.status(HttpStatus.OK).body(naverOAuthService.checkOauthUserExistence(createOAuthTokenRequest.getAuthCode()));
     }
 
