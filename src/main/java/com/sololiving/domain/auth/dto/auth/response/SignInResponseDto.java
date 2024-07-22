@@ -12,7 +12,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SignInResponseDto {
-    private String accessToken;
     private Duration expiresIn;
     private UserType userType;
     private ClientId clientId;

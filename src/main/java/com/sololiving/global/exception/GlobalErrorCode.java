@@ -1,5 +1,7 @@
 package com.sololiving.global.exception;
 
+import com.sololiving.global.exception.error.ErrorCode;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

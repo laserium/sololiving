@@ -1,6 +1,6 @@
 package com.sololiving.domain.user.exception;
 
-import com.sololiving.global.exception.ErrorCode;
+import com.sololiving.global.exception.error.ErrorCode;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

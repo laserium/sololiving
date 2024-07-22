@@ -30,7 +30,7 @@ public class OauthUtil {
         log.info(" [Kakao Service] Scope : {}", kakaoTokenResponseDto.getScope());
     }
 
-    public String encodeState(String state) {
+    public static String encodeState(String state) {
         try {
             return URLEncoder.encode(state, "UTF-8");
         } catch (UnsupportedEncodingException e) {

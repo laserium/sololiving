@@ -32,4 +32,9 @@
         WHERE user_id = #{userId}
     </update>
 
+
+    <delete id="deleteByRefreshToken" parameterType="string">
+        DELETE FROM refresh_token WHERE refresh_token = #{refreshToken}
+    </delete>
+
 </mapper>

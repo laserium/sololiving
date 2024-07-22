@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,16 +13,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.oauth.response.OauthUserExistenceResponseDto;
-import com.sololiving.domain.auth.dto.oauth.response.naver.NaverRequestTokenRefreshDto;
+import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoUserInfoResponseDto;
+import com.sololiving.domain.auth.dto.oauth.response.naver.NaverDeleteTokenDto;
+import com.sololiving.domain.auth.dto.oauth.response.naver.NaverRefreshTokenhDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverUserInfoResponseDto;
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
+import com.sololiving.domain.auth.exception.AuthSuccessCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.vo.UserVo;
 import com.sololiving.global.config.properties.NaverOAuthProviderProperties;
 import com.sololiving.global.config.properties.NaverOAuthRegistrationProperties;
-import com.sololiving.global.exception.Exception;
+import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.success.SuccessException;
 import com.sololiving.global.util.OauthUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +50,7 @@ public class NaverOAuthService {
     private String state;
 
     public OauthUserExistenceResponseDto checkOauthUserExistence(String authCode) {
-        String oauth2UserId = NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(authCode)).getResponse().getId();
+        String oauth2UserId = NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(authCode));
         log.info(oauth2UserId);
         Optional<UserVo> userOptional = userMapper.findByOauth2UserId(oauth2UserId);
         if (userOptional.isPresent()) {
@@ -77,41 +82,48 @@ public class NaverOAuthService {
                 .block();
         
         if (naverTokenResponseDto == null) {
-            throw new Exception(AuthErrorCode.FAIL_TO_RETRIVE_KAKAO_TOKEN);
+            throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIVE_KAKAO_TOKEN);
         }
         
         if (naverTokenResponseDto.getError() == "invalid_request") {
-            throw new Exception(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
+            throw new ErrorException(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
         }
         // log
         oauthUtil.logNaverTokenResponse(naverTokenResponseDto);
-        return requestTokenRefresh(naverTokenResponseDto.getRefreshToken());
+
+        if(naverTokenResponseDto.getExpiresIn() >= 10) {
+            return refreshToken(naverTokenResponseDto.getRefreshToken());
+        } else return naverTokenResponseDto.getAccessToken();
+
     }
 
-    private NaverUserInfoResponseDto getUserInfoByToken(String accessToken) {
+    private String getUserInfoByToken(String accessToken) {
         WebClient webClient = webClientBuilder.build();
-        String response = webClient.get()
+        log.info(accessToken);
+        NaverUserInfoResponseDto response = webClient.get()
                 .uri(naverOAuthProviderProperties.getAuthorizationUri())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + OauthUtil.encodeState(accessToken))
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(NaverUserInfoResponseDto.class)
                 .block();
 
         if (response == null) {
-            throw new Exception(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
+            throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
         }
-
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(response, NaverUserInfoResponseDto.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("사용자 정보 조회 파싱 중 오류 발생", e);
+            // KakaoUserInfoResponseDto response = objectMapper.readValue(responseBody, KakaoUserInfoResponseDto.class);
+            // log.info(response.getId().toString());
+        } catch (Exception e) {
+            
         }
+        return response.getResponse().getId();
+
     }
 
-    private String requestTokenRefresh(String refreshToken) {
+    private String refreshToken(String refreshToken) {
         WebClient webClient = webClientBuilder.build();
-        NaverRequestTokenRefreshDto response = webClient.post()
+        NaverRefreshTokenhDto response = webClient.post()
                 .uri(naverOAuthProviderProperties.getTokenUri())
                 .body(BodyInserters.fromFormData("grant_type", "refresh_token")
                         .with("client_id", naverOAuthRegistrationProperties.getClientId())
@@ -119,16 +131,38 @@ public class NaverOAuthService {
                         .with("refresh_token", refreshToken)
                 )
                 .retrieve()
-                .bodyToMono(NaverRequestTokenRefreshDto.class)
+                .bodyToMono(NaverRefreshTokenhDto.class)
                 .block();
         if(response == null) {
-            throw new Exception(AuthErrorCode.CANNOT_REFRESH_TOKEN);
+            throw new ErrorException(AuthErrorCode.CANNOT_REFRESH_TOKEN);
         }
         // log.info(response.getError());
         // log.info(response.getErrorDescription());
         return response.getAccessToken();
-
+    
     } 
 
+
+    public void deleteToken(String accessToken) {
+        WebClient webClient = webClientBuilder.build();
+        NaverDeleteTokenDto response = webClient.post()
+        .uri(naverOAuthProviderProperties.getTokenUri())
+        .body(BodyInserters.fromFormData("grant_type", "delete")
+                .with("client_id", naverOAuthRegistrationProperties.getClientId())
+                .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
+                .with("access_token", accessToken)
+                .with("service_provider", "NAVER")
+        )
+        .retrieve()
+        .bodyToMono(NaverDeleteTokenDto.class)
+        .block();
+
+        if(response.getResult() == "success") { 
+            throw new SuccessException(AuthSuccessCode.SIGN_OUT_SUCCESS);
+        } else {
+            throw new ErrorException(AuthErrorCode.CANNOT_SIGN_OUT);
+        }
+    }
+    
 
 }

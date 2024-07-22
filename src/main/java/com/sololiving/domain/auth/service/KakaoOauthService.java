@@ -20,7 +20,7 @@ import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.vo.UserVo;
 import com.sololiving.global.config.properties.KakaoOAuthProviderProperties;
 import com.sololiving.global.config.properties.KakaoOAuthRegistrationProperties;
-import com.sololiving.global.exception.Exception;
+import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.OauthUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -81,11 +81,11 @@ public class KakaoOAuthService {
                     return response.getAccessToken();
                 }
             } else {
-                throw new Exception(AuthErrorCode.FAIL_TO_RETRIVE_KAKAO_TOKEN);
+                throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIVE_KAKAO_TOKEN);
             }
         } catch (WebClientResponseException e) {
             log.error("Error response from Kakao token endpoint: {}", e.getResponseBodyAsString());
-            throw new Exception(AuthErrorCode.FAIL_TO_RETRIVE_KAKAO_TOKEN);
+            throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIVE_KAKAO_TOKEN);
         }
     }
 
@@ -100,7 +100,7 @@ public class KakaoOAuthService {
                 .block();
 
         if (response == null) {
-            throw new Exception(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
+            throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
         }
 
         return response.getId().toString();
@@ -121,7 +121,7 @@ public class KakaoOAuthService {
                 .block();
             
         if(response == null) {
-            throw new Exception(AuthErrorCode.CANNOT_REFRESH_TOKEN);
+            throw new ErrorException(AuthErrorCode.CANNOT_REFRESH_TOKEN);
         }
         // log.info(response.getError());
         // log.info(response.getErrorDescription());

@@ -14,4 +14,7 @@ public interface RefreshTokenMapper {
     void insert(RefreshTokenVo refreshToken);
     
     void update(RefreshTokenVo refreshToken);
+
+    int deleteByRefreshToken(@Param("refreshToken") String refreshToken);
+
 }
