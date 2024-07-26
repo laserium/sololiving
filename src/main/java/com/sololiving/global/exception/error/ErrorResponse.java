@@ -1,4 +1,4 @@
-package com.sololiving.global.exception;
+package com.sololiving.global.exception.error;
 
 import lombok.Builder;
 import lombok.Getter;

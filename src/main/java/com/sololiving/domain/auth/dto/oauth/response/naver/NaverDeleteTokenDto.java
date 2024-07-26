@@ -5,19 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 
-// 네이버 로그인 - 토큰 발급 ResponseDto
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class NaverTokenResponseDto {
-
+public class NaverDeleteTokenDto {
     @JsonProperty("access_token")
     public String accessToken;
 
-    @JsonProperty("refresh_token")
-    public String refreshToken;
-
-    @JsonProperty("token_type")
-    public String tokenType;
+    @JsonProperty("result")
+    public String result;
 
     @JsonProperty("expires_in")
     public Integer expiresIn;
@@ -27,5 +22,4 @@ public class NaverTokenResponseDto {
 
     @JsonProperty("error_description")
     public String errorDescription;
-
 }

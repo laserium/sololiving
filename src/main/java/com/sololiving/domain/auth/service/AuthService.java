@@ -17,15 +17,13 @@ import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.auth.mapper.AuthMapper;
 import com.sololiving.domain.auth.mapper.RefreshTokenMapper;
-import com.sololiving.domain.auth.util.CookieUtil;
 import com.sololiving.domain.user.enums.Gender;
-import com.sololiving.domain.user.exception.UserErrorCode;
-import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.service.UserService;
 import com.sololiving.domain.vo.RefreshTokenVo;
 import com.sololiving.domain.vo.UserVo;
 import com.sololiving.global.common.enums.UserType;
-import com.sololiving.global.exception.Exception;
+import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.util.CookieService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +35,6 @@ public class AuthService {
 
     private final UserService userService;
     private final AuthMapper authMapper;
-    private final UserMapper userMapper;
     private final RefreshTokenMapper refreshTokenMapper;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -57,7 +54,7 @@ public class AuthService {
     // 필드의 유일성 검증
     private void validateUniqueField(String fieldValue, Validator validator, AuthErrorCode errorCode) {
         if (!validator.validate(fieldValue)) {
-            throw new Exception(errorCode);
+            throw new ErrorException(errorCode);
         }
     }
     // 필드 유효성 검증을 위한 함수형 인터페이스
@@ -107,40 +104,60 @@ public class AuthService {
 
     // 로그인(RT, AT 발급)
     @Transactional
-    public CreateTokenResponse signIn(SignInRequestDto signInRequest) {
-        // 아이디와 비밀번호 체크
-        UserVo userVo = userMapper.findByUserId(signInRequest.getUserId()).orElseThrow(() -> new Exception(UserErrorCode.USER_NOT_FOUND));
-        ClientId clientId = signInRequest.getClientId();
-        if(clientId == ClientId.SOLOLIVING) {
-            this.verifyPassword(userVo, signInRequest.getUserPwd());
-        } 
-        // Refresh Token 발급 + DB에 저장
-        String refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());       
-        Duration expiresIn = Duration.ofMinutes(30);
-        // Duration expiresIn = Duration.ofSeconds(10);
-        String accessToken = tokenProvider.generateToken(userVo, expiresIn);
-        return CreateTokenResponse.builder()
-                .refreshToken(refreshToken)
-                .accessToken(accessToken)
-                .expiresIn(expiresIn)
-                .build();
+    public CreateTokenResponse createTokenResponse(SignInRequestDto signInRequest) {
+        UserVo userVo = checkIdAndPwd(signInRequest);
+        Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
+        RefreshTokenVo refreshTokenVo = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId());
+        if(refreshTokenVo != null) {
+            return CreateTokenResponse.builder()
+                                    .refreshToken(refreshTokenVo.getRefreshToken())
+                                    .accessToken(tokenProvider.generateToken(userVo, expiresIn))
+                                    .expiresIn(expiresIn)
+                                    .build();
+        } else {
+            String refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
+            String accessToken = tokenProvider.generateToken(userVo, expiresIn);
+            return CreateTokenResponse.builder()
+                                    .refreshToken(refreshToken)
+                                    .accessToken(accessToken)
+                                    .expiresIn(expiresIn)
+                                    .build();
+        }
+
+
+    }
+
+    // 아이디와 비밀번호 체크
+    public UserVo checkIdAndPwd(SignInRequestDto signInRequestDto) {
+        UserVo userVo = userService.findByUserId(signInRequestDto.getUserId());
+        verifyPassword(userVo, signInRequestDto.getUserPwd());
+        return userVo;
+    }
+
+
+    // 로그아웃
+    public void userSignOut(String refreshTokenValue) {
+        int rowsAffected = refreshTokenMapper.deleteByRefreshToken(refreshTokenValue);
+        if (rowsAffected == 0) {
+            throw new ErrorException(AuthErrorCode.CANNOT_DELETE_REFRESH_TOKEN);
+        }
     }
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-        return CookieUtil.createRefreshTokenCookie(refreshToken);
+        return CookieService.createRefreshTokenCookie(refreshToken);
+    }
+
+    public ResponseCookie createAccessTokenCookie(String accessToken) {
+        return CookieService.createAccessTokenCookie(accessToken);
     }
 
     public SignInResponseDto createSignInResponse(SignInRequestDto signInRequest, CreateTokenResponse tokensResponse) {
-        String accessToken = tokensResponse.getAccessToken();
         Duration expiresIn = tokensResponse.getExpiresIn();
         UserVo userVo = userService.findByUserId(signInRequest.getUserId());
         UserType userType = userVo.getUserType();
-        ClientId clientId = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId())
-                                              .map(RefreshTokenVo::getClientId)
-                                              .orElseThrow(() -> new Exception(AuthErrorCode.CANNOT_FIND_RT));
+        ClientId clientId = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId()).getClientId();
         
         return SignInResponseDto.builder()
-                .accessToken(accessToken)
                 .expiresIn(expiresIn)
                 .userType(userType)
                 .clientId(clientId)
@@ -150,9 +167,11 @@ public class AuthService {
     // 비밀번호 검증
     private void verifyPassword(UserVo userVo, String password) {
         if (!bCryptPasswordEncoder.matches(password, userVo.getUserPwd())) {
-            throw new Exception(AuthErrorCode.PASSWORD_INCORRECT);
+            throw new ErrorException(AuthErrorCode.PASSWORD_INCORRECT);
         }
     }
+
+    
 
 
 }

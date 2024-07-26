@@ -39,3 +39,4 @@ out/
 
 ## SECURITY ##
 application.properties
+keystore.p12
