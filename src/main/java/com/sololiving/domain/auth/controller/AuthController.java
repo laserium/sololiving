@@ -8,15 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
+import com.sololiving.domain.auth.dto.email.response.EmailResponseDto;
 import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.auth.exception.AuthSuccessCode;
+import com.sololiving.domain.auth.service.AuthEmailService;
 import com.sololiving.domain.auth.service.AuthService;
+import com.sololiving.domain.user.service.UserService;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.error.ErrorResponse;
 import com.sololiving.global.util.CookieService;
@@ -30,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
     
     private final AuthService authService;
+    private final UserService userService;
+    private final AuthEmailService authEmailService;
     private final CookieService cookieService;
     
     @PostMapping("/signup")
@@ -69,5 +75,30 @@ public class AuthController {
             throw new ErrorException(AuthErrorCode.CANNOT_FIND_RT);
         }
     }
+
+    @PostMapping("/users/id-recover")
+    public ResponseEntity<?>  postUsersIdRecover(@RequestBody String email) {
+        EmailResponseDto emailResponseDto = EmailResponseDto.builder()
+                                .to(email)
+                                .subject("[홀로서기] 아이디 찾기 인증 메일입니다.")
+                                .build();
+
+        authEmailService.sendAuthEmail(email, emailResponseDto, "id-recover");
+        return ResponseEntity.status(HttpStatus.OK).body(null) ;
+    }
+
+
+    @PostMapping("/users/password-reset")
+    public ResponseEntity<?> postUsersPasswordReset(@RequestBody String userId, @RequestBody String email) {
+
+        EmailResponseDto emailResponseDto = EmailResponseDto.builder()
+                .to(userService.validateUserIdAndEmail(userId, email))
+                .subject("[홀로서기] 임시 비밀번호 발급 메일입니다.")
+                .build();
+
+        authEmailService.sendMail(emailResponseDto, "password");
+        return ResponseEntity.status(HttpStatus.OK).body(null) ;
+    }
+    
 
 }
