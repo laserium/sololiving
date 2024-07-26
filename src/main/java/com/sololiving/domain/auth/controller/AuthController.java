@@ -44,16 +44,10 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<SignInResponseDto> postSignIn(@RequestBody SignInRequestDto signInRequestDto) {
-        CreateTokenResponse tokenResponse = authService.signIn(signInRequestDto);
+        CreateTokenResponse tokenResponse = authService.createTokenResponse(signInRequestDto);
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
-        SignInResponseDto signInResponse;
-        try {
-            signInResponse = authService.createSignInResponse(signInRequestDto, tokenResponse);
-        } catch (ErrorException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-        
+        SignInResponseDto signInResponse = authService.createSignInResponse(signInRequestDto, tokenResponse);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .header("Set-Cookie", accessTokenCookie.toString())
@@ -65,9 +59,11 @@ public class AuthController {
         String refreshTokenValue = CookieService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
-            ResponseCookie cookie = cookieService.deleteRefreshTokenCookie();
+            ResponseCookie refreshTokencookie = cookieService.deleteRefreshTokenCookie();
+            ResponseCookie accessTokenCookie = cookieService.deleteAccessTokenCookie();
             return ResponseEntity.status(HttpStatus.OK)
-                    .header("Set-Cookie", cookie.toString())
+                    .header("Set-Cookie", refreshTokencookie.toString())
+                    .header("Set-Cookie", accessTokenCookie.toString())
                     .body(AuthSuccessCode.SIGN_OUT_SUCCESS);
         } else {
             throw new ErrorException(AuthErrorCode.CANNOT_FIND_RT);

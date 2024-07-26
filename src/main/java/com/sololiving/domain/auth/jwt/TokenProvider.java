@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.crypto.SecretKey;
@@ -31,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class TokenProvider {
 
     public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(1);
+    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
     private final JwtProperties jwtProperties;
     private final RefreshTokenMapper refreshTokenMapper;
 
@@ -87,9 +87,9 @@ public class TokenProvider {
     // refresh token => DB에 저장
     @Transactional
     private void saveRefreshToken(String userId, String newRefreshToken, ClientId clientId) {
-        Optional<RefreshTokenVo> existingToken = refreshTokenMapper.findRefreshTokenByUserId(userId);
-        if (existingToken.isPresent()) {
-            RefreshTokenVo updatedToken = existingToken.get().update(newRefreshToken);
+        RefreshTokenVo existingToken = refreshTokenMapper.findRefreshTokenByUserId(userId);
+        if (existingToken != null) {
+            RefreshTokenVo updatedToken = existingToken.update(newRefreshToken);
             refreshTokenMapper.update(updatedToken);
         } else {
             RefreshTokenVo newToken = RefreshTokenVo.builder()
@@ -98,7 +98,7 @@ public class TokenProvider {
                     .expiresIn(LocalDateTime.now().plusDays(1)) 
                     .issuedAt(LocalDateTime.now())
                     .tokenStatus(TokenStatus.VALID)
-                    .clientId(ClientId.SOLOLIVING)
+                    .clientId(clientId)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .build();

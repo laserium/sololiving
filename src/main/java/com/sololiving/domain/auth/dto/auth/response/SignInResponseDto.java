@@ -2,6 +2,7 @@ package com.sololiving.domain.auth.dto.auth.response;
 
 import java.time.Duration;
 
+
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.global.common.enums.UserType;
 
@@ -15,4 +16,6 @@ public class SignInResponseDto {
     private Duration expiresIn;
     private UserType userType;
     private ClientId clientId;
+    private String oauth2UserId;
+
 }

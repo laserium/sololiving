@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.sololiving.domain.auth.dto.oauth.response.google.GoogleTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverTokenResponseDto;
 
@@ -16,11 +17,11 @@ public class OauthUtil {
     private static final Logger log = LoggerFactory.getLogger(OauthUtil.class);
 
     public void logNaverTokenResponse(NaverTokenResponseDto naverTokenResponseDto) {
-        log.info(" [Kakao Service] Access Token: {}", naverTokenResponseDto.getAccessToken());
-        log.info(" [Kakao Service] Refresh Token: {}", naverTokenResponseDto.getRefreshToken());
-        log.info(" [Kakao Service] Expires In: {}", naverTokenResponseDto.getExpiresIn());
-        log.info(" [Kakao Service] Error: {}", naverTokenResponseDto.getError());
-        log.info(" [Kakao Service] Error Description: {}", naverTokenResponseDto.getErrorDescription());
+        log.info(" [Naver Service] Access Token: {}", naverTokenResponseDto.getAccessToken());
+        log.info(" [Naver Service] Refresh Token: {}", naverTokenResponseDto.getRefreshToken());
+        log.info(" [Naver Service] Expires In: {}", naverTokenResponseDto.getExpiresIn());
+        log.info(" [Naver Service] Error: {}", naverTokenResponseDto.getError());
+        log.info(" [Naver Service] Error Description: {}", naverTokenResponseDto.getErrorDescription());
     }
 
     public void logKakaoTokenResponse(KakaoTokenResponseDto kakaoTokenResponseDto) {
@@ -30,7 +31,15 @@ public class OauthUtil {
         log.info(" [Kakao Service] Scope : {}", kakaoTokenResponseDto.getScope());
     }
 
-    public static String encodeState(String state) {
+    public void logGoogleTokenResponse(GoogleTokenResponseDto googleTokenResponseDto) {
+        log.info(" [Google Service] Access Token : {}", googleTokenResponseDto.getAccessToken());
+        log.info(" [Google Service] Refresh Token : {}", googleTokenResponseDto.getRefreshToken());
+        log.info(" [Google Service] Expires In: {}", googleTokenResponseDto.getExpiresIn());
+        log.info(" [Google Service] Scope : {}", googleTokenResponseDto.getScope());
+        log.info(" [Google Service] TokenType : {}", googleTokenResponseDto.getTokenType());
+    }
+
+    public String encodeState(String state) {
         try {
             return URLEncoder.encode(state, "UTF-8");
         } catch (UnsupportedEncodingException e) {

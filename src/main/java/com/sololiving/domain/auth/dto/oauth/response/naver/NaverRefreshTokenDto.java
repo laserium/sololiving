@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class NaverRefreshTokenhDto {
+public class NaverRefreshTokenDto {
     @JsonProperty("access_token")
     public String accessToken;
 

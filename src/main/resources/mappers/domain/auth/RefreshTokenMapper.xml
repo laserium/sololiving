@@ -17,7 +17,8 @@
     </resultMap>
 
     <select id="findRefreshTokenByUserId" resultMap="refreshTokenResultMap">
-        SELECT * FROM REFRESH_TOKEN WHERE user_id = #{userId}
+        SELECT * FROM REFRESH_TOKEN 
+        WHERE user_id = #{userId}
     </select>
 
     <insert id="insert" parameterType="com.sololiving.domain.vo.RefreshTokenVo">
@@ -32,9 +33,13 @@
         WHERE user_id = #{userId}
     </update>
 
-
     <delete id="deleteByRefreshToken" parameterType="string">
-        DELETE FROM refresh_token WHERE refresh_token = #{refreshToken}
+        DELETE FROM REFRESH_TOKEN 
+        WHERE refresh_token = #{refreshToken}
     </delete>
 
+    <select id="existsByUserId" resultType="boolean" parameterType="String">
+        SELECT EXISTS(SELECT 1 FROM REFRESH_TOKEN WHERE user_id = #{userId})
+    </select>
+    
 </mapper>

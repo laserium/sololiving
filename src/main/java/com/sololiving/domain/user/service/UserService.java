@@ -17,8 +17,18 @@ public class UserService {
 
     // 아이디로 유저 찾기
     public UserVo findByUserId(String userId) {
-        return userMapper.findByUserId(userId)
-                .orElseThrow(() -> new ErrorException(UserErrorCode.USER_NOT_FOUND));
+        UserVo userVo = userMapper.findByUserId(userId);
+        if(userVo != null) {
+            return userVo;
+        } else throw new ErrorException(UserErrorCode.USER_NOT_FOUND);
+    }
+
+    // Oauth2UserId로 유저 찾기(회원가입 분기 로직 전용)
+    public UserVo findByOauth2UserId(String userId) {
+        UserVo userVo = userMapper.findByOauth2UserId(userId);
+        if(userVo != null) {
+            return userVo;
+        } else return null;
     }
     
 }

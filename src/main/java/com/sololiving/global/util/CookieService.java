@@ -1,15 +1,17 @@
 package com.sololiving.global.util;
 
-import java.time.Duration;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+
+import com.sololiving.domain.auth.jwt.TokenProvider;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class CookieService {
+
     
     // RefreshToken 을 보관할 쿠키 생성
     public static ResponseCookie createRefreshTokenCookie(String refreshToken) {
@@ -18,8 +20,8 @@ public class CookieService {
         .path("/")
         .httpOnly(true)
         .sameSite("none")
-        // .secure(true) // HTTPS 환경에서만 사용
-        .maxAge(Duration.ofDays(1).getSeconds()) // 쿠키 유효 시간 (1일)
+        .secure(true) // HTTPS 환경에서만 사용
+        .maxAge(TokenProvider.REFRESH_TOKEN_DURATION.getSeconds()) // 쿠키 유효 시간 (1일)
         .build();
     }
 
@@ -30,8 +32,8 @@ public class CookieService {
         .path("/")
         .httpOnly(true)
         .sameSite("none")
-        // .secure(true) // HTTPS 환경에서만 사용
-        .maxAge(Duration.ofMinutes(30).getSeconds()) // 쿠키 유효 시간 (30분)
+        .secure(true) // HTTPS 환경에서만 사용
+        .maxAge(TokenProvider.ACCESS_TOKEN_DURATION.getSeconds()) // 쿠키 유효 시간 (30분)
         .build();
     }
         
@@ -65,6 +67,18 @@ public class CookieService {
     public ResponseCookie deleteRefreshTokenCookie() {
         return ResponseCookie
             .from("refreshToken", null)
+            .path("/")
+            .httpOnly(true)
+            .sameSite("none")
+            .secure(true) // HTTPS 환경에서만 사용
+            .maxAge(0) // 쿠키 유효 시간 0으로 설정
+            .build();
+    }
+    
+    @SuppressWarnings("null")
+    public ResponseCookie deleteAccessTokenCookie() {
+        return ResponseCookie
+            .from("accessToken", null)
             .path("/")
             .httpOnly(true)
             .sameSite("none")
