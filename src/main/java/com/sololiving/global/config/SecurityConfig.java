@@ -21,8 +21,16 @@ public class SecurityConfig {
                     .requestMatchers("/**").permitAll()
                     .anyRequest().permitAll()
             )
-            .csrf((csrfConfig) -> csrfConfig.disable()) 
+            .csrf((csrfConfig) -> csrfConfig.disable())
             .oauth2Login(withDefaults());
+        //     .headers(headers -> headers
+        //         .contentSecurityPolicy(csp -> csp
+        //             .policyDirectives("default-src 'self'; script-src 'self' https://trusted.cdn.com")
+        //         )
+        //         .frameOptions(frameOptions -> frameOptions
+        //             .deny() 
+        //         )
+        // );
         return http.build();
     }
 

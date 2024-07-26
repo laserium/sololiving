@@ -1,4 +1,4 @@
-package com.sololiving.global.exception;
+package com.sololiving.global.exception.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -7,11 +7,11 @@ import lombok.Getter;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
 @Getter
-public class Exception extends RuntimeException {
+public class ErrorException extends RuntimeException {
 
     private final ErrorCode errorCode;
 
-    public Exception(ErrorCode errorCode) {
+    public ErrorException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

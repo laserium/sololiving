@@ -1,6 +1,5 @@
 package com.sololiving.domain.auth.controller;
 
-import java.time.Duration;
 
 
 import org.springframework.http.HttpStatus;
@@ -15,11 +14,14 @@ import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
+import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.auth.exception.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
-import com.sololiving.global.exception.ErrorResponse;
-import com.sololiving.global.exception.Exception;
+import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.error.ErrorResponse;
+import com.sololiving.global.util.CookieService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,32 +30,44 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
     
     private final AuthService authService;
+    private final CookieService cookieService;
     
     @PostMapping("/signup")
     public ResponseEntity<?> postSignUp(@RequestBody SignUpRequestDto signUpRequestDto) {
         authService.signUp(signUpRequestDto);
         ErrorResponse errorResponse = ErrorResponse.builder()
-        .code((AuthSuccessCode.SIGN_UP_SUCCESS).getCode())
-        .message((AuthSuccessCode.SIGN_UP_SUCCESS).getMessage())
-        .build();
+                                    .code((AuthSuccessCode.SIGN_UP_SUCCESS).getCode())
+                                    .message((AuthSuccessCode.SIGN_UP_SUCCESS).getMessage())
+                                    .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(errorResponse);
     }
 
     @PostMapping("/signin")
     public ResponseEntity<SignInResponseDto> postSignIn(@RequestBody SignInRequestDto signInRequestDto) {
-        CreateTokenResponse tokenResponse = authService.signIn(signInRequestDto);
+        CreateTokenResponse tokenResponse = authService.createTokenResponse(signInRequestDto);
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
-        SignInResponseDto signInResponse;
-        try {
-            signInResponse = authService.createSignInResponse(signInRequestDto, tokenResponse);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-        
+        ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
+        SignInResponseDto signInResponse = authService.createSignInResponse(signInRequestDto, tokenResponse);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Set-Cookie", refreshTokenCookie.toString())
+                .header("Set-Cookie", accessTokenCookie.toString())
                 .body(signInResponse);
     }
 
+    @PostMapping("/signout")
+    public ResponseEntity<?> postSignOut(HttpServletRequest httpServletRequest) {
+        String refreshTokenValue = CookieService.extractRefreshTokenFromCookie(httpServletRequest);
+        if (refreshTokenValue != null) {
+            authService.userSignOut(refreshTokenValue);
+            ResponseCookie refreshTokencookie = cookieService.deleteRefreshTokenCookie();
+            ResponseCookie accessTokenCookie = cookieService.deleteAccessTokenCookie();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .header("Set-Cookie", refreshTokencookie.toString())
+                    .header("Set-Cookie", accessTokenCookie.toString())
+                    .body(AuthSuccessCode.SIGN_OUT_SUCCESS);
+        } else {
+            throw new ErrorException(AuthErrorCode.CANNOT_FIND_RT);
+        }
+    }
 
 }
