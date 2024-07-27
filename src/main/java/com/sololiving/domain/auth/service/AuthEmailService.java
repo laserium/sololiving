@@ -25,19 +25,19 @@ public class AuthEmailService {
     private final UserService userService;
 
     @Async("emailTaskExecutor")
-    public void sendMail(Email email, String type) {
+    public void sendMail(EmailResponseDto emailResponseDto, String type) {
         String authNum = createCode();
 
         if (type.equals("password")) {
-            authService.setTempPassword(email.getTo(), authNum);
+            userService.setTempPassword(emailResponseDto.getTo(), authNum);
         }
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
-            createMimeMessageHelper(mimeMessage, email.getTo(), email.getSubject(), setContext(authNum, type));
+            createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(), emailResponseDto.getSubject(),
+                    setContext(authNum, type));
             javaMailSender.send(mimeMessage);
-
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
@@ -49,7 +49,7 @@ public class AuthEmailService {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(),
-            emailResponseDto.getSubject(), setContext(userService.findEmailByUserId(email), type));
+                    emailResponseDto.getSubject(), setContext(userService.findEmailByUserId(email), type));
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
@@ -92,5 +92,5 @@ public class AuthEmailService {
         context.setVariable("code", code);
         return templateEngine.process(type, context);
     }
-    
+
 }

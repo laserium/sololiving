@@ -21,41 +21,46 @@ public class UserService {
     // 아이디로 유저 찾기
     public UserVo findByUserId(String userId) {
         UserVo userVo = userMapper.findByUserId(userId);
-        if(userVo != null) {
+        if (userVo != null) {
             return userVo;
-        } else throw new ErrorException(UserErrorCode.USER_NOT_FOUND);
+        } else
+            throw new ErrorException(UserErrorCode.USER_NOT_FOUND);
     }
 
     // Oauth2UserId로 유저 찾기(회원가입 분기 로직 전용)
     public UserVo findByOauth2UserId(String userId) {
         UserVo userVo = userMapper.findByOauth2UserId(userId);
-        if(userVo != null) {
+        if (userVo != null) {
             return userVo;
-        } else return null;
+        } else
+            return null;
     }
 
     // 이메일로 유저 찾기
     public UserVo findByEmail(String email) {
         UserVo userVo = userMapper.findByEmail(email);
-        if(userVo != null) {
+        if (userVo != null) {
             return userVo;
-        } else throw new ErrorException(UserErrorCode.USER_NOT_FOUND);
+        } else
+            throw new ErrorException(UserErrorCode.USER_NOT_FOUND);
     }
-    
+
     // 아이디로 이메일 찾기
     public String findEmailByUserId(String userId) {
         String email = userMapper.findEmailByUserId(userId);
-        if(email != null) {
+        if (email != null) {
             return email;
-        } else throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
+        } else
+            throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
     }
-    
+
     // 아이디와 이메일 검증
     public String validateUserIdAndEmail(String userId, String email) {
         String userEmail = userMapper.findEmailByUserId(userId);
-        if(userEmail.equals(email)) {
+        if (userEmail.equals(email)) {
             return userEmail;
-        } else throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
+        } else
+            throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
     }
 
     // 임시 비밀번호 설정
@@ -63,7 +68,6 @@ public class UserService {
     public void setTempPassword(String userEmail, String tempPassword) {
         UserVo userVo = findByEmail(userEmail);
 
-        userVo.updatePassword(bCryptPasswordEncoder.encode(tempPassword));
-        userRepository.save(userVo);
+        userMapper.updatePassword(bCryptPasswordEncoder.encode(tempPassword), userVo.getUserId());
     }
 }

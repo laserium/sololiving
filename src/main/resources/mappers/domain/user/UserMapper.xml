@@ -29,5 +29,11 @@
         WHERE user_id = #{userId}
     </select>
 
+    <update id = "updatePassword" parameterType="string">
+        UPDATE USER
+        SET user_pwd = #{userPwd}
+        WHERE user_id = #{userId}
+    </update>
+
 
 </mapper>
