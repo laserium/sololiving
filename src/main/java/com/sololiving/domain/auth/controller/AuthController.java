@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
+import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
@@ -18,6 +20,7 @@ import com.sololiving.domain.auth.exception.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthEmailService;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.user.service.UserService;
+import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.util.CookieService;
@@ -38,11 +41,8 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> postSignUp(@RequestBody SignUpRequestDto signUpRequestDto) {
         authService.signUp(signUpRequestDto);
-        SuccessResponse successResponse = SuccessResponse.builder()
-                .code((AuthSuccessCode.SIGN_UP_SUCCESS).getCode())
-                .message((AuthSuccessCode.SIGN_UP_SUCCESS).getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(successResponse);
+        return ResponseEntity.status(HttpStatus.CREATED)
+        .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.SIGN_UP_SUCCESS));
     }
 
     @PostMapping("/signin")
@@ -67,33 +67,35 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.OK)
                     .header("Set-Cookie", refreshTokencookie.toString())
                     .header("Set-Cookie", accessTokenCookie.toString())
-                    .body(AuthSuccessCode.SIGN_OUT_SUCCESS);
+                    .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.SIGN_OUT_SUCCESS));
         } else {
             throw new ErrorException(AuthErrorCode.CANNOT_FIND_RT);
         }
     }
 
     @PostMapping("/users/id-recover")
-    public ResponseEntity<?> postUsersIdRecover(@RequestBody String email) {
+    public ResponseEntity<?> postUsersIdRecover(@RequestBody IdRecoverRequestDto idRecoverRequestDto) {
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
-                .to(email)
+                .to(idRecoverRequestDto.getEmail())
                 .subject("[홀로서기] 아이디 찾기 인증 메일입니다.")
                 .build();
 
-        authEmailService.sendAuthEmail(email, emailResponseDto, "id-recover");
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        authEmailService.sendMailIdRecover(idRecoverRequestDto.getEmail(), emailResponseDto, "id-recover");
+        return ResponseEntity.status(HttpStatus.OK)
+        .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.ID_RECOVER_SUCCESS));
     }
 
     @PostMapping("/users/password-reset")
-    public ResponseEntity<?> postUsersPasswordReset(@RequestBody String userId, @RequestBody String email) {
+    public ResponseEntity<?> postUsersPasswordReset(@RequestBody PasswordResetRequestDto passwordResetRequestDto) {
 
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
-                .to(userService.validateUserIdAndEmail(userId, email))
+                .to(userService.validateUserIdAndEmail(passwordResetRequestDto.getUserId(), passwordResetRequestDto.getEmail()))
                 .subject("[홀로서기] 임시 비밀번호 발급 메일입니다.")
                 .build();
 
-        authEmailService.sendMail(emailResponseDto, "password");
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        authEmailService.sendMailPasswordReset(emailResponseDto, "password-reset");
+        return ResponseEntity.status(HttpStatus.OK)
+        .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.PASSWORD_RESET_SUCCESS));
     }
 
 }

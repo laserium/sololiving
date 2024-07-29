@@ -25,16 +25,11 @@ public class AuthEmailService {
     private final UserService userService;
 
     @Async("emailTaskExecutor")
-    public void sendMail(EmailResponseDto emailResponseDto, String type) {
+    public void sendMailPasswordReset(EmailResponseDto emailResponseDto, String type) {
         String authNum = createCode();
-
-        if (type.equals("password")) {
-            userService.setTempPassword(emailResponseDto.getTo(), authNum);
-        }
-
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-
+        userService.setTempPassword(emailResponseDto.getTo(), authNum);
         try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(), emailResponseDto.getSubject(),
                     setContext(authNum, type));
             javaMailSender.send(mimeMessage);
@@ -45,11 +40,11 @@ public class AuthEmailService {
     }
 
     @Async("emailTaskExecutor")
-    public void sendAuthEmail(String email, EmailResponseDto emailResponseDto, String type) {
+    public void sendMailIdRecover(String email, EmailResponseDto emailResponseDto, String type) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(),
-                    emailResponseDto.getSubject(), setContext(userService.findEmailByUserId(email), type));
+                    emailResponseDto.getSubject(), setContext(userService.findUserIdByEmail(email), type));
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {

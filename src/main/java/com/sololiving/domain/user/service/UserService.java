@@ -54,6 +54,15 @@ public class UserService {
             throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
     }
 
+    // 이메일로 아이디 찾기
+    public String findUserIdByEmail(String email) {
+        String userId = userMapper.findUserIdByEmail(email);
+        if (userId != null) {
+            return userId;
+        } else
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+    }
+
     // 아이디와 이메일 검증
     public String validateUserIdAndEmail(String userId, String email) {
         String userEmail = userMapper.findEmailByUserId(userId);

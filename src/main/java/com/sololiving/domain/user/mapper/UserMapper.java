@@ -14,9 +14,11 @@ public interface UserMapper {
 
     String findEmailByUserId(@Param("userId") String userId);
 
+    String findUserIdByEmail(@Param("email") String email);
+
     String findPwdByIdAndEmail(@Param("userId") String userId, @Param("email") String email);
 
     UserVo findByEmail(@Param("email") String email);
 
-    void updatePassword(@Param("userPwd") String userPwd);
+    void updatePassword(@Param("userPwd") String userPwd, @Param("userId") String userId);
 }
