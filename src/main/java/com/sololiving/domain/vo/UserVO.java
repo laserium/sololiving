@@ -28,5 +28,4 @@ public class UserVo {
     private LocalDateTime updatedAt;
     private UserType userType;
 
-
 }
