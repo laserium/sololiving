@@ -25,10 +25,8 @@ import com.sololiving.global.config.properties.GoogleOAuthRegistrationProperties
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class GoogleOAuthService {
 
