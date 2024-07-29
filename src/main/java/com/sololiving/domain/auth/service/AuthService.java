@@ -31,76 +31,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private static final String USER_NICK_NAME = "익명";
 
     private final UserService userService;
-    private final AuthMapper authMapper;
     private final RefreshTokenMapper refreshTokenMapper;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    // 회원가입
-    public void signUp(SignUpRequestDto signUpRequestDto) {
-        validateSignUpRequest(signUpRequestDto);
-        saveUser(signUpRequestDto);
-    }
-
-    // 회원가입 - 1. 중복데이터 검증
-    private void validateSignUpRequest(SignUpRequestDto signUpRequestDto) {
-        validateUniqueField(signUpRequestDto.getUserId(), this::isUserIdAvailable, AuthErrorCode.ID_ALREADY_EXISTS);
-        validateUniqueField(signUpRequestDto.getEmail(), this::isUserEmailAvailable, AuthErrorCode.EMAIL_ALREADY_EXISTS);
-        validateUniqueField(signUpRequestDto.getContact(), this::isUserContactAvailable, AuthErrorCode.CONTACT_ALREADY_EXISTS);
-    }
-    // 필드의 유일성 검증
-    private void validateUniqueField(String fieldValue, Validator validator, AuthErrorCode errorCode) {
-        if (!validator.validate(fieldValue)) {
-            throw new ErrorException(errorCode);
-        }
-    }
-    // 필드 유효성 검증을 위한 함수형 인터페이스
-    @FunctionalInterface
-    private interface Validator {
-        boolean validate(String value);
-    }
-
-    // 중복 검사 - 아이디
-    private boolean isUserIdAvailable(String userId) {
-        return !authMapper.existsByUserId(userId);
-    }
-
-    // 중복 검사 - 이메일
-    private boolean isUserEmailAvailable(String email) {
-        return !authMapper.existsByEmail(email);
-    }
-
-    // 중복 검사 - 연락처
-    private boolean isUserContactAvailable(String contact) {
-        return !authMapper.existsByContact(contact);
-    }
-
-    // 회원가입 - 2. 저장
-    @Transactional
-    private void saveUser(SignUpRequestDto signUpRequestDto) {
-        UserVo user = UserVo.builder()
-                .userId(signUpRequestDto.getUserId())
-                .userPwd(bCryptPasswordEncoder.encode(signUpRequestDto.getUserPwd()))
-                .oauth2UserId(signUpRequestDto.getOauth2UserId())
-                .nickName(USER_NICK_NAME)
-                .contact(signUpRequestDto.getContact())
-                .email(signUpRequestDto.getEmail())
-                .gender(Gender.DEFAULT)
-                .address(null)
-                .birth(null)
-                .is_active(true)
-                .followersCnt("0")
-                .followingCnt("0")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .userType(UserType.GENERAL)
-                .build();
-
-        authMapper.insertUser(user);
-    }
 
     // 로그인(RT, AT 발급)
     @Transactional
@@ -108,32 +44,22 @@ public class AuthService {
         UserVo userVo = checkIdAndPwd(signInRequest);
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
         RefreshTokenVo refreshTokenVo = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId());
-        if(refreshTokenVo != null) {
-            return CreateTokenResponse.builder()
-                                    .refreshToken(refreshTokenVo.getRefreshToken())
-                                    .accessToken(tokenProvider.generateToken(userVo, expiresIn))
-                                    .expiresIn(expiresIn)
-                                    .build();
+        
+        String refreshToken;
+        if (refreshTokenVo != null && refreshTokenVo.getExpiresIn().isAfter(LocalDateTime.now())) {
+            refreshToken = refreshTokenVo.getRefreshToken();
         } else {
-            String refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
-            String accessToken = tokenProvider.generateToken(userVo, expiresIn);
-            return CreateTokenResponse.builder()
-                                    .refreshToken(refreshToken)
-                                    .accessToken(accessToken)
-                                    .expiresIn(expiresIn)
-                                    .build();
+            refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
         }
-
-
+        
+        String accessToken = tokenProvider.generateToken(userVo, expiresIn);
+        
+        return CreateTokenResponse.builder()
+                                  .refreshToken(refreshToken)
+                                  .accessToken(accessToken)
+                                  .expiresIn(expiresIn)
+                                  .build();
     }
-
-    // 아이디와 비밀번호 체크
-    public UserVo checkIdAndPwd(SignInRequestDto signInRequestDto) {
-        UserVo userVo = userService.findByUserId(signInRequestDto.getUserId());
-        verifyPassword(userVo, signInRequestDto.getUserPwd());
-        return userVo;
-    }
-
 
     // 로그아웃
     public void userSignOut(String refreshTokenValue) {
@@ -142,11 +68,11 @@ public class AuthService {
             throw new ErrorException(AuthErrorCode.CANNOT_DELETE_REFRESH_TOKEN);
         }
     }
-
+    
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
         return CookieService.createRefreshTokenCookie(refreshToken);
     }
-
+    
     public ResponseCookie createAccessTokenCookie(String accessToken) {
         return CookieService.createAccessTokenCookie(accessToken);
     }
@@ -161,6 +87,7 @@ public class AuthService {
                 .expiresIn(expiresIn)
                 .userType(userType)
                 .clientId(clientId)
+                .oauth2UserId(userVo.getOauth2UserId())
                 .build();
     }
 
@@ -170,8 +97,14 @@ public class AuthService {
             throw new ErrorException(AuthErrorCode.PASSWORD_INCORRECT);
         }
     }
-
+    // 아이디와 비밀번호 체크
+    private UserVo checkIdAndPwd(SignInRequestDto signInRequestDto) {
+        UserVo userVo = userService.findByUserId(signInRequestDto.getUserId());
+        verifyPassword(userVo, signInRequestDto.getUserPwd());
+        return userVo;
+    }
     
-
-
+    
+    
+    
 }

@@ -50,7 +50,7 @@ public class TokenProvider {
                 .expiration(expiry)
                 .subject(userVo.getEmail())
                 .claim("id", userVo.getUserId())
-                .signWith(key, Jwts.SIG.HS512)
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -130,7 +130,7 @@ public class TokenProvider {
     private Claims getClaims(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
         return Jwts.parser()
-                .decryptWith(key)
+                .verifyWith(key)
                 .build()
                 .parseEncryptedClaims(token)
                 .getPayload();
@@ -144,11 +144,10 @@ public class TokenProvider {
         token = sanitizeToken(token);
         SecretKey key = getSecretKey();
         return Jwts.parser()
-                .decryptWith(key) // 중복 제거
+                .verifyWith(key) // 중복 제거
                 .build()
-                .parseEncryptedClaims(token)
+                .parseSignedClaims(token)
                 .getPayload();
     }
 
 }
-// 

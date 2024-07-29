@@ -22,7 +22,6 @@ import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.user.service.UserService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.util.CookieService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,12 +37,6 @@ public class AuthController {
     private final AuthEmailService authEmailService;
     private final CookieService cookieService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> postSignUp(@RequestBody SignUpRequestDto signUpRequestDto) {
-        authService.signUp(signUpRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-        .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.SIGN_UP_SUCCESS));
-    }
 
     @PostMapping("/signin")
     public ResponseEntity<SignInResponseDto> postSignIn(@RequestBody SignInRequestDto signInRequestDto) {
