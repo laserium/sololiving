@@ -28,8 +28,11 @@
 
     <update id="update" parameterType="com.sololiving.domain.vo.RefreshTokenVo">
         UPDATE REFRESH_TOKEN
-        SET refresh_token = #{refreshToken}, expires_in = #{expiresIn}, issued_at = #{issuedAt}, 
-            token_status = #{tokenStatus}, updated_at = #{updatedAt}
+        SET refresh_token = #{refreshToken},
+            expires_in = #{expiresIn},
+            issued_at = #{issuedAt}, 
+            token_status = #{tokenStatus},
+            updated_at = #{updatedAt}
         WHERE user_id = #{userId}
     </update>
 

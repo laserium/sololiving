@@ -27,10 +27,13 @@ public class RefreshTokenVo {
 
     public RefreshTokenVo update(String newRefreshToken) {
         return RefreshTokenVo.builder()
+                .userId(this.userId)
                 .refreshToken(newRefreshToken)
-                .expiresIn(expiresIn)
-                .issuedAt(issuedAt)
+                .expiresIn(LocalDateTime.now().plusDays(1))
+                .issuedAt(this.issuedAt)
+                .clientId(this.clientId)
                 .tokenStatus(TokenStatus.VALID)
+                .createdAt(this.createdAt)
                 .updatedAt(LocalDateTime.now())
                 .build();
     }

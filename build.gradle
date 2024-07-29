@@ -28,6 +28,15 @@ dependencies {
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 	implementation 'com.jcraft:jsch:0.1.55'
 
+	// ASPECT AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.aspectj:aspectjweaver'
+
+	// LOG
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+
 	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
@@ -48,6 +57,7 @@ dependencies {
 
 	// Email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

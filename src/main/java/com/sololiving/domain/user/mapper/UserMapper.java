@@ -7,6 +7,17 @@ import com.sololiving.domain.vo.UserVo;
 
 @Mapper
 public interface UserMapper {
+    // 회원가입
+    void insertUser(UserVo userVo);
+
+    // 유효성검사(중복확인) - 아이디
+    boolean existsByUserId(String userId);
+
+    // 유효성검사(중복확인) - 이메일
+    boolean existsByEmail(String email);
+
+    // 유효성검사(중복확인) - 연락처
+    boolean existsByContact(String contact);
 
     UserVo findByUserId(@Param("userId") String userId);
 
@@ -21,4 +32,6 @@ public interface UserMapper {
     UserVo findByEmail(@Param("email") String email);
 
     void updatePassword(@Param("userPwd") String userPwd, @Param("userId") String userId);
+
+    void deleteByUserId(@Param("userId") String userId);
 }

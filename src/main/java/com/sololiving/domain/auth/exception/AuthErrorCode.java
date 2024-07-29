@@ -20,7 +20,8 @@ public enum AuthErrorCode implements ErrorCode {
     WRONG_PARAMETER_OR_REQUEST("AUTH_E009", "파라미터가 잘못되었거나 요청문이 잘못되었습니다."),
     CANNOT_REFRESH_TOKEN("AUTH_E010", "토큰 갱신 중 오류발생"),
     CANNOT_DELETE_REFRESH_TOKEN("AUTH_E011", "RefreshToken을 삭제할 수 없습니다."),
-    CANNOT_SIGN_OUT("AUTH_E012", "로그아웃을 할 수 없습니다.");
+    CANNOT_SIGN_OUT("AUTH_E012", "로그아웃을 할 수 없습니다."),
+    CANNOT_FIND_AT("AUTH_E013", "해당하는 유저의 AccessToken을 찾을 수 없습니다.");
     
 
     private final String code;
