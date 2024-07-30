@@ -5,12 +5,15 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Gender {
-    MALE("남성"),
-    FEMALE("여성"),
-    DEFAULT("선택");
+public enum Status {
+    DEFAULT("기본값"),
+    SIGNEDIN("로그인"),
+    SIGNEDOUT("로그아웃"),
+    BLOCKED("차단"),
+    WITHDRAWN("탈퇴");
+
 
     private final String description;
 
 
-}
+}   

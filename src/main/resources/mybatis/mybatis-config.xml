@@ -16,11 +16,8 @@
     <typeHandlers>
         <typeHandler javaType="com.sololiving.domain.auth.enums.TokenStatus" handler="com.sololiving.global.handlers.MybatisEnumHandler"/>
         <typeHandler javaType="com.sololiving.domain.auth.enums.ClientId" handler="com.sololiving.global.handlers.MybatisEnumHandler"/>
+        <typeHandler javaType="com.sololiving.domain.user.enums.Status" handler="com.sololiving.global.handlers.MybatisEnumHandler"/>
+        <typeHandler javaType="com.sololiving.domain.user.enums.Gender" handler="com.sololiving.global.handlers.MybatisEnumHandler"/>
+        <typeHandler javaType="com.sololiving.domain.user.enums.UserType" handler="com.sololiving.global.handlers.MybatisEnumHandler"/>
     </typeHandlers>
-
-    <mappers>
-        <mapper resource="mappers/domain/auth/AuthMapper.xml"/>
-        <mapper resource="mappers/domain/auth/RefreshTokenMapper.xml"/>
-        <mapper resource="mappers/domain/user/UserMapper.xml"/>
-    </mappers>
 </configuration>

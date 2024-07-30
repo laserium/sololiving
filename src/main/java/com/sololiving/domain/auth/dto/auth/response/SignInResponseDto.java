@@ -4,7 +4,7 @@ import java.time.Duration;
 
 
 import com.sololiving.domain.auth.enums.ClientId;
-import com.sololiving.global.common.enums.UserType;
+import com.sololiving.domain.user.enums.UserType;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -9,19 +9,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
-import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
-import com.sololiving.domain.auth.mapper.AuthMapper;
 import com.sololiving.domain.auth.mapper.RefreshTokenMapper;
-import com.sololiving.domain.user.enums.Gender;
-import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.user.enums.UserType;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.vo.RefreshTokenVo;
 import com.sololiving.domain.vo.UserVo;
-import com.sololiving.global.common.enums.UserType;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.CookieService;
 
@@ -32,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
 
-    private final UserService userService;
+    private final UserAuthService userAuthService;
     private final RefreshTokenMapper refreshTokenMapper;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -79,7 +76,7 @@ public class AuthService {
 
     public SignInResponseDto createSignInResponse(SignInRequestDto signInRequest, CreateTokenResponse tokensResponse) {
         Duration expiresIn = tokensResponse.getExpiresIn();
-        UserVo userVo = userService.findByUserId(signInRequest.getUserId());
+        UserVo userVo = userAuthService.findByUserId(signInRequest.getUserId());
         UserType userType = userVo.getUserType();
         ClientId clientId = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId()).getClientId();
         
@@ -99,7 +96,7 @@ public class AuthService {
     }
     // 아이디와 비밀번호 체크
     private UserVo checkIdAndPwd(SignInRequestDto signInRequestDto) {
-        UserVo userVo = userService.findByUserId(signInRequestDto.getUserId());
+        UserVo userVo = userAuthService.findByUserId(signInRequestDto.getUserId());
         verifyPassword(userVo, signInRequestDto.getUserPwd());
         return userVo;
     }

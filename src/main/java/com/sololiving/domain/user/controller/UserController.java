@@ -11,41 +11,51 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
-import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.dto.response.ViewUserListResponseDto;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.user.service.UserViewService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.util.CookieService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/user")
 public class UserController {
     
     private final UserService userService;
+    private final UserViewService userViewService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> postSignUp(@RequestBody SignUpRequestDto signUpRequestDto) {
+    public ResponseEntity<SuccessResponse> postSignUp(@RequestBody SignUpRequestDto signUpRequestDto) {
         userService.signUp(signUpRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
         .body(ResponseMessage.createSuccessResponse(UserSuccessCode.SIGN_UP_SUCCESS));
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable("userId") String userId, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<SuccessResponse> deleteUser(@PathVariable("userId") String userId, HttpServletRequest httpServletRequest) {
         String accessToken = CookieService.extractAccessTokenFromCookie(httpServletRequest);
-        log.info(accessToken);
         if(accessToken != null) {
             userService.deleteUser(accessToken, userId);
             return ResponseEntity.status(HttpStatus.OK)
             .body(ResponseMessage.createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
         } else throw new ErrorException(AuthErrorCode.CANNOT_FIND_AT);
-        
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> getUserList(HttpServletRequest httpServletRequest, @RequestBody String userId) {
+        String accessToken = CookieService.extractAccessTokenFromCookie(httpServletRequest);
+        userViewService.viewUserList(accessToken, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+    
+
 }

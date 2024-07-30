@@ -6,24 +6,10 @@
 <mapper namespace="com.sololiving.domain.user.mapper.UserMapper">
     <!--회원가입-->
     <insert id="insertUser">
-        INSERT INTO USER (user_id, user_pwd, oauth2_user_id, nickname, contact, email, gender, address, birth, is_active, followers_cnt, following_cnt, created_at, updated_at, user_type)
-        VALUES (#{userId}, #{userPwd}, #{oauth2UserId}, #{nickName}, #{contact}, #{email}, #{gender}, #{address}, #{birth}, #{is_active}, #{followersCnt}, #{followingCnt}, #{createdAt}, #{updatedAt}, #{userType})
+        INSERT INTO USER (user_id, user_pwd, oauth2_user_id, nickname, contact, email, gender, address, birth, status, followers_cnt, following_cnt, created_at, updated_at, user_type, last_signin_at, last_activity_at)
+        VALUES (#{userId}, #{userPwd}, #{oauth2UserId}, #{nickName}, #{contact}, #{email}, #{gender}, #{address}, #{birth}, #{status}, #{followersCnt}, #{followingCnt}, #{createdAt}, #{updatedAt}, #{userType}, #{lastSignInAt}, #{lastActivityAt})
     </insert>
 
-    <!--중복검사 : 아이디-->
-    <select id="existsByUserId" resultType="boolean">
-        SELECT EXISTS(SELECT 1 FROM USER WHERE user_id = #{userId})
-    </select>
-
-    <!--중복검사 : 이메일-->
-    <select id="existsByEmail" resultType="boolean">
-        SELECT EXISTS(SELECT 1 FROM USER WHERE email = #{email})
-    </select>
-
-    <!--중복검사 : 연락처-->
-    <select id="existsByContact" resultType="boolean">
-        SELECT EXISTS(SELECT 1 FROM USER WHERE contact = #{contact})
-    </select>
 
     <!-- 회원탈퇴 -->
     <delete id="deleteByUserId" parameterType="string">
@@ -31,42 +17,5 @@
         FROM USER
         WHERE user_id = #{userId}
     </delete>
-
-    <select id="findByUserId" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
-        SELECT * 
-        FROM USER 
-        WHERE user_id = #{userId}
-    </select>
-    
-    <select id="findByOauth2UserId" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
-        SELECT * 
-        FROM USER 
-        WHERE oauth2_user_id = #{oauth2UserId}
-    </select>
-
-    <select id="findByEmail" parameterType="string" resultType="com.sololiving.domain.vo.UserVo">
-        SELECT *
-        FROM USER
-        WHERE email = #{email}
-    </select>
-
-    <select id="findEmailByUserId" parameterType="string" resultType="string">
-        SELECT email
-        FROM USER
-        WHERE user_id = #{userId}
-    </select>
-
-    <select id="findUserIdByEmail" parameterType="string" resultType="string">
-        SELECT user_id
-        FROM USER
-        WHERE email = #{email}
-    </select>
-
-    <update id = "updatePassword" parameterType="map">
-        UPDATE USER
-        SET user_pwd = #{userPwd}
-        WHERE user_id = #{userId}
-    </update>
-
 
 </mapper>

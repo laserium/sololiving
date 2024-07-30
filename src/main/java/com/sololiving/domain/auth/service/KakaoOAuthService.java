@@ -2,7 +2,6 @@ package com.sololiving.domain.auth.service;
 
 import java.time.Duration;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -17,9 +16,9 @@ import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoUserInfoResponse
 import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.AuthErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
-import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.user.enums.UserType;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.vo.UserVo;
-import com.sololiving.global.common.enums.UserType;
 import com.sololiving.global.config.properties.KakaoOAuthProviderProperties;
 import com.sololiving.global.config.properties.KakaoOAuthRegistrationProperties;
 import com.sololiving.global.exception.error.ErrorException;
@@ -33,7 +32,7 @@ public class KakaoOAuthService {
 
     private final KakaoOAuthRegistrationProperties kakaoOAuthRegistrationProperties;
     private final KakaoOAuthProviderProperties kakaoOAuthProviderProperties;
-    private final UserService userService;
+    private final UserAuthService userAuthService;
     private final WebClient.Builder webClientBuilder;
     private final OauthUtil oauthUtil;
 
@@ -52,7 +51,7 @@ public class KakaoOAuthService {
 
     public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequest createOAuthTokenRequest) {
         String oauth2UserId = KAKAO_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
-        return userService.findByOauth2UserId(oauth2UserId);
+        return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
     public String getTokenByCode(String authCode) {
