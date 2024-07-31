@@ -16,12 +16,12 @@ import com.sololiving.domain.auth.dto.oauth.response.naver.NaverRefreshTokenDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverUserInfoResponseDto;
 import com.sololiving.domain.auth.enums.ClientId;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
-import com.sololiving.domain.auth.exception.AuthSuccessCode;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
+import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
-import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.user.enums.UserType;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.vo.UserVo;
-import com.sololiving.global.common.enums.UserType;
 import com.sololiving.global.config.properties.NaverOAuthProviderProperties;
 import com.sololiving.global.config.properties.NaverOAuthRegistrationProperties;
 import com.sololiving.global.exception.error.ErrorException;
@@ -36,7 +36,7 @@ public class NaverOAuthService {
 
     private final NaverOAuthRegistrationProperties naverOAuthRegistrationProperties;
     private final NaverOAuthProviderProperties naverOAuthProviderProperties;
-    private final UserService userService;
+    private final UserAuthService userAuthService;
     private final WebClient.Builder webClientBuilder;
     private final OauthUtil oauthUtil;
 
@@ -59,7 +59,7 @@ public class NaverOAuthService {
 
     public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequest createOAuthTokenRequest) {
         String oauth2UserId = NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
-        return userService.findByOauth2UserId(oauth2UserId);
+        return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
     public String getTokenByCode(String authCode) {

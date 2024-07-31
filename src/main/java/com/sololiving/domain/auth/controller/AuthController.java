@@ -11,15 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
-import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.dto.email.response.EmailResponseDto;
 import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
-import com.sololiving.domain.auth.exception.AuthSuccessCode;
+import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
+import com.sololiving.domain.auth.exception.token.TokenErrorCode;
 import com.sololiving.domain.auth.service.AuthEmailService;
 import com.sololiving.domain.auth.service.AuthService;
-import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.CookieService;
@@ -33,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserService userService;
+    private final UserAuthService userAuthService;
     private final AuthEmailService authEmailService;
     private final CookieService cookieService;
 
@@ -62,7 +61,7 @@ public class AuthController {
                     .header("Set-Cookie", accessTokenCookie.toString())
                     .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.SIGN_OUT_SUCCESS));
         } else {
-            throw new ErrorException(AuthErrorCode.CANNOT_FIND_RT);
+            throw new ErrorException(TokenErrorCode.CANNOT_FIND_RT);
         }
     }
 
@@ -82,7 +81,7 @@ public class AuthController {
     public ResponseEntity<?> postUsersPasswordReset(@RequestBody PasswordResetRequestDto passwordResetRequestDto) {
 
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
-                .to(userService.validateUserIdAndEmail(passwordResetRequestDto.getUserId(), passwordResetRequestDto.getEmail()))
+                .to(userAuthService.validateUserIdAndEmail(passwordResetRequestDto.getUserId(), passwordResetRequestDto.getEmail()))
                 .subject("[홀로서기] 임시 비밀번호 발급 메일입니다.")
                 .build();
 

@@ -10,7 +10,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.sololiving.domain.auth.dto.email.response.EmailResponseDto;
-import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.user.service.UserAuthService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -22,12 +22,12 @@ public class AuthEmailService {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
-    private final UserService userService;
+    private final UserAuthService userAuthService;
 
     @Async("emailTaskExecutor")
     public void sendMailPasswordReset(EmailResponseDto emailResponseDto, String type) {
         String authNum = createCode();
-        userService.setTempPassword(emailResponseDto.getTo(), authNum);
+        userAuthService.setTempPassword(emailResponseDto.getTo(), authNum);
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(), emailResponseDto.getSubject(),
@@ -44,7 +44,7 @@ public class AuthEmailService {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(),
-                    emailResponseDto.getSubject(), setContext(userService.findUserIdByEmail(email), type));
+                    emailResponseDto.getSubject(), setContext(userAuthService.findUserIdByEmail(email), type));
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {

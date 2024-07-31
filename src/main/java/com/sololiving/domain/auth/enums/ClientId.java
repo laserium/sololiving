@@ -1,5 +1,10 @@
 package com.sololiving.domain.auth.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum ClientId {
     SOLOLIVING("자체발급"),
     KAKAO("카카오"),
@@ -8,11 +13,4 @@ public enum ClientId {
 
     private final String description;
 
-    ClientId(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }

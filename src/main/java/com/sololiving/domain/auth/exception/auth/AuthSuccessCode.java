@@ -1,4 +1,4 @@
-package com.sololiving.domain.auth.exception;
+package com.sololiving.domain.auth.exception.auth;
 
 import com.sololiving.global.exception.success.SuccessCode;
 

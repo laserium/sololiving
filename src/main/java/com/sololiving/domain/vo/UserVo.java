@@ -1,7 +1,9 @@
 package com.sololiving.domain.vo;
 
 import com.sololiving.domain.user.enums.Gender;
-import com.sololiving.global.common.enums.UserType;
+import com.sololiving.domain.user.enums.Status;
+import com.sololiving.domain.user.enums.UserType;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,17 +17,19 @@ public class UserVo {
     private String userId;
     private String userPwd;
     private String oauth2UserId;
-    private String nickName;
+    private String nickname;
     private String contact;
     private String email;
     private Gender gender;
     private String address;
     private LocalDate birth;
-    private boolean is_active;
+    private Status status;
     private String followersCnt;
     private String followingCnt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserType userType;
+    private LocalDateTime lastSignInAt;
+    private LocalDateTime lastActivityAt;
 
 }

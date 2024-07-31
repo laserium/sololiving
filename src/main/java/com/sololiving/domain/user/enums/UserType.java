@@ -5,12 +5,10 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Gender {
-    MALE("남성"),
-    FEMALE("여성"),
-    DEFAULT("선택");
+public enum UserType {
+    ADMIN("관리자"),
+    GENERAL("일반");
 
     private final String description;
 
-
-}
+}   

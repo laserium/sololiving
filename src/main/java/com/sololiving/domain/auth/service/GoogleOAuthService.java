@@ -15,11 +15,11 @@ import com.sololiving.domain.auth.dto.oauth.response.google.GoogleRefreshTokenDt
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleUserInfoResponseDto;
 import com.sololiving.domain.auth.enums.ClientId;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
-import com.sololiving.domain.user.service.UserService;
+import com.sololiving.domain.user.enums.UserType;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.vo.UserVo;
-import com.sololiving.global.common.enums.UserType;
 import com.sololiving.global.config.properties.GoogleOAuthProviderProperties;
 import com.sololiving.global.config.properties.GoogleOAuthRegistrationProperties;
 import com.sololiving.global.exception.error.ErrorException;
@@ -32,7 +32,7 @@ public class GoogleOAuthService {
 
     private final GoogleOAuthProviderProperties googleOAuthProviderProperties;
     private final GoogleOAuthRegistrationProperties googleOAuthRegistrationProperties;
-    private final UserService userService;
+    private final UserAuthService userAuthService;
     private final WebClient.Builder webClientBuilder;
 
     private static final String GOOGLE_ID_PREFIX = "GOOGLE_";
@@ -52,7 +52,7 @@ public class GoogleOAuthService {
     }
 
     public UserVo getUserVoFromOAuthToken(String oauth2UserId) {
-        return userService.findByOauth2UserId(oauth2UserId);
+        return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
     public String getOauth2UserId(CreateOAuthTokenRequest createOAuthTokenRequest) {
