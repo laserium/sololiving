@@ -8,7 +8,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableAspectJAutoProxy
-@MapperScan("com.sololiving")
+// @MapperScan( basePackages = {"com.sololiving"})
 public class SoloLivingApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SoloLivingApiApplication.class, args);

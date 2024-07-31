@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
+import com.sololiving.domain.auth.exception.token.TokenErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
+import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserAuthMapper;
@@ -25,12 +27,12 @@ public class UserAuthService {
     
     // 회원가입 - 중복데이터 검증
     protected void validateSignUpRequest(SignUpRequestDto signUpRequestDto) {
-        validateUniqueField(signUpRequestDto.getUserId(), this::isUserIdAvailable, AuthErrorCode.ID_ALREADY_EXISTS);
-        validateUniqueField(signUpRequestDto.getEmail(), this::isUserEmailAvailable, AuthErrorCode.EMAIL_ALREADY_EXISTS);
-        validateUniqueField(signUpRequestDto.getContact(), this::isUserContactAvailable, AuthErrorCode.CONTACT_ALREADY_EXISTS);
+        validateUniqueField(signUpRequestDto.getUserId(), this::isUserIdAvailable, UserErrorCode.ID_ALREADY_EXISTS);
+        validateUniqueField(signUpRequestDto.getEmail(), this::isUserEmailAvailable, UserErrorCode.EMAIL_ALREADY_EXISTS);
+        validateUniqueField(signUpRequestDto.getContact(), this::isUserContactAvailable, UserErrorCode.CONTACT_ALREADY_EXISTS);
     }
     // 필드의 유일성 검증
-    private void validateUniqueField(String fieldValue, Validator validator, AuthErrorCode errorCode) {
+    public void validateUniqueField(String fieldValue, Validator validator, UserErrorCode errorCode) {
         if (!validator.validate(fieldValue)) {
             throw new ErrorException(errorCode);
         }
@@ -42,7 +44,7 @@ public class UserAuthService {
     }
 
     // 중복 검사 - 아이디
-    private boolean isUserIdAvailable(String userId) {
+    public boolean isUserIdAvailable(String userId) {
         return !userAuthMapper.existsByUserId(userId);
     }
 
@@ -54,14 +56,6 @@ public class UserAuthService {
     // 중복 검사 - 연락처
     private boolean isUserContactAvailable(String contact) {
         return !userAuthMapper.existsByContact(contact);
-    }
-
-    // AT 파싱 결과 userId 와 request 받은 userId 와 비교
-    protected boolean validateUserId(String accessToken, String userId) {
-        String tokenUserId = tokenProvider.getUserId(accessToken);
-        if(userId.equals(tokenUserId)) {
-            return true;
-        } else throw new ErrorException(UserErrorCode.USER_ID_INCORRECT);
     }
 
     // 아이디로 유저 찾기
@@ -117,6 +111,22 @@ public class UserAuthService {
         } else
             throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
     }
+
+    // AT에서 추출한 USER 검증
+    public boolean validateUserIdwithAccessToken(String accessToken) {
+        String userId = tokenProvider.getUserId(accessToken);
+        if(userAuthMapper.existsByUserId(userId)) {
+            return true;
+        } else throw new ErrorException(TokenErrorCode.CANNT_EXTRACT_USER);
+    }
+
+    // 사용자 상태 값 NULL 값 예외처리
+    public void validateStatus(Status status) {
+        if (status == null || (status != Status.ACTIVE && status != Status.BLOCKED && status != Status.WITHDRAWN)) {
+            throw new ErrorException(UserErrorCode.NO_USER_STATUS_REQUEST);
+        }
+    }
+
 
     // 임시 비밀번호 설정
     @Transactional

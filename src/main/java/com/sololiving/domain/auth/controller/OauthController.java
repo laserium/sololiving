@@ -11,7 +11,7 @@ import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequest;
 import com.sololiving.domain.auth.dto.oauth.response.OauthUserExistenceResponseDto;
 import com.sololiving.domain.auth.dto.token.response.AuthTokenResponseDto;
-import com.sololiving.domain.auth.exception.AuthSuccessCode;
+import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.auth.service.GoogleOAuthService;
 import com.sololiving.domain.auth.service.KakaoOAuthService;

@@ -12,7 +12,8 @@ import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
 import com.sololiving.domain.auth.enums.ClientId;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
+import com.sololiving.domain.auth.exception.token.TokenErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.auth.mapper.RefreshTokenMapper;
 import com.sololiving.domain.user.enums.UserType;
@@ -41,16 +42,15 @@ public class AuthService {
         UserVo userVo = checkIdAndPwd(signInRequest);
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
         RefreshTokenVo refreshTokenVo = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId());
-        
         String refreshToken;
-        if (refreshTokenVo != null && refreshTokenVo.getExpiresIn().isAfter(LocalDateTime.now())) {
-            refreshToken = refreshTokenVo.getRefreshToken();
+        if (refreshTokenVo != null) {
+            if(refreshTokenVo.getExpiresIn().isAfter(LocalDateTime.now())) {
+                refreshToken = refreshTokenVo.getRefreshToken();
+            } else refreshToken = refreshTokenVo.getRefreshToken();
         } else {
             refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
         }
-        
         String accessToken = tokenProvider.generateToken(userVo, expiresIn);
-        
         return CreateTokenResponse.builder()
                                   .refreshToken(refreshToken)
                                   .accessToken(accessToken)
@@ -62,7 +62,7 @@ public class AuthService {
     public void userSignOut(String refreshTokenValue) {
         int rowsAffected = refreshTokenMapper.deleteByRefreshToken(refreshTokenValue);
         if (rowsAffected == 0) {
-            throw new ErrorException(AuthErrorCode.CANNOT_DELETE_REFRESH_TOKEN);
+            throw new ErrorException(TokenErrorCode.CANNOT_DELETE_REFRESH_TOKEN);
         }
     }
     

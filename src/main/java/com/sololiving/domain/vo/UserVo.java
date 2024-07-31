@@ -17,7 +17,7 @@ public class UserVo {
     private String userId;
     private String userPwd;
     private String oauth2UserId;
-    private String nickName;
+    private String nickname;
     private String contact;
     private String email;
     private Gender gender;
@@ -26,9 +26,9 @@ public class UserVo {
     private Status status;
     private String followersCnt;
     private String followingCnt;
-    private UserType userType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private UserType userType;
     private LocalDateTime lastSignInAt;
     private LocalDateTime lastActivityAt;
 

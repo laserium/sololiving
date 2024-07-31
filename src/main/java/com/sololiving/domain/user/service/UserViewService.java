@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.user.dto.response.ViewUserListResponseDto;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
@@ -18,18 +19,18 @@ public class UserViewService {
 
     private final UserAuthService userAuthService;
     private final UserViewMapper userViewMapper;
+    private final TokenProvider tokenProvider;
 
-    public List<ViewUserListResponseDto> viewUserList(String accessToken, String userId) {
-        validateViewUserList(accessToken, userId);
+    public List<ViewUserListResponseDto> viewUserList(String accessToken) {
+        // validateViewUserList(accessToken);
         return responseViewUserList();
     }
 
-    private boolean validateViewUserList(String accessToken, String userId) {
-        if(userAuthService.validateUserId(accessToken, userId)) {
-            if(userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
-                return true;
-            } else throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
-        } else throw new ErrorException(UserErrorCode.USER_ID_INCORRECT);
+    private boolean validateViewUserList(String accessToken) {
+        String userId = tokenProvider.getUserId(accessToken);
+        if(userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
+            return true;
+        } else throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
 
     }
     

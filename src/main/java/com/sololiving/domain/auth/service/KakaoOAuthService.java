@@ -14,7 +14,7 @@ import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoRequestTokenRefr
 import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoUserInfoResponseDto;
 import com.sololiving.domain.auth.enums.ClientId;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.service.UserAuthService;

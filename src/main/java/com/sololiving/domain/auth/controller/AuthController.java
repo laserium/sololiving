@@ -14,8 +14,8 @@ import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.dto.email.response.EmailResponseDto;
 import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
-import com.sololiving.domain.auth.exception.AuthSuccessCode;
+import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
+import com.sololiving.domain.auth.exception.token.TokenErrorCode;
 import com.sololiving.domain.auth.service.AuthEmailService;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.user.service.UserAuthService;
@@ -61,7 +61,7 @@ public class AuthController {
                     .header("Set-Cookie", accessTokenCookie.toString())
                     .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.SIGN_OUT_SUCCESS));
         } else {
-            throw new ErrorException(AuthErrorCode.CANNOT_FIND_RT);
+            throw new ErrorException(TokenErrorCode.CANNOT_FIND_RT);
         }
     }
 

@@ -15,7 +15,7 @@ import com.sololiving.domain.auth.dto.oauth.response.google.GoogleRefreshTokenDt
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleUserInfoResponseDto;
 import com.sololiving.domain.auth.enums.ClientId;
-import com.sololiving.domain.auth.exception.AuthErrorCode;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.service.UserAuthService;
