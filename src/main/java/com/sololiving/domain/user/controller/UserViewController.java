@@ -21,11 +21,12 @@ import lombok.RequiredArgsConstructor;
 public class UserViewController {
 
     private final UserViewService userViewService;
+    private final CookieService cookieService;
 
     @GetMapping("/list")
     public ResponseEntity<List<ViewUserListResponseDto>> getUserList(HttpServletRequest httpServletRequest) {
-        String accessToken = CookieService.extractAccessTokenFromCookie(httpServletRequest);
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         return ResponseEntity.status(HttpStatus.OK).body(userViewService.viewUserList(accessToken));
     }
-    
+
 }

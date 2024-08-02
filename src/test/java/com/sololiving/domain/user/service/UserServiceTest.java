@@ -1,4 +1,4 @@
-// package com.sololiving.home.service;
+// package com.sololiving.domain.user.service;
 
 // import com.sololiving.home.mapper.UserMapper;
 // import com.sololiving.home.vo.UserVO;

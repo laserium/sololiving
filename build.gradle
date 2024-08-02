@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.2'
 	id 'io.spring.dependency-management' version '1.1.5'
+	id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 group = 'com.sololiving'
@@ -12,6 +13,7 @@ java {
 }
 
 configurations {
+	asciidoctorExt
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -22,10 +24,15 @@ repositories {
 }
 
 dependencies {
+	// STARTER DEFAULT
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// MYBATIS
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+	// SSH Library
 	implementation 'com.jcraft:jsch:0.1.55'
 
 	// ASPECT AOP
@@ -57,11 +64,15 @@ dependencies {
 
 	// Email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	
 
+	// Spring REST Docs
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -69,17 +80,39 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+task createGeneratedSnippetsDir {
+    doLast {
+        file(snippetsDir).mkdirs()
+    }
+}
+
+asciidoctor {
+    configurations 'asciidoctorExt'
+    baseDirFollowsSourceFile()
+    inputs.dir snippetsDir
+    dependsOn test
+    doFirst {
+        delete file('src/main/resources/static/docs')
+    }
+    doLast {
+        copy {
+            from file('build/docs/asciidoc')
+            into file('src/main/resources/static/docs')
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
-    systemProperty 'spring.profiles.active', 'test'
+    outputs.dir snippetsDir
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-tasks.withType(Test) {
-    enabled = false
+tasks.named('build') {
+    dependsOn asciidoctor
 }
 
 springBoot {
