@@ -41,4 +41,6 @@ out/
 application-dev.properties
 application-test.properties
 application.properties
+application-dev.properties
+application-test.properties
 keystore.p12

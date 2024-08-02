@@ -33,6 +33,7 @@ public class AuthService {
     private final UserAuthService userAuthService;
     private final RefreshTokenMapper refreshTokenMapper;
     private final TokenProvider tokenProvider;
+    private final CookieService cookieService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
@@ -67,11 +68,11 @@ public class AuthService {
     }
     
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-        return CookieService.createRefreshTokenCookie(refreshToken);
+        return cookieService.createRefreshTokenCookie(refreshToken);
     }
     
     public ResponseCookie createAccessTokenCookie(String accessToken) {
-        return CookieService.createAccessTokenCookie(accessToken);
+        return cookieService.createAccessTokenCookie(accessToken);
     }
 
     public SignInResponseDto createSignInResponse(SignInRequestDto signInRequest, CreateTokenResponse tokensResponse) {

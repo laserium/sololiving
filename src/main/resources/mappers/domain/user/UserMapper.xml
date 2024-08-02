@@ -7,7 +7,7 @@
 
     <!--회원가입-->
     <insert id="insertUser" parameterType="com.sololiving.domain.vo.UserVo">
-        INSERT INTO USER (user_id, user_pwd, oauth2_user_id, nickname, contact, email, gender, address, birth, status, followers_cnt, following_cnt, created_at, updated_at, user_type, last_signin_at, last_activity_at)
+        INSERT INTO USER (user_id, user_pwd, oauth2_user_id, nickname, contact, email, gender, address, birth, status, followers_cnt, following_cnt, created_at, updated_at, user_type, last_sign_in_at, last_activity_at)
         VALUES (#{userId}, #{userPwd}, #{oauth2UserId}, #{nickname}, #{contact}, #{email}, #{gender}, #{address}, #{birth}, #{status}, #{followersCnt}, #{followingCnt}, #{createdAt}, #{updatedAt}, #{userType}, #{lastSignInAt}, #{lastActivityAt})
     </insert>
 

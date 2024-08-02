@@ -1,0 +1,9 @@
+= Spring REST Docs Test
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+include::user.adoc[]
