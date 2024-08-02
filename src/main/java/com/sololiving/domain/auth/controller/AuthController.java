@@ -36,7 +36,6 @@ public class AuthController {
     private final AuthEmailService authEmailService;
     private final CookieService cookieService;
 
-
     @PostMapping("/signin")
     public ResponseEntity<SignInResponseDto> postSignIn(@RequestBody SignInRequestDto signInRequestDto) {
         CreateTokenResponse tokenResponse = authService.createTokenResponse(signInRequestDto);
@@ -51,7 +50,7 @@ public class AuthController {
 
     @PostMapping("/signout")
     public ResponseEntity<?> postSignOut(HttpServletRequest httpServletRequest) {
-        String refreshTokenValue = CookieService.extractRefreshTokenFromCookie(httpServletRequest);
+        String refreshTokenValue = cookieService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
             ResponseCookie refreshTokencookie = cookieService.deleteRefreshTokenCookie();
@@ -74,20 +73,21 @@ public class AuthController {
 
         authEmailService.sendMailIdRecover(idRecoverRequestDto.getEmail(), emailResponseDto, "id-recover");
         return ResponseEntity.status(HttpStatus.OK)
-        .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.ID_RECOVER_SUCCESS));
+                .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.ID_RECOVER_SUCCESS));
     }
 
     @PostMapping("/users/password-reset")
     public ResponseEntity<?> postUsersPasswordReset(@RequestBody PasswordResetRequestDto passwordResetRequestDto) {
 
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
-                .to(userAuthService.validateUserIdAndEmail(passwordResetRequestDto.getUserId(), passwordResetRequestDto.getEmail()))
+                .to(userAuthService.validateUserIdAndEmail(passwordResetRequestDto.getUserId(),
+                        passwordResetRequestDto.getEmail()))
                 .subject("[홀로서기] 임시 비밀번호 발급 메일입니다.")
                 .build();
 
         authEmailService.sendMailPasswordReset(emailResponseDto, "password-reset");
         return ResponseEntity.status(HttpStatus.OK)
-        .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.PASSWORD_RESET_SUCCESS));
+                .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.PASSWORD_RESET_SUCCESS));
     }
 
 }
