@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchUsersEmailRequestDto {
-    private String email;
+public class UpdateUsersNicknameRequestDto {
+    private String nickname;
 }

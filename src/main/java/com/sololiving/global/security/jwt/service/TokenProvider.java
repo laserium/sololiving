@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.user.vo.UserVo;
+import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.enums.ClientId;
 import com.sololiving.global.security.jwt.enums.TokenStatus;
+import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.security.jwt.mapper.RefreshTokenMapper;
 import com.sololiving.global.security.jwt.properties.JwtProperties;
 import com.sololiving.global.security.jwt.vo.RefreshTokenVo;
@@ -109,6 +111,9 @@ public class TokenProvider {
 
     // AT로 유저 아이디 추출
     public String getUserId(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new ErrorException(TokenErrorCode.NO_ACCESS_TOKEN);
+        }
         Claims claims = decodeJwtToken(token);
         return claims.get("id", String.class); // Claim에서 "id" 값을 String으로 안전하게 추출
     }

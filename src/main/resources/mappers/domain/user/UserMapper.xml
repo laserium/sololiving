@@ -31,4 +31,10 @@
         WHERE user_id = #{userId}
     </update>
 
+    <update id="updateUserNickname" parameterType="map">
+        UPDATE USER
+        SET nickname = #{nickname}
+        WHERE user_id = #{userId}
+    </update>
+
 </mapper>

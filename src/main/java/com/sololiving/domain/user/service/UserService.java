@@ -10,12 +10,12 @@ import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
-import com.sololiving.domain.user.dto.request.PatchUsersEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUsersEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUsersNicknameRequestDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
-import com.sololiving.domain.user.mapper.UserAuthMapper;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.error.ErrorException;
@@ -71,13 +71,18 @@ public class UserService {
     }
 
     // 회원탈퇴
-    @Transactional
-    public void deleteUser(String accessToken) {
+    public void deleteUserRequest(String accessToken) {
         if (userAuthService.validateUserIdwithAccessToken(accessToken)) {
             String userId = tokenProvider.getUserId(accessToken);
-            userMapper.deleteByUserId(userId);
+            deleteUser(userId);
         } else
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+    }
+
+    // 회원탈퇴 - 삭제
+    @Transactional
+    private void deleteUser(String userId) {
+        userMapper.deleteByUserId(userId);
     }
 
     // 회원 상태 변경
@@ -85,9 +90,7 @@ public class UserService {
     public void updateStatus(String accessToken, Status status) {
         tokenService.validateAccessToken(accessToken);
         String userId = tokenProvider.getUserId(accessToken);
-        if (userAuthService.isUserIdAvailable(userId)) {
-            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
-        }
+        validateUserId(userId);
         userAuthService.validateStatus(status);
         if (userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
             userMapper.updateUserStatus(userId, status);
@@ -96,11 +99,9 @@ public class UserService {
     }
 
     // 유저 이메일 변경
-    public void sendUpdateNewEmailRequest(String accessToken, PatchUsersEmailRequestDto patchUsersEmailRequestDto) {
+    public void sendUpdateNewEmailRequest(String accessToken, UpdateUsersEmailRequestDto patchUsersEmailRequestDto) {
         String userId = tokenProvider.getUserId(accessToken);
-        if (userAuthService.isUserIdAvailable(userId)) {
-            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
-        }
+        validateUserId(userId);
         String email = patchUsersEmailRequestDto.getEmail();
         if (userAuthService.isUserEmailAvailable(email)) {
             EmailResponseDto emailResponseDto = EmailResponseDto.builder()
@@ -113,6 +114,7 @@ public class UserService {
         }
     }
 
+    // 이메일 수정 후 저장
     public void confirmEmail(EmailVerificationTokenVo emailVerificationTokenVo) {
         String userId = emailVerificationTokenVo.getUserId();
         String email = emailVerificationTokenVo.getNewEmail();
@@ -123,9 +125,33 @@ public class UserService {
         }
     }
 
+    // 회원 이메일 - 수정
     @Transactional
     private void updateUserEmail(String userId, String email) {
         userMapper.updateUserEmail(userId, email);
     }
 
+    // 유저 닉네임 변경
+    public void updateUserNicknameRequest(String accessToken,
+            UpdateUsersNicknameRequestDto updateUsersNicknameRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        String nickname = updateUsersNicknameRequestDto.getNickname();
+        validateUserId(userId);
+        if (nickname == null) {
+            throw new ErrorException(UserErrorCode.USER_NICKNAME_IS_NULL);
+        }
+        updateUserNickname(userId, nickname);
+    }
+
+    // 회원 닉네임 - 수정
+    @Transactional
+    private void updateUserNickname(String userId, String nickname) {
+        userMapper.updateUserNickname(userId, nickname);
+    }
+
+    private void validateUserId(String userId) {
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+    }
 }

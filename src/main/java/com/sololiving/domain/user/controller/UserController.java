@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverUserInfoResponseDto.Response;
-import com.sololiving.domain.user.dto.request.PatchUsersEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUsersEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUsersNicknameRequestDto;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserService;
@@ -49,7 +50,7 @@ public class UserController {
     public ResponseEntity<SuccessResponse> deleteUser(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         if (accessToken != null) {
-            userService.deleteUser(accessToken);
+            userService.deleteUserRequest(accessToken);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseMessage.createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
         } else
@@ -74,11 +75,22 @@ public class UserController {
 
     // 유저 이메일 변경
     @PatchMapping("/email")
-    public ResponseEntity<?> updateUserEmail(@RequestBody PatchUsersEmailRequestDto patchUsersEmailRequestDto,
+    public ResponseEntity<?> updateUserEmail(@RequestBody UpdateUsersEmailRequestDto patchUsersEmailRequestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         userService.sendUpdateNewEmailRequest(accessToken, patchUsersEmailRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_EMAIL_REQUEST_SUCCESS));
+    }
+
+    // 유저 닉네임 변경
+    @PatchMapping("/nickname")
+    public ResponseEntity<?> updateUserNickname(
+            @RequestBody UpdateUsersNicknameRequestDto updateUsersNicknameRequestDto,
+            HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        userService.updateUserNicknameRequest(accessToken, updateUsersNicknameRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_NICKNAME_SUCCESS));
     }
 }
