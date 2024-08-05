@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Confirmation Success</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        text-align: center;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 4rem;
+        margin-bottom: 2rem;
+      }
+      p {
+        font-size: 2rem;
+      }
+      span {
+        font-weight: bold;
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>이메일이 성공적으로 확인되었습니다!</h1>
+      <br /><br />
+      <p><span id="countdown">3</span>초 후에 창이 자동으로 닫힙니다.</p>
+    </div>
+
+    <script>
+      let countdownElement = document.getElementById("countdown");
+      let countdown = 3;
+
+      const intervalId = setInterval(() => {
+        countdown -= 1;
+        countdownElement.textContent = countdown;
+        if (countdown === 0) {
+          clearInterval(intervalId);
+          window.close();
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>

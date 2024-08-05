@@ -14,15 +14,15 @@ import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequest;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleRefreshTokenDto;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleUserInfoResponseDto;
-import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
-import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.service.UserAuthService;
-import com.sololiving.domain.vo.UserVo;
+import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.config.properties.GoogleOAuthProviderProperties;
 import com.sololiving.global.config.properties.GoogleOAuthRegistrationProperties;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.security.jwt.enums.ClientId;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +40,8 @@ public class GoogleOAuthService {
     @Value("${google.oauth2.state}")
     private String state;
 
-    public SignInResponseDto handleGoogleSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo, String oauth2UserId) {
+    public SignInResponseDto handleGoogleSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo,
+            String oauth2UserId) {
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
         UserType userType = UserType.GENERAL;
         ClientId clientId = ClientId.GOOGLE;
@@ -69,16 +70,19 @@ public class GoogleOAuthService {
         GoogleTokenResponseDto googleTokenResponseDto = fetchGoogleToken(authCode);
         validateTokenResponse(googleTokenResponseDto);
 
-        return (googleTokenResponseDto.getExpiresIn() <= 10) ? refreshToken(googleTokenResponseDto.getRefreshToken()).getAccessToken() : googleTokenResponseDto.getAccessToken();
+        return (googleTokenResponseDto.getExpiresIn() <= 10)
+                ? refreshToken(googleTokenResponseDto.getRefreshToken()).getAccessToken()
+                : googleTokenResponseDto.getAccessToken();
     }
 
-    private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId, String oauth2UserId) {
+    private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId,
+            String oauth2UserId) {
         return SignInResponseDto.builder()
-                                .expiresIn(expiresIn)
-                                .userType(userType)
-                                .clientId(clientId)
-                                .oauth2UserId(oauth2UserId)
-                                .build();
+                .expiresIn(expiresIn)
+                .userType(userType)
+                .clientId(clientId)
+                .oauth2UserId(oauth2UserId)
+                .build();
     }
 
     private void validateTokenResponse(GoogleTokenResponseDto googleTokenResponseDto) {
@@ -96,40 +100,40 @@ public class GoogleOAuthService {
 
     private GoogleTokenResponseDto fetchGoogleToken(String authCode) {
         return webClientBuilder.build()
-                               .post()
-                               .uri(googleOAuthProviderProperties.getTokenUri())
-                               .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                                                   .with("client_id", googleOAuthRegistrationProperties.getClientId())
-                                                   .with("client_secret", googleOAuthRegistrationProperties.getClientSecret())
-                                                   .with("redirect_uri", googleOAuthRegistrationProperties.getRedirectUri())
-                                                   .with("code", authCode)
-                                                   .with("state", state))
-                               .retrieve()
-                               .bodyToMono(GoogleTokenResponseDto.class)
-                               .block();
+                .post()
+                .uri(googleOAuthProviderProperties.getTokenUri())
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("client_id", googleOAuthRegistrationProperties.getClientId())
+                        .with("client_secret", googleOAuthRegistrationProperties.getClientSecret())
+                        .with("redirect_uri", googleOAuthRegistrationProperties.getRedirectUri())
+                        .with("code", authCode)
+                        .with("state", state))
+                .retrieve()
+                .bodyToMono(GoogleTokenResponseDto.class)
+                .block();
     }
 
     private GoogleUserInfoResponseDto fetchGoogleUserInfo(String accessToken) {
         return webClientBuilder.build()
-                               .get()
-                               .uri(googleOAuthProviderProperties.getAuthorizationUri())
-                               .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                               .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                               .retrieve()
-                               .bodyToMono(GoogleUserInfoResponseDto.class)
-                               .block();
+                .get()
+                .uri(googleOAuthProviderProperties.getAuthorizationUri())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(GoogleUserInfoResponseDto.class)
+                .block();
     }
 
     private GoogleRefreshTokenDto refreshToken(String refreshToken) {
         return webClientBuilder.build()
-                               .post()
-                               .uri(googleOAuthProviderProperties.getTokenUri())
-                               .body(BodyInserters.fromFormData("grant_type", "refresh_token")
-                                                   .with("client_id", googleOAuthRegistrationProperties.getClientId())
-                                                   .with("client_secret", googleOAuthRegistrationProperties.getClientSecret())
-                                                   .with("refresh_token", refreshToken))
-                               .retrieve()
-                               .bodyToMono(GoogleRefreshTokenDto.class)
-                               .block();
+                .post()
+                .uri(googleOAuthProviderProperties.getTokenUri())
+                .body(BodyInserters.fromFormData("grant_type", "refresh_token")
+                        .with("client_id", googleOAuthRegistrationProperties.getClientId())
+                        .with("client_secret", googleOAuthRegistrationProperties.getClientSecret())
+                        .with("refresh_token", refreshToken))
+                .retrieve()
+                .bodyToMono(GoogleRefreshTokenDto.class)
+                .block();
     }
 }

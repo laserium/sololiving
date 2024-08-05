@@ -15,17 +15,17 @@ import com.sololiving.domain.auth.dto.oauth.response.naver.NaverDeleteTokenDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverRefreshTokenDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverUserInfoResponseDto;
-import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
-import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.service.UserAuthService;
-import com.sololiving.domain.vo.UserVo;
+import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.config.properties.NaverOAuthProviderProperties;
 import com.sololiving.global.config.properties.NaverOAuthRegistrationProperties;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessException;
+import com.sololiving.global.security.jwt.enums.ClientId;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.util.OauthUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,8 @@ public class NaverOAuthService {
     @Value("${naver.oauth2.state}")
     private String state;
 
-    public SignInResponseDto handleNaverSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo, String oauth2UserId) {
+    public SignInResponseDto handleNaverSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo,
+            String oauth2UserId) {
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
         UserType userType = UserType.GENERAL;
         ClientId clientId = ClientId.NAVER;
@@ -56,9 +57,9 @@ public class NaverOAuthService {
         }
     }
 
-
     public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequest createOAuthTokenRequest) {
-        String oauth2UserId = NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+        String oauth2UserId = NAVER_ID_PREFIX
+                + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
         return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
@@ -66,7 +67,9 @@ public class NaverOAuthService {
         NaverTokenResponseDto naverTokenResponseDto = fetchNaverToken(authCode);
         validateTokenResponse(naverTokenResponseDto);
 
-        return (naverTokenResponseDto.getExpiresIn() <= 10) ? refreshToken(naverTokenResponseDto.getRefreshToken()).getAccessToken() : naverTokenResponseDto.getAccessToken();
+        return (naverTokenResponseDto.getExpiresIn() <= 10)
+                ? refreshToken(naverTokenResponseDto.getRefreshToken()).getAccessToken()
+                : naverTokenResponseDto.getAccessToken();
     }
 
     public String getUserInfoByToken(String accessToken) {
@@ -80,66 +83,67 @@ public class NaverOAuthService {
         validateDeleteTokenResponse(response);
     }
 
-    private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId, String oauth2UserId) {
+    private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId,
+            String oauth2UserId) {
         return SignInResponseDto.builder()
-                                .expiresIn(expiresIn)
-                                .userType(userType)
-                                .clientId(clientId)
-                                .oauth2UserId(oauth2UserId)
-                                .build();
+                .expiresIn(expiresIn)
+                .userType(userType)
+                .clientId(clientId)
+                .oauth2UserId(oauth2UserId)
+                .build();
     }
 
     private NaverTokenResponseDto fetchNaverToken(String authCode) {
         String encodedState = oauthUtil.encodeState(state);
         return webClientBuilder.build()
-                               .post()
-                               .uri(naverOAuthProviderProperties.getTokenUri())
-                               .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                                                   .with("client_id", naverOAuthRegistrationProperties.getClientId())
-                                                   .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
-                                                   .with("code", authCode)
-                                                   .with("state", encodedState))
-                               .retrieve()
-                               .bodyToMono(NaverTokenResponseDto.class)
-                               .block();
+                .post()
+                .uri(naverOAuthProviderProperties.getTokenUri())
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("client_id", naverOAuthRegistrationProperties.getClientId())
+                        .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
+                        .with("code", authCode)
+                        .with("state", encodedState))
+                .retrieve()
+                .bodyToMono(NaverTokenResponseDto.class)
+                .block();
     }
 
     private NaverUserInfoResponseDto fetchNaverUserInfo(String accessToken) {
         return webClientBuilder.build()
-                               .get()
-                               .uri(naverOAuthProviderProperties.getAuthorizationUri())
-                               .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                               .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                               .retrieve()
-                               .bodyToMono(NaverUserInfoResponseDto.class)
-                               .block();
+                .get()
+                .uri(naverOAuthProviderProperties.getAuthorizationUri())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(NaverUserInfoResponseDto.class)
+                .block();
     }
 
     private NaverRefreshTokenDto refreshToken(String refreshToken) {
         return webClientBuilder.build()
-                               .post()
-                               .uri(naverOAuthProviderProperties.getTokenUri())
-                               .body(BodyInserters.fromFormData("grant_type", "refresh_token")
-                                                   .with("client_id", naverOAuthRegistrationProperties.getClientId())
-                                                   .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
-                                                   .with("refresh_token", refreshToken))
-                               .retrieve()
-                               .bodyToMono(NaverRefreshTokenDto.class)
-                               .block();
+                .post()
+                .uri(naverOAuthProviderProperties.getTokenUri())
+                .body(BodyInserters.fromFormData("grant_type", "refresh_token")
+                        .with("client_id", naverOAuthRegistrationProperties.getClientId())
+                        .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
+                        .with("refresh_token", refreshToken))
+                .retrieve()
+                .bodyToMono(NaverRefreshTokenDto.class)
+                .block();
     }
 
     private NaverDeleteTokenDto deleteNaverToken(String accessToken) {
         return webClientBuilder.build()
-                               .post()
-                               .uri(naverOAuthProviderProperties.getTokenUri())
-                               .body(BodyInserters.fromFormData("grant_type", "delete")
-                                                   .with("client_id", naverOAuthRegistrationProperties.getClientId())
-                                                   .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
-                                                   .with("access_token", accessToken)
-                                                   .with("service_provider", "NAVER"))
-                               .retrieve()
-                               .bodyToMono(NaverDeleteTokenDto.class)
-                               .block();
+                .post()
+                .uri(naverOAuthProviderProperties.getTokenUri())
+                .body(BodyInserters.fromFormData("grant_type", "delete")
+                        .with("client_id", naverOAuthRegistrationProperties.getClientId())
+                        .with("client_secret", naverOAuthRegistrationProperties.getClientSecret())
+                        .with("access_token", accessToken)
+                        .with("service_provider", "NAVER"))
+                .retrieve()
+                .bodyToMono(NaverDeleteTokenDto.class)
+                .block();
     }
 
     private void validateTokenResponse(NaverTokenResponseDto naverTokenResponseDto) {

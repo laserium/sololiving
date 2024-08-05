@@ -3,7 +3,7 @@ package com.sololiving.global.util;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
-import com.sololiving.domain.auth.jwt.TokenProvider;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

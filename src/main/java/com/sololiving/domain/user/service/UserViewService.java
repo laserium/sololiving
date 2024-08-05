@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.sololiving.domain.auth.jwt.TokenProvider;
 import com.sololiving.domain.user.dto.response.ViewUserListResponseDto;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserViewMapper;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,12 +28,13 @@ public class UserViewService {
 
     private boolean validateViewUserList(String accessToken) {
         String userId = tokenProvider.getUserId(accessToken);
-        if(userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
+        if (userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
             return true;
-        } else throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
+        } else
+            throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
 
     }
-    
+
     private List<ViewUserListResponseDto> responseViewUserList() {
         return userViewMapper.findUserList();
     }

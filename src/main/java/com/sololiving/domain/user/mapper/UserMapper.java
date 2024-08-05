@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.sololiving.domain.user.enums.Status;
-import com.sololiving.domain.vo.UserVo;
+import com.sololiving.domain.user.vo.UserVo;
 
 @Mapper
 public interface UserMapper {
@@ -16,4 +16,6 @@ public interface UserMapper {
 
     // 회원 상태 변경
     void updateUserStatus(@Param("userId") String userId, @Param("status") Status status);
+
+    void updateUserEmail(@Param("userId") String userId, @Param("email") String email);
 }

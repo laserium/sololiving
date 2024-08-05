@@ -12,15 +12,15 @@ import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
-import com.sololiving.domain.auth.dto.email.response.EmailResponseDto;
-import com.sololiving.domain.auth.dto.token.response.CreateTokenResponse;
 import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
-import com.sololiving.domain.auth.exception.token.TokenErrorCode;
-import com.sololiving.domain.auth.service.AuthEmailService;
 import com.sololiving.domain.auth.service.AuthService;
+import com.sololiving.domain.email.dto.response.EmailResponseDto;
+import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
+import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.util.CookieService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserAuthService userAuthService;
-    private final AuthEmailService authEmailService;
+    private final EmailService authEmailService;
     private final CookieService cookieService;
 
     @PostMapping("/signin")

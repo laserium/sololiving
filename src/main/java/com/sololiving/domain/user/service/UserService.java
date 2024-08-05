@@ -6,17 +6,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
-import com.sololiving.domain.auth.jwt.TokenProvider;
-import com.sololiving.domain.auth.service.TokenService;
+import com.sololiving.domain.email.dto.response.EmailResponseDto;
+import com.sololiving.domain.email.service.EmailService;
+import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
+import com.sololiving.domain.user.dto.request.PatchUsersEmailRequestDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.mapper.UserAuthMapper;
 import com.sololiving.domain.user.mapper.UserMapper;
-import com.sololiving.domain.vo.UserVo;
+import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.security.jwt.service.TokenProvider;
+import com.sololiving.global.security.jwt.service.TokenService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +35,8 @@ public class UserService {
     private final TokenService tokenService;
     private final TokenProvider tokenProvider;
     private final UserMapper userMapper;
+    private final EmailService authEmailService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     // 회원가입
     public void signUp(SignUpRequestDto signUpRequestDto) {
@@ -68,26 +72,60 @@ public class UserService {
 
     // 회원탈퇴
     @Transactional
-    public void deleteUser(String accessToken, String userId) {
-        if(userAuthService.validateUserIdwithAccessToken(accessToken)) {
+    public void deleteUser(String accessToken) {
+        if (userAuthService.validateUserIdwithAccessToken(accessToken)) {
+            String userId = tokenProvider.getUserId(accessToken);
             userMapper.deleteByUserId(userId);
-        } else throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        } else
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
     }
 
     // 회원 상태 변경
     @Transactional
-    public void updateStatus(String accessToken, String userId, Status status) {
+    public void updateStatus(String accessToken, Status status) {
         tokenService.validateAccessToken(accessToken);
-        if(userAuthService.isUserIdAvailable(userId)) {
-            throw new ErrorException(UserErrorCode.ID_ALREADY_EXISTS);
+        String userId = tokenProvider.getUserId(accessToken);
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
         userAuthService.validateStatus(status);
-        String adminId = tokenProvider.getUserId(accessToken);
-        if(userAuthService.findUserTypeByUserId(adminId) == UserType.ADMIN) {
+        if (userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
             userMapper.updateUserStatus(userId, status);
-        } else throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
+        } else
+            throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
     }
 
+    // 유저 이메일 변경
+    public void sendUpdateNewEmailRequest(String accessToken, PatchUsersEmailRequestDto patchUsersEmailRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        String email = patchUsersEmailRequestDto.getEmail();
+        if (userAuthService.isUserEmailAvailable(email)) {
+            EmailResponseDto emailResponseDto = EmailResponseDto.builder()
+                    .to(email)
+                    .subject("[홀로서기] 새로운 이메일 설정 확인 메일입니다.")
+                    .build();
+            authEmailService.sendMailUpdateEmail(email, userId, emailResponseDto, "update-email");
+        } else {
+            throw new ErrorException(UserErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+    }
 
-    
+    public void confirmEmail(EmailVerificationTokenVo emailVerificationTokenVo) {
+        String userId = emailVerificationTokenVo.getUserId();
+        String email = emailVerificationTokenVo.getNewEmail();
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        } else {
+            updateUserEmail(userId, email);
+        }
+    }
+
+    @Transactional
+    private void updateUserEmail(String userId, String email) {
+        userMapper.updateUserEmail(userId, email);
+    }
+
 }
