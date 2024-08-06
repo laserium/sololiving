@@ -19,7 +19,8 @@ public enum UserErrorCode implements ErrorCode {
     USER_TYPE_ERROR_NO_PERMISSION("USER_E009", "해당하는 유저는 권한이 없습니다."),
     NO_USER_ID_REQUEST("USER_E010", "유저아이디 값이 정확하게 요청되지 않았습니다."),
     NO_USER_STATUS_REQUEST("USER_E011", "유저 상태 값이 정확하게 요청되지 않았습니다."),
-    USER_NICKNAME_IS_NULL("USER_E012", "유저 닉네임 값이 없습니다(NULL)");
+    USER_NICKNAME_IS_NULL("USER_E012", "유저 닉네임 값이 없습니다(NULL)"),
+    USER_GENDER_IS_NULL("USER_E013", "유저 성별 값이 없습니다(NULL)");
 
     private final String code;
     private final String message;

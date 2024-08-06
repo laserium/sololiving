@@ -24,13 +24,20 @@ repositories {
 }
 
 dependencies {
-	// STARTER DEFAULT
+	// JDBC
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+	// SECURITY
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// WEB
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	// MYBATIS
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+	// BATCH
+	// implementation 'org.springframework.boot:spring-boot-starter-batch'
 
 	// SSH Library
 	implementation 'com.jcraft:jsch:0.1.55'
@@ -48,8 +55,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
 	// Configuration Properties
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	// WebFlux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -69,11 +76,18 @@ dependencies {
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
+	// LOMBOK
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// MY SQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
+
+	// DEVTOOL
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// TEST
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'

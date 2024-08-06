@@ -17,6 +17,7 @@ import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.user.service.UserAuthService;
+import com.sololiving.domain.user.service.UserService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
@@ -33,6 +34,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserAuthService userAuthService;
+    private final UserService userService;
     private final EmailService authEmailService;
     private final CookieService cookieService;
 
@@ -42,6 +44,7 @@ public class AuthController {
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
         SignInResponseDto signInResponse = authService.createSignInResponse(signInRequestDto, tokenResponse);
+        userService.setLastSignInAt(signInRequestDto.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .header("Set-Cookie", accessTokenCookie.toString())

@@ -28,7 +28,7 @@ public class EmailController {
     @ResponseBody
     public ResponseEntity<?> confirmEmail(@PathVariable("token") String token) {
         EmailVerificationTokenVo verificationToken = emailVerificationService.getVerificationToken(token);
-        userService.confirmEmail(verificationToken);
+        userService.updateUserEmail(verificationToken);
         emailVerificationService.deleteVerificationToken(verificationToken);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create("/email/confirmation-success"))

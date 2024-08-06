@@ -46,7 +46,7 @@ public class AuthService {
             if (refreshTokenVo.getExpiresIn().isAfter(LocalDateTime.now())) {
                 refreshToken = refreshTokenVo.getRefreshToken();
             } else
-                refreshToken = refreshTokenVo.getRefreshToken();
+                refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
         } else {
             refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
         }

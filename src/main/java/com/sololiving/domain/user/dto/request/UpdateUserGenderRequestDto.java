@@ -1,5 +1,7 @@
 package com.sololiving.domain.user.dto.request;
 
+import com.sololiving.domain.user.enums.Gender;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUsersNicknameRequestDto {
-    private String nickname;
+public class UpdateUserGenderRequestDto {
+    private Gender gender;
 }

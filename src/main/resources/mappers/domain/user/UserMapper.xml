@@ -19,6 +19,12 @@
         WHERE user_id = #{userId}
     </delete>
 
+    <update id="updateUserLastSignInAt" parameterType="string">
+        UPDATE USER
+        SET last_sign_in_at = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
     <update id="updateUserStatus" parameterType="map">
         UPDATE USER
         SET status = #{status}
@@ -34,6 +40,12 @@
     <update id="updateUserNickname" parameterType="map">
         UPDATE USER
         SET nickname = #{nickname}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserGender" parameterType="map">
+        UPDATE USER
+        SET gender = #{gender}
         WHERE user_id = #{userId}
     </update>
 

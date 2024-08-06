@@ -10,8 +10,9 @@ import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
-import com.sololiving.domain.user.dto.request.UpdateUsersEmailRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUsersNicknameRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserGenderRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserNicknameRequestDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
@@ -85,6 +86,11 @@ public class UserService {
         userMapper.deleteByUserId(userId);
     }
 
+    // 로그인 시 최근 로그인 시간 변경
+    public void setLastSignInAt(String userId) {
+        userMapper.updateUserLastSignInAt(userId);
+    }
+
     // 회원 상태 변경
     @Transactional
     public void updateStatus(String accessToken, Status status) {
@@ -99,7 +105,7 @@ public class UserService {
     }
 
     // 유저 이메일 변경
-    public void sendUpdateNewEmailRequest(String accessToken, UpdateUsersEmailRequestDto patchUsersEmailRequestDto) {
+    public void sendUpdateNewEmailRequest(String accessToken, UpdateUserEmailRequestDto patchUsersEmailRequestDto) {
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
         String email = patchUsersEmailRequestDto.getEmail();
@@ -115,37 +121,36 @@ public class UserService {
     }
 
     // 이메일 수정 후 저장
-    public void confirmEmail(EmailVerificationTokenVo emailVerificationTokenVo) {
+    public void updateUserEmail(EmailVerificationTokenVo emailVerificationTokenVo) {
         String userId = emailVerificationTokenVo.getUserId();
         String email = emailVerificationTokenVo.getNewEmail();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         } else {
-            updateUserEmail(userId, email);
+            updateUserEmailInDb(userId, email);
         }
     }
 
     // 회원 이메일 - 수정
     @Transactional
-    private void updateUserEmail(String userId, String email) {
+    private void updateUserEmailInDb(String userId, String email) {
         userMapper.updateUserEmail(userId, email);
     }
 
     // 유저 닉네임 변경
-    public void updateUserNicknameRequest(String accessToken,
-            UpdateUsersNicknameRequestDto updateUsersNicknameRequestDto) {
+    public void updateUserNickname(String accessToken,
+            UpdateUserNicknameRequestDto updateUsersNicknameRequestDto) {
         String userId = tokenProvider.getUserId(accessToken);
         String nickname = updateUsersNicknameRequestDto.getNickname();
         validateUserId(userId);
         if (nickname == null) {
             throw new ErrorException(UserErrorCode.USER_NICKNAME_IS_NULL);
         }
-        updateUserNickname(userId, nickname);
+        updateUserNicknameInDb(userId, nickname);
     }
 
-    // 회원 닉네임 - 수정
     @Transactional
-    private void updateUserNickname(String userId, String nickname) {
+    private void updateUserNicknameInDb(String userId, String nickname) {
         userMapper.updateUserNickname(userId, nickname);
     }
 
@@ -154,4 +159,21 @@ public class UserService {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
     }
+
+    // 회원 성별 변경
+    public void updateUserGender(String accessToken, UpdateUserGenderRequestDto updateUserGenderRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        Gender gender = updateUserGenderRequestDto.getGender();
+        validateUserId(userId);
+        if (gender == null) {
+            throw new ErrorException(UserErrorCode.USER_GENDER_IS_NULL);
+        }
+        updateUserGenderInDb(userId, gender);
+    }
+
+    @Transactional
+    private void updateUserGenderInDb(String userId, Gender gender) {
+        userMapper.updateUserGender(userId, gender);
+    }
+
 }
