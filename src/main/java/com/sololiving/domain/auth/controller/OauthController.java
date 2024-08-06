@@ -17,6 +17,7 @@ import com.sololiving.domain.auth.service.KakaoOAuthService;
 import com.sololiving.domain.auth.service.NaverOAuthService;
 import com.sololiving.domain.auth.service.OAuthService;
 import com.sololiving.domain.user.vo.UserVo;
+import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.dto.response.AuthTokenResponseDto;
 
@@ -35,6 +36,7 @@ public class OauthController {
 
     @PostMapping("/naver/token")
     public ResponseEntity<?> postNaverToken(@RequestBody CreateOAuthTokenRequest createOAuthTokenRequest) {
+        String oauth2UserId = naverOAuthService.getOauth2UserId(createOAuthTokenRequest);
         UserVo userVo = naverOAuthService.getUserVoFromOAuthToken(createOAuthTokenRequest);
         // 로그인 처리
         if (userVo != null) {
@@ -49,16 +51,18 @@ public class OauthController {
                     .body(responseBody);
             // 회원가입 처리
         } else {
-            SuccessResponse successResponse = SuccessResponse.builder()
-                    .code((AuthSuccessCode.OAUTH2_SUCCESS).getCode())
-                    .message((AuthSuccessCode.OAUTH2_SUCCESS).getMessage())
+            OauthUserExistenceResponseDto oauthUserExistenceResponseDto = OauthUserExistenceResponseDto.builder()
+                    .isOauthUser("true")
+                    .oauth2UserId(oauth2UserId)
                     .build();
-            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(oauthUserExistenceResponseDto);
         }
     }
 
     @PostMapping("/kakao/token")
     public ResponseEntity<?> postKakaoToken(@RequestBody CreateOAuthTokenRequest createOAuthTokenRequest) {
+        String oauth2UserId = kakaoOAuthService.getOauth2UserId(createOAuthTokenRequest);
         UserVo userVo = kakaoOAuthService.getUserVoFromOAuthToken(createOAuthTokenRequest);
         // 로그인 처리
         if (userVo != null) {
@@ -73,11 +77,11 @@ public class OauthController {
                     .body(responseBody);
             // 회원가입 처리
         } else {
-            SuccessResponse successResponse = SuccessResponse.builder()
-                    .code((AuthSuccessCode.OAUTH2_SUCCESS).getCode())
-                    .message((AuthSuccessCode.OAUTH2_SUCCESS).getMessage())
+            OauthUserExistenceResponseDto oauthUserExistenceResponseDto = OauthUserExistenceResponseDto.builder()
+                    .isOauthUser("true")
+                    .oauth2UserId(oauth2UserId)
                     .build();
-            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(oauthUserExistenceResponseDto);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.sololiving.domain.user.mapper;
 
+import java.time.LocalDate;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +31,13 @@ public interface UserMapper {
 
     // 회원 성별 변경
     void updateUserGender(@Param("userId") String userId, @Param("gender") Gender gender);
+
+    // 회원 주소 변경
+    void updateUserAddress(@Param("userId") String userId, @Param("address") String address);
+
+    // 회원 생일 변경
+    void updateUserBirth(@Param("userId") String userId, @Param("birth") LocalDate birth);
+
+    // 회원 비밀번호 변경
+    void updateUserPassword(@Param("userId") String userId, @Param("password") String password);
 }

@@ -1,5 +1,6 @@
 package com.sololiving.domain.user.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,9 +11,12 @@ import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
+import com.sololiving.domain.user.dto.request.UpdateUserAddressRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserBirthRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserEmailRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserGenderRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserNicknameRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserPasswordRequestDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
@@ -144,7 +148,7 @@ public class UserService {
         String nickname = updateUsersNicknameRequestDto.getNickname();
         validateUserId(userId);
         if (nickname == null) {
-            throw new ErrorException(UserErrorCode.USER_NICKNAME_IS_NULL);
+            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
         }
         updateUserNicknameInDb(userId, nickname);
     }
@@ -166,7 +170,7 @@ public class UserService {
         Gender gender = updateUserGenderRequestDto.getGender();
         validateUserId(userId);
         if (gender == null) {
-            throw new ErrorException(UserErrorCode.USER_GENDER_IS_NULL);
+            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
         }
         updateUserGenderInDb(userId, gender);
     }
@@ -176,4 +180,51 @@ public class UserService {
         userMapper.updateUserGender(userId, gender);
     }
 
+    // 회원 주소 변경
+    public void updateUserAddress(String accessToken, UpdateUserAddressRequestDto updateUserAddressRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        String address = updateUserAddressRequestDto.getAddress();
+        validateUserId(userId);
+        if (address == null) {
+            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        }
+        updateUserAddressInDb(userId, address);
+    }
+
+    @Transactional
+    private void updateUserAddressInDb(String userId, String address) {
+        userMapper.updateUserAddress(userId, address);
+    }
+
+    // 회원 생일 변경
+    public void updateUserBirth(String accessToken, UpdateUserBirthRequestDto updateUserBirthRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        LocalDate birth = updateUserBirthRequestDto.getBirth();
+        validateUserId(userId);
+        if (birth == null) {
+            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        }
+        updateUserBirthInDb(userId, birth);
+    }
+
+    @Transactional
+    private void updateUserBirthInDb(String userId, LocalDate birth) {
+        userMapper.updateUserBirth(userId, birth);
+    }
+
+    // 회원 비밀번호 변경
+    public void updateUserPassword(String accessToken, UpdateUserPasswordRequestDto updateUserPasswordRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        String password = updateUserPasswordRequestDto.getPassword();
+        validateUserId(userId);
+        if (password == null) {
+            new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        }
+        updateUserPasswordInDb(userId, bCryptPasswordEncoder.encode(password));
+    }
+
+    @Transactional
+    private void updateUserPasswordInDb(String userId, String password) {
+        userMapper.updateUserPassword(userId, password);
+    }
 }

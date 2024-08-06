@@ -63,6 +63,10 @@ public class NaverOAuthService {
         return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
+    public String getOauth2UserId(CreateOAuthTokenRequest createOAuthTokenRequest) {
+        return NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+    }
+
     public String getTokenByCode(String authCode) {
         NaverTokenResponseDto naverTokenResponseDto = fetchNaverToken(authCode);
         validateTokenResponse(naverTokenResponseDto);

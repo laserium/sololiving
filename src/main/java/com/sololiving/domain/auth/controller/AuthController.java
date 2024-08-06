@@ -20,6 +20,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.service.UserService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.util.CookieService;
@@ -52,7 +53,7 @@ public class AuthController {
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<?> postSignOut(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<SuccessResponse> postSignOut(HttpServletRequest httpServletRequest) {
         String refreshTokenValue = cookieService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
@@ -68,7 +69,7 @@ public class AuthController {
     }
 
     @PostMapping("/users/id-recover")
-    public ResponseEntity<?> postUsersIdRecover(@RequestBody IdRecoverRequestDto idRecoverRequestDto) {
+    public ResponseEntity<SuccessResponse> postUsersIdRecover(@RequestBody IdRecoverRequestDto idRecoverRequestDto) {
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                 .to(idRecoverRequestDto.getEmail())
                 .subject("[홀로서기] 아이디 찾기 인증 메일입니다.")
@@ -80,7 +81,8 @@ public class AuthController {
     }
 
     @PostMapping("/users/password-reset")
-    public ResponseEntity<?> postUsersPasswordReset(@RequestBody PasswordResetRequestDto passwordResetRequestDto) {
+    public ResponseEntity<SuccessResponse> postUsersPasswordReset(
+            @RequestBody PasswordResetRequestDto passwordResetRequestDto) {
 
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                 .to(userAuthService.validateUserIdAndEmail(passwordResetRequestDto.getUserId(),

@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverUserInfoResponseDto.Response;
+import com.sololiving.domain.user.dto.request.UpdateUserAddressRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserBirthRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserEmailRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserGenderRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserNicknameRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserPasswordRequestDto;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserService;
@@ -60,7 +63,8 @@ public class UserController {
 
     // 상태변경
     @PatchMapping("/status/{status}")
-    public ResponseEntity<?> updateUserStatus(@PathVariable Status status, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<SuccessResponse> updateUserStatus(@PathVariable Status status,
+            HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         userService.updateStatus(accessToken, status);
         if (status == Status.ACTIVE) {
@@ -76,7 +80,8 @@ public class UserController {
 
     // 유저 이메일 변경
     @PatchMapping("/email")
-    public ResponseEntity<?> updateUserEmail(@RequestBody UpdateUserEmailRequestDto patchUsersEmailRequestDto,
+    public ResponseEntity<SuccessResponse> updateUserEmail(
+            @RequestBody UpdateUserEmailRequestDto patchUsersEmailRequestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         userService.sendUpdateNewEmailRequest(accessToken, patchUsersEmailRequestDto);
@@ -86,22 +91,56 @@ public class UserController {
 
     // 유저 닉네임 변경
     @PatchMapping("/nickname")
-    public ResponseEntity<?> updateUserNickname(
+    public ResponseEntity<SuccessResponse> updateUserNickname(
             @RequestBody UpdateUserNicknameRequestDto updateUsersNicknameRequestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         userService.updateUserNickname(accessToken, updateUsersNicknameRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_NICKNAME_SUCCESS));
+                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
     }
 
     // 유저 성별 변경
     @PatchMapping("/gender")
-    public ResponseEntity<?> updateUserGender(@RequestBody UpdateUserGenderRequestDto updateUserGenderRequestDto,
+    public ResponseEntity<SuccessResponse> updateUserGender(
+            @RequestBody UpdateUserGenderRequestDto updateUserGenderRequestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         userService.updateUserGender(accessToken, updateUserGenderRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_GENDER_SUCCESS));
+                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
+    }
+
+    // 유저 주소 변경
+    @PatchMapping("/address")
+    public ResponseEntity<SuccessResponse> updateUserAddress(
+            @RequestBody UpdateUserAddressRequestDto updateUserAddressRequestDto,
+            HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        userService.updateUserAddress(accessToken, updateUserAddressRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
+    }
+
+    // 유저 주소 변경
+    @PatchMapping("/birth")
+    public ResponseEntity<SuccessResponse> updateUserBirth(
+            @RequestBody UpdateUserBirthRequestDto updateUserBirthRequestDto,
+            HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        userService.updateUserBirth(accessToken, updateUserBirthRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
+    }
+
+    // 유저 비밀번호 변경
+    @PatchMapping("/password")
+    public ResponseEntity<SuccessResponse> updateUserPassword(
+            @RequestBody UpdateUserPasswordRequestDto updateUserPasswordRequestDto,
+            HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        userService.updateUserPassword(accessToken, updateUserPasswordRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
     }
 }

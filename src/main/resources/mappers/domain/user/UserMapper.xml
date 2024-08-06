@@ -49,4 +49,22 @@
         WHERE user_id = #{userId}
     </update>
 
+    <update id="updateUserAddress" parameterType="map">
+        UPDATE USER
+        SET address = #{address}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserBirth" parameterType="map">
+        UPDATE USER
+        SET birth = #{birth}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserPassword" parameterType="map">
+        UPDATE USER
+        SET user_pwd = #{password}
+        WHERE user_id = #{userId}
+    </update>
+
 </mapper>

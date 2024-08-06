@@ -56,6 +56,10 @@ public class KakaoOAuthService {
         return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
+    public String getOauth2UserId(CreateOAuthTokenRequest createOAuthTokenRequest) {
+        return KAKAO_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+    }
+
     public String getTokenByCode(String authCode) {
         KakaoTokenResponseDto kakaoTokenResponseDto = fetchKakaoToken(authCode);
         validateTokenResponse(kakaoTokenResponseDto);
