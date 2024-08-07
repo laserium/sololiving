@@ -26,7 +26,7 @@ public class EmailService {
     private final UserAuthService userAuthService;
     private final EmailVerificationService emailVerificationService;
 
-    @Value("${app.url}")
+    @Value("${sololiving.app.url}")
     private String url;
 
     // 임시 비밀번호 설정 메일

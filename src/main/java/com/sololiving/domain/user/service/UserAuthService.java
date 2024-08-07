@@ -97,6 +97,15 @@ public class UserAuthService {
             throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
     }
 
+    // 아이디로 비밀번호 찾기
+    public String findPasswordByUserId(String userId) {
+        String password = userAuthMapper.findPasswordByUserId(userId);
+        if (password != null) {
+            return password;
+        } else
+            throw new ErrorException(UserErrorCode.USER_PWD_NOT_FOUND);
+    }
+
     // 이메일로 아이디 찾기
     public String findUserIdByEmail(String email) {
         String userId = userAuthMapper.findUserIdByEmail(email);

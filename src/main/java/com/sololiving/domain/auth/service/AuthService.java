@@ -89,8 +89,8 @@ public class AuthService {
     }
 
     // 비밀번호 검증
-    private void verifyPassword(UserVo userVo, String password) {
-        if (!bCryptPasswordEncoder.matches(password, userVo.getUserPwd())) {
+    public void verifyPassword(String passwordDb, String passwordInput) {
+        if (!bCryptPasswordEncoder.matches(passwordInput, passwordDb)) {
             throw new ErrorException(AuthErrorCode.PASSWORD_INCORRECT);
         }
     }
@@ -98,7 +98,7 @@ public class AuthService {
     // 아이디와 비밀번호 체크
     private UserVo checkIdAndPwd(SignInRequestDto signInRequestDto) {
         UserVo userVo = userAuthService.findByUserId(signInRequestDto.getUserId());
-        verifyPassword(userVo, signInRequestDto.getUserPwd());
+        verifyPassword(userVo.getUserPwd(), signInRequestDto.getUserPwd());
         return userVo;
     }
 

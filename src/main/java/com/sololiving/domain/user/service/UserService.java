@@ -8,15 +8,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
+import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
 import com.sololiving.domain.user.dto.request.UpdateUserAddressRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserBirthRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserContactRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserEmailRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserGenderRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserNicknameRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserPasswordRequestDto;
+import com.sololiving.domain.user.dto.request.ValidateUpdateUserContactRequestDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
@@ -26,6 +29,8 @@ import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.jwt.service.TokenService;
+import com.sololiving.global.security.sms.exception.SmsErrorCode;
+import com.sololiving.global.security.sms.service.SmsService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +45,9 @@ public class UserService {
     private final TokenService tokenService;
     private final TokenProvider tokenProvider;
     private final UserMapper userMapper;
-    private final EmailService authEmailService;
+    private final EmailService emailService;
+    private final SmsService smsService;
+    private final AuthService authService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 회원가입
@@ -118,7 +125,7 @@ public class UserService {
                     .to(email)
                     .subject("[홀로서기] 새로운 이메일 설정 확인 메일입니다.")
                     .build();
-            authEmailService.sendMailUpdateEmail(email, userId, emailResponseDto, "update-email");
+            emailService.sendMailUpdateEmail(email, userId, emailResponseDto, "update-email");
         } else {
             throw new ErrorException(UserErrorCode.EMAIL_ALREADY_EXISTS);
         }
@@ -139,6 +146,33 @@ public class UserService {
     @Transactional
     private void updateUserEmailInDb(String userId, String email) {
         userMapper.updateUserEmail(userId, email);
+    }
+
+    // 회원 연락처 변경 전 인증 메일 전송
+    public String validateUpdateUserContact(String accessToken,
+            ValidateUpdateUserContactRequestDto validateUpdateUserContactRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        String contact = validateUpdateUserContactRequestDto.getContact();
+        validateUserId(userId);
+        if (contact == null) {
+            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        }
+        return contact;
+    }
+
+    public void updateUserContact(String accessToken, UpdateUserContactRequestDto updateUserContactRequestDto) {
+        String userId = tokenProvider.getUserId(accessToken);
+        validateUserId(userId);
+        String contact = updateUserContactRequestDto.getContact();
+        boolean isCorrect = smsService.checkSms(contact, updateUserContactRequestDto.getCode());
+        if (isCorrect) {
+            updateUserContactInDb(userId, contact);
+        } else
+            throw new ErrorException(SmsErrorCode.CERTIFICATION_NUMBER_INCORRECT);
+    }
+
+    private void updateUserContactInDb(String userId, String contact) {
+        userMapper.updateUserContact(userId, contact);
     }
 
     // 유저 닉네임 변경
@@ -215,16 +249,20 @@ public class UserService {
     // 회원 비밀번호 변경
     public void updateUserPassword(String accessToken, UpdateUserPasswordRequestDto updateUserPasswordRequestDto) {
         String userId = tokenProvider.getUserId(accessToken);
-        String password = updateUserPasswordRequestDto.getPassword();
         validateUserId(userId);
-        if (password == null) {
+        String oldPassword = userAuthService.findPasswordByUserId(userId);
+        String password = updateUserPasswordRequestDto.getPassword();
+        authService.verifyPassword(oldPassword, password);
+        String newPassword = updateUserPasswordRequestDto.getNewPassword();
+        if (newPassword == null) {
             new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
         }
-        updateUserPasswordInDb(userId, bCryptPasswordEncoder.encode(password));
+        updateUserPasswordInDb(userId, bCryptPasswordEncoder.encode(newPassword));
     }
 
     @Transactional
     private void updateUserPasswordInDb(String userId, String password) {
         userMapper.updateUserPassword(userId, password);
     }
+
 }

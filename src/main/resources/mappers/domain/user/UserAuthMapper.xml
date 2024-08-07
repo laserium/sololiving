@@ -38,6 +38,12 @@
         WHERE email = #{email}
     </select>
 
+    <select id="findPasswordByUserId" parameterType="string" resultType="string">
+        SELECT user_pwd
+        FROM USER
+        WHERE user_id = #{userId}
+    </select>
+
     <select id="findEmailByUserId" parameterType="string" resultType="string">
         SELECT email
         FROM USER

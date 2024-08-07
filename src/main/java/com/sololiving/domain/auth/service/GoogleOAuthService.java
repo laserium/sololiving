@@ -37,7 +37,7 @@ public class GoogleOAuthService {
 
     private static final String GOOGLE_ID_PREFIX = "GOOGLE_";
 
-    @Value("${google.oauth2.state}")
+    @Value("${sololiving.google.oauth2.state}")
     private String state;
 
     public SignInResponseDto handleGoogleSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo,

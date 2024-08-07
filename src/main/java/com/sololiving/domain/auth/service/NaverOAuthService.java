@@ -42,7 +42,7 @@ public class NaverOAuthService {
 
     private static final String NAVER_ID_PREFIX = "NAVER_";
 
-    @Value("${naver.oauth2.state}")
+    @Value("${sololiving.naver.oauth2.state}")
     private String state;
 
     public SignInResponseDto handleNaverSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo,

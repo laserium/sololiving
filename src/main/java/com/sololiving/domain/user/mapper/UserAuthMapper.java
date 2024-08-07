@@ -22,6 +22,8 @@ public interface UserAuthMapper {
 
     UserVo findByOauth2UserId(@Param("oauth2UserId") String oauth2UserId);
 
+    String findPasswordByUserId(@Param("userId") String userId);
+
     String findEmailByUserId(@Param("userId") String userId);
 
     String findUserIdByEmail(@Param("email") String email);

@@ -26,6 +26,9 @@ public interface UserMapper {
     // 회원 이메일 변경
     void updateUserEmail(@Param("userId") String userId, @Param("email") String email);
 
+    // 회원 이메일 변경
+    void updateUserContact(@Param("userId") String userId, @Param("contact") String email);
+
     // 회원 닉네임 변경
     void updateUserNickname(@Param("userId") String userId, @Param("nickname") String email);
 

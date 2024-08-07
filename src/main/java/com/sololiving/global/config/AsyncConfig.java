@@ -11,6 +11,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class AsyncConfig {
 
+    // 로그 출력용 스레드 풀 구성
+    @Bean(name = "logTaskExecutor")
+    public Executor logTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2); // 스레드 풀의 기본 크기
+        executor.setMaxPoolSize(5); // 최대 스레드 수
+        executor.setQueueCapacity(100); // 큐 대기열 크기
+        executor.setThreadNamePrefix("LogThread-"); // 스레드 이름 접두사
+        executor.initialize();
+        return executor;
+    }
+
     // 이메일 발송용 스레드 풀 구성
     @Bean(name = "emailTaskExecutor")
     public Executor emailTaskExecutor() {
@@ -23,14 +35,14 @@ public class AsyncConfig {
         return executor;
     }
 
-    // 로그 출력용 스레드 풀 구성
-    @Bean(name = "logTaskExecutor")
-    public Executor logTaskExecutor() {
+    // 문자 발송용 스레드 풀 구성
+    @Bean(name = "smsTaskExecutor")
+    public Executor smsTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2); // 스레드 풀의 기본 크기
-        executor.setMaxPoolSize(5); // 최대 스레드 수
-        executor.setQueueCapacity(100); // 큐 대기열 크기
-        executor.setThreadNamePrefix("LogThread-"); // 스레드 이름 접두사
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("SmsThread-");
         executor.initialize();
         return executor;
     }
