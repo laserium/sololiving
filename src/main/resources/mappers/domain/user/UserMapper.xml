@@ -6,7 +6,7 @@
 <mapper namespace="com.sololiving.domain.user.mapper.UserMapper">
 
     <!--회원가입-->
-    <insert id="insertUser" parameterType="com.sololiving.domain.vo.UserVo">
+    <insert id="insertUser" parameterType="com.sololiving.domain.user.vo.UserVo">
         INSERT INTO USER (user_id, user_pwd, oauth2_user_id, nickname, contact, email, gender, address, birth, status, followers_cnt, following_cnt, created_at, updated_at, user_type, last_sign_in_at, last_activity_at)
         VALUES (#{userId}, #{userPwd}, #{oauth2UserId}, #{nickname}, #{contact}, #{email}, #{gender}, #{address}, #{birth}, #{status}, #{followersCnt}, #{followingCnt}, #{createdAt}, #{updatedAt}, #{userType}, #{lastSignInAt}, #{lastActivityAt})
     </insert>
@@ -19,9 +19,57 @@
         WHERE user_id = #{userId}
     </delete>
 
+    <update id="updateUserLastSignInAt" parameterType="string">
+        UPDATE USER
+        SET last_sign_in_at = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
     <update id="updateUserStatus" parameterType="map">
         UPDATE USER
         SET status = #{status}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserEmail" parameterType="map">
+        UPDATE USER
+        SET email = #{email}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserContact" parameterType="map">
+        UPDATE USER
+        SET contact = #{contact}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserNickname" parameterType="map">
+        UPDATE USER
+        SET nickname = #{nickname}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserGender" parameterType="map">
+        UPDATE USER
+        SET gender = #{gender}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserAddress" parameterType="map">
+        UPDATE USER
+        SET address = #{address}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserBirth" parameterType="map">
+        UPDATE USER
+        SET birth = #{birth}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserPassword" parameterType="map">
+        UPDATE USER
+        SET user_pwd = #{password}
         WHERE user_id = #{userId}
     </update>
 

@@ -2,9 +2,8 @@ package com.sololiving.domain.auth.dto.auth.response;
 
 import java.time.Duration;
 
-
-import com.sololiving.domain.auth.enums.ClientId;
 import com.sololiving.domain.user.enums.UserType;
+import com.sololiving.global.security.jwt.enums.ClientId;
 
 import lombok.Builder;
 import lombok.Getter;

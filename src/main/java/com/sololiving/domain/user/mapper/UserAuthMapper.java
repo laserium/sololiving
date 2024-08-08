@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.sololiving.domain.user.enums.UserType;
-import com.sololiving.domain.vo.UserVo;
+import com.sololiving.domain.user.vo.UserVo;
 
 @Mapper
 public interface UserAuthMapper {
@@ -21,6 +21,8 @@ public interface UserAuthMapper {
     UserVo findByUserId(@Param("userId") String userId);
 
     UserVo findByOauth2UserId(@Param("oauth2UserId") String oauth2UserId);
+
+    String findPasswordByUserId(@Param("userId") String userId);
 
     String findEmailByUserId(@Param("userId") String userId);
 
