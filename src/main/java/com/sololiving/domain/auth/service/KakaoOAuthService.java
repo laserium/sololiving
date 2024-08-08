@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
-import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequest;
+import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequestDto;
 import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoRequestTokenRefreshDto;
 import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.kakao.KakaoUserInfoResponseDto;
@@ -38,8 +38,7 @@ public class KakaoOAuthService {
 
     private static final String KAKAO_ID_PREFIX = "KAKAO_";
 
-    public SignInResponseDto handleKakaoSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo,
-            String oauth2UserId) {
+    public SignInResponseDto handleKakaoSignInBody(UserVo userVo, String oauth2UserId) {
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
         UserType userType = UserType.GENERAL;
         ClientId clientId = ClientId.KAKAO;
@@ -50,23 +49,23 @@ public class KakaoOAuthService {
         }
     }
 
-    public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequest createOAuthTokenRequest) {
+    public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequestDto requestDto) {
         String oauth2UserId = KAKAO_ID_PREFIX
-                + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+                + getUserInfoByToken(getTokenByCode(requestDto.getAuthCode()));
         return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
-    public String getOauth2UserId(CreateOAuthTokenRequest createOAuthTokenRequest) {
-        return KAKAO_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+    public String getOauth2UserId(CreateOAuthTokenRequestDto requestDto) {
+        return KAKAO_ID_PREFIX + getUserInfoByToken(getTokenByCode(requestDto.getAuthCode()));
     }
 
     public String getTokenByCode(String authCode) {
-        KakaoTokenResponseDto kakaoTokenResponseDto = fetchKakaoToken(authCode);
-        validateTokenResponse(kakaoTokenResponseDto);
+        KakaoTokenResponseDto responseDto = fetchKakaoToken(authCode);
+        validateTokenResponse(responseDto);
 
-        return (kakaoTokenResponseDto.getExpiresIn() <= 10)
-                ? refreshToken(kakaoTokenResponseDto.getRefreshToken()).getAccessToken()
-                : kakaoTokenResponseDto.getAccessToken();
+        return (responseDto.getExpiresIn() <= 10)
+                ? refreshToken(responseDto.getRefreshToken()).getAccessToken()
+                : responseDto.getAccessToken();
     }
 
     public String getUserInfoByToken(String accessToken) {
@@ -85,15 +84,15 @@ public class KakaoOAuthService {
                 .build();
     }
 
-    private void validateTokenResponse(KakaoTokenResponseDto kakaoTokenResponseDto) {
-        if (kakaoTokenResponseDto == null) {
+    private void validateTokenResponse(KakaoTokenResponseDto responseDto) {
+        if (responseDto == null) {
             throw new ErrorException(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
         }
-        oauthUtil.logKakaoTokenResponse(kakaoTokenResponseDto);
+        oauthUtil.logKakaoTokenResponse(responseDto);
     }
 
-    private void validateUserInfoResponse(KakaoUserInfoResponseDto response) {
-        if (response == null) {
+    private void validateUserInfoResponse(KakaoUserInfoResponseDto responseDto) {
+        if (responseDto == null) {
             throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
         }
     }

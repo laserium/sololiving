@@ -22,7 +22,7 @@ public class UserViewService {
     private final TokenProvider tokenProvider;
 
     public List<ViewUserListResponseDto> viewUserList(String accessToken) {
-        // validateViewUserList(accessToken);
+        validateViewUserList(accessToken);
         return responseViewUserList();
     }
 

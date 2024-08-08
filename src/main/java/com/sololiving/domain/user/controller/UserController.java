@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserAddressRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserBirthRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserContactRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserEmailRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserGenderRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserNicknameRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserPasswordRequestDto;
-import com.sololiving.domain.user.dto.request.ValidateUpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserBirthRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserAddressRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserGenderRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserNicknameRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserPasswordRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.ValidateUpdateUserContactRequestDto;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserService;
@@ -44,8 +44,8 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<SuccessResponse> createUser(@RequestBody SignUpRequestDto signUpRequestDto) {
-        userService.signUp(signUpRequestDto);
+    public ResponseEntity<SuccessResponse> createUser(@RequestBody SignUpRequestDto requestDto) {
+        userService.signUp(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(UserSuccessCode.SIGN_UP_SUCCESS));
     }
@@ -86,22 +86,22 @@ public class UserController {
     // 회원 이메일 변경
     @PatchMapping("/email")
     public ResponseEntity<SuccessResponse> updateUserEmail(
-            @RequestBody UpdateUserEmailRequestDto updateUserEmailRequestDto,
+            @RequestBody UpdateUserEmailRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.sendUpdateNewEmailRequest(accessToken, updateUserEmailRequestDto);
+        userService.sendUpdateNewEmailRequest(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_EMAIL_REQUEST_SUCCESS));
     }
 
     // 회원 연락처 변경 전 인증 메일 전송
-    @PostMapping("/contact/sms")
+    @PostMapping("/contact/sms-verification")
     public ResponseEntity<?> validateUpdateUserContact(
-            @RequestBody ValidateUpdateUserContactRequestDto validateUpdateUserContactRequestDto,
+            @RequestBody ValidateUpdateUserContactRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        smsService.sendSms(userService.validateUpdateUserContact(accessToken, validateUpdateUserContactRequestDto));
+        smsService.sendSms(userService.validateUpdateUserContact(accessToken, requestDto));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(SmsSuccessCode.SUCCESS_TO_SEND));
@@ -109,10 +109,10 @@ public class UserController {
 
     // 회원 연락처 변경
     @PatchMapping("/contact")
-    public ResponseEntity<?> updateUserContact(@RequestBody UpdateUserContactRequestDto updateUserContactRequestDto,
+    public ResponseEntity<?> updateUserContact(@RequestBody UpdateUserContactRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserContact(accessToken, updateUserContactRequestDto);
+        userService.updateUserContact(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -121,10 +121,10 @@ public class UserController {
     // 회원 닉네임 변경
     @PatchMapping("/nickname")
     public ResponseEntity<SuccessResponse> updateUserNickname(
-            @RequestBody UpdateUserNicknameRequestDto updateUsersNicknameRequestDto,
+            @RequestBody UpdateUserNicknameRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserNickname(accessToken, updateUsersNicknameRequestDto);
+        userService.updateUserNickname(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -133,10 +133,10 @@ public class UserController {
     // 회원 성별 변경
     @PatchMapping("/gender")
     public ResponseEntity<SuccessResponse> updateUserGender(
-            @RequestBody UpdateUserGenderRequestDto updateUserGenderRequestDto,
+            @RequestBody UpdateUserGenderRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserGender(accessToken, updateUserGenderRequestDto);
+        userService.updateUserGender(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -145,10 +145,10 @@ public class UserController {
     // 회원 주소 변경
     @PatchMapping("/address")
     public ResponseEntity<SuccessResponse> updateUserAddress(
-            @RequestBody UpdateUserAddressRequestDto updateUserAddressRequestDto,
+            @RequestBody UpdateUserAddressRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserAddress(accessToken, updateUserAddressRequestDto);
+        userService.updateUserAddress(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -157,10 +157,10 @@ public class UserController {
     // 회원 주소 변경
     @PatchMapping("/birth")
     public ResponseEntity<SuccessResponse> updateUserBirth(
-            @RequestBody UpdateUserBirthRequestDto updateUserBirthRequestDto,
+            @RequestBody UpdateUserBirthRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserBirth(accessToken, updateUserBirthRequestDto);
+        userService.updateUserBirth(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -169,10 +169,10 @@ public class UserController {
     // 회원 비밀번호 변경
     @PatchMapping("/password")
     public ResponseEntity<SuccessResponse> updateUserPassword(
-            @RequestBody UpdateUserPasswordRequestDto updateUserPasswordRequestDto,
+            @RequestBody UpdateUserPasswordRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserPassword(accessToken, updateUserPasswordRequestDto);
+        userService.updateUserPassword(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));

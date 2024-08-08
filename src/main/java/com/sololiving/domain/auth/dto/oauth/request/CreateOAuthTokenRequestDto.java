@@ -3,6 +3,6 @@ package com.sololiving.domain.auth.dto.oauth.request;
 import lombok.Getter;
 
 @Getter
-public class CreateOAuthTokenRequest {
+public class CreateOAuthTokenRequestDto {
     private String authCode;
 }

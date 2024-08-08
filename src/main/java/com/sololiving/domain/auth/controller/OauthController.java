@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
-import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequest;
+import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequestDto;
 import com.sololiving.domain.auth.dto.oauth.response.OauthUserExistenceResponseDto;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.auth.service.GoogleOAuthService;
@@ -32,13 +32,12 @@ public class OauthController {
     private final AuthService authService;
 
     @PostMapping("/naver/token")
-    public ResponseEntity<?> postNaverToken(@RequestBody CreateOAuthTokenRequest createOAuthTokenRequest) {
-        String oauth2UserId = naverOAuthService.getOauth2UserId(createOAuthTokenRequest);
-        UserVo userVo = naverOAuthService.getUserVoFromOAuthToken(createOAuthTokenRequest);
+    public ResponseEntity<?> postNaverToken(@RequestBody CreateOAuthTokenRequestDto requestDto) {
+        String oauth2UserId = naverOAuthService.getOauth2UserId(requestDto);
+        UserVo userVo = naverOAuthService.getUserVoFromOAuthToken(requestDto);
         // 로그인 처리
         if (userVo != null) {
-            SignInResponseDto responseBody = naverOAuthService.handleNaverSignInBody(
-                    createOAuthTokenRequest, userVo,
+            SignInResponseDto responseBody = naverOAuthService.handleNaverSignInBody(userVo,
                     userVo.getOauth2UserId());
             AuthTokenResponseDto responseHeader = oAuthService.handleSignInHeader(userVo,
                     responseBody.getClientId());
@@ -63,13 +62,12 @@ public class OauthController {
     }
 
     @PostMapping("/kakao/token")
-    public ResponseEntity<?> postKakaoToken(@RequestBody CreateOAuthTokenRequest createOAuthTokenRequest) {
-        String oauth2UserId = kakaoOAuthService.getOauth2UserId(createOAuthTokenRequest);
-        UserVo userVo = kakaoOAuthService.getUserVoFromOAuthToken(createOAuthTokenRequest);
+    public ResponseEntity<?> postKakaoToken(@RequestBody CreateOAuthTokenRequestDto requestDto) {
+        String oauth2UserId = kakaoOAuthService.getOauth2UserId(requestDto);
+        UserVo userVo = kakaoOAuthService.getUserVoFromOAuthToken(requestDto);
         // 로그인 처리
         if (userVo != null) {
-            SignInResponseDto responseBody = kakaoOAuthService.handleKakaoSignInBody(
-                    createOAuthTokenRequest, userVo,
+            SignInResponseDto responseBody = kakaoOAuthService.handleKakaoSignInBody(userVo,
                     userVo.getOauth2UserId());
             AuthTokenResponseDto responseHeader = oAuthService.handleSignInHeader(userVo,
                     responseBody.getClientId());
@@ -93,13 +91,12 @@ public class OauthController {
     }
 
     @PostMapping("/google/token")
-    public ResponseEntity<?> postGoogleToken(@RequestBody CreateOAuthTokenRequest createOAuthTokenRequest) {
-        String oauth2UserId = googleOAuthService.getOauth2UserId(createOAuthTokenRequest);
+    public ResponseEntity<?> postGoogleToken(@RequestBody CreateOAuthTokenRequestDto requestDto) {
+        String oauth2UserId = googleOAuthService.getOauth2UserId(requestDto);
         UserVo userVo = googleOAuthService.getUserVoFromOAuthToken(oauth2UserId);
         // 로그인 처리
         if (userVo != null) {
-            SignInResponseDto responseBody = googleOAuthService.handleGoogleSignInBody(
-                    createOAuthTokenRequest, userVo,
+            SignInResponseDto responseBody = googleOAuthService.handleGoogleSignInBody(userVo,
                     userVo.getOauth2UserId());
             AuthTokenResponseDto responseHeader = oAuthService.handleSignInHeader(userVo,
                     responseBody.getClientId());

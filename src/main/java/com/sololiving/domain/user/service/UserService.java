@@ -12,14 +12,14 @@ import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
-import com.sololiving.domain.user.dto.request.UpdateUserAddressRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserBirthRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserContactRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserEmailRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserGenderRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserNicknameRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserPasswordRequestDto;
-import com.sololiving.domain.user.dto.request.ValidateUpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserAddressRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserBirthRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserGenderRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserNicknameRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserPasswordRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.ValidateUpdateUserContactRequestDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
@@ -51,21 +51,21 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 회원가입
-    public void signUp(SignUpRequestDto signUpRequestDto) {
-        userAuthService.validateSignUpRequest(signUpRequestDto);
-        saveUser(signUpRequestDto);
+    public void signUp(SignUpRequestDto requestDto) {
+        userAuthService.validateSignUpRequest(requestDto);
+        saveUser(requestDto);
     }
 
     // 회원가입 - 저장
     @Transactional
-    private void saveUser(SignUpRequestDto signUpRequestDto) {
+    private void saveUser(SignUpRequestDto requestDto) {
         UserVo user = UserVo.builder()
-                .userId(signUpRequestDto.getUserId())
-                .userPwd(bCryptPasswordEncoder.encode(signUpRequestDto.getUserPwd()))
-                .oauth2UserId(signUpRequestDto.getOauth2UserId())
+                .userId(requestDto.getUserId())
+                .userPwd(bCryptPasswordEncoder.encode(requestDto.getUserPwd()))
+                .oauth2UserId(requestDto.getOauth2UserId())
                 .nickname(USER_NICK_NAME)
-                .contact(signUpRequestDto.getContact())
-                .email(signUpRequestDto.getEmail())
+                .contact(requestDto.getContact())
+                .email(requestDto.getEmail())
                 .gender(Gender.DEFAULT)
                 .address(null)
                 .birth(null)
@@ -116,10 +116,10 @@ public class UserService {
     }
 
     // 유저 이메일 변경
-    public void sendUpdateNewEmailRequest(String accessToken, UpdateUserEmailRequestDto patchUsersEmailRequestDto) {
+    public void sendUpdateNewEmailRequest(String accessToken, UpdateUserEmailRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
-        String email = patchUsersEmailRequestDto.getEmail();
+        String email = requestDto.getEmail();
         if (userAuthService.isUserEmailAvailable(email)) {
             EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                     .to(email)
@@ -150,9 +150,9 @@ public class UserService {
 
     // 회원 연락처 변경 전 인증 메일 전송
     public String validateUpdateUserContact(String accessToken,
-            ValidateUpdateUserContactRequestDto validateUpdateUserContactRequestDto) {
+            ValidateUpdateUserContactRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
-        String contact = validateUpdateUserContactRequestDto.getContact();
+        String contact = requestDto.getContact();
         validateUserId(userId);
         if (contact == null) {
             throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
@@ -160,11 +160,11 @@ public class UserService {
         return contact;
     }
 
-    public void updateUserContact(String accessToken, UpdateUserContactRequestDto updateUserContactRequestDto) {
+    public void updateUserContact(String accessToken, UpdateUserContactRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
-        String contact = updateUserContactRequestDto.getContact();
-        boolean isCorrect = smsService.checkSms(contact, updateUserContactRequestDto.getCode());
+        String contact = requestDto.getContact();
+        boolean isCorrect = smsService.checkSms(contact, requestDto.getCode());
         if (isCorrect) {
             updateUserContactInDb(userId, contact);
         } else
@@ -177,9 +177,9 @@ public class UserService {
 
     // 유저 닉네임 변경
     public void updateUserNickname(String accessToken,
-            UpdateUserNicknameRequestDto updateUsersNicknameRequestDto) {
+            UpdateUserNicknameRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
-        String nickname = updateUsersNicknameRequestDto.getNickname();
+        String nickname = requestDto.getNickname();
         validateUserId(userId);
         if (nickname == null) {
             throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
@@ -199,9 +199,9 @@ public class UserService {
     }
 
     // 회원 성별 변경
-    public void updateUserGender(String accessToken, UpdateUserGenderRequestDto updateUserGenderRequestDto) {
+    public void updateUserGender(String accessToken, UpdateUserGenderRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
-        Gender gender = updateUserGenderRequestDto.getGender();
+        Gender gender = requestDto.getGender();
         validateUserId(userId);
         if (gender == null) {
             throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
@@ -215,9 +215,9 @@ public class UserService {
     }
 
     // 회원 주소 변경
-    public void updateUserAddress(String accessToken, UpdateUserAddressRequestDto updateUserAddressRequestDto) {
+    public void updateUserAddress(String accessToken, UpdateUserAddressRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
-        String address = updateUserAddressRequestDto.getAddress();
+        String address = requestDto.getAddress();
         validateUserId(userId);
         if (address == null) {
             throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
@@ -231,9 +231,9 @@ public class UserService {
     }
 
     // 회원 생일 변경
-    public void updateUserBirth(String accessToken, UpdateUserBirthRequestDto updateUserBirthRequestDto) {
+    public void updateUserBirth(String accessToken, UpdateUserBirthRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
-        LocalDate birth = updateUserBirthRequestDto.getBirth();
+        LocalDate birth = requestDto.getBirth();
         validateUserId(userId);
         if (birth == null) {
             throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
@@ -247,13 +247,13 @@ public class UserService {
     }
 
     // 회원 비밀번호 변경
-    public void updateUserPassword(String accessToken, UpdateUserPasswordRequestDto updateUserPasswordRequestDto) {
+    public void updateUserPassword(String accessToken, UpdateUserPasswordRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
         String oldPassword = userAuthService.findPasswordByUserId(userId);
-        String password = updateUserPasswordRequestDto.getPassword();
+        String password = requestDto.getPassword();
         authService.verifyPassword(oldPassword, password);
-        String newPassword = updateUserPasswordRequestDto.getNewPassword();
+        String newPassword = requestDto.getNewPassword();
         if (newPassword == null) {
             new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
         }

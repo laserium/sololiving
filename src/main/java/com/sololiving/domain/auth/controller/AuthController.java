@@ -40,12 +40,12 @@ public class AuthController {
     private final CookieService cookieService;
 
     @PostMapping("/signin")
-    public ResponseEntity<SignInResponseDto> postSignIn(@RequestBody SignInRequestDto signInRequestDto) {
-        CreateTokenResponse tokenResponse = authService.createTokenResponse(signInRequestDto);
+    public ResponseEntity<SignInResponseDto> postSignIn(@RequestBody SignInRequestDto requestDto) {
+        CreateTokenResponse tokenResponse = authService.createTokenResponse(requestDto);
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
-        SignInResponseDto signInResponse = authService.createSignInResponse(signInRequestDto, tokenResponse);
-        userService.setLastSignInAt(signInRequestDto.getUserId());
+        SignInResponseDto signInResponse = authService.createSignInResponse(requestDto, tokenResponse);
+        userService.setLastSignInAt(requestDto.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .header("Set-Cookie", accessTokenCookie.toString())
@@ -69,24 +69,24 @@ public class AuthController {
     }
 
     @PostMapping("/users/id-recover")
-    public ResponseEntity<SuccessResponse> postUsersIdRecover(@RequestBody IdRecoverRequestDto idRecoverRequestDto) {
+    public ResponseEntity<SuccessResponse> postUsersIdRecover(@RequestBody IdRecoverRequestDto requestDto) {
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
-                .to(idRecoverRequestDto.getEmail())
+                .to(requestDto.getEmail())
                 .subject("[홀로서기] 아이디 찾기 인증 메일입니다.")
                 .build();
 
-        authEmailService.sendMailIdRecover(idRecoverRequestDto.getEmail(), emailResponseDto, "id-recover");
+        authEmailService.sendMailIdRecover(requestDto.getEmail(), emailResponseDto, "id-recover");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.ID_RECOVER_SUCCESS));
     }
 
     @PostMapping("/users/password-reset")
     public ResponseEntity<SuccessResponse> postUsersPasswordReset(
-            @RequestBody PasswordResetRequestDto passwordResetRequestDto) {
+            @RequestBody PasswordResetRequestDto requestDto) {
 
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
-                .to(userAuthService.validateUserIdAndEmail(passwordResetRequestDto.getUserId(),
-                        passwordResetRequestDto.getEmail()))
+                .to(userAuthService.validateUserIdAndEmail(requestDto.getUserId(),
+                        requestDto.getEmail()))
                 .subject("[홀로서기] 임시 비밀번호 발급 메일입니다.")
                 .build();
 

@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
-import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequest;
+import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequestDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverDeleteTokenDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverRefreshTokenDto;
 import com.sololiving.domain.auth.dto.oauth.response.naver.NaverTokenResponseDto;
@@ -45,8 +45,7 @@ public class NaverOAuthService {
     @Value("${sololiving.naver.oauth2.state}")
     private String state;
 
-    public SignInResponseDto handleNaverSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo,
-            String oauth2UserId) {
+    public SignInResponseDto handleNaverSignInBody(UserVo userVo, String oauth2UserId) {
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
         UserType userType = UserType.GENERAL;
         ClientId clientId = ClientId.NAVER;
@@ -57,34 +56,34 @@ public class NaverOAuthService {
         }
     }
 
-    public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequest createOAuthTokenRequest) {
+    public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequestDto requestDto) {
         String oauth2UserId = NAVER_ID_PREFIX
-                + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+                + getUserInfoByToken(getTokenByCode(requestDto.getAuthCode()));
         return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
-    public String getOauth2UserId(CreateOAuthTokenRequest createOAuthTokenRequest) {
-        return NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+    public String getOauth2UserId(CreateOAuthTokenRequestDto requestDto) {
+        return NAVER_ID_PREFIX + getUserInfoByToken(getTokenByCode(requestDto.getAuthCode()));
     }
 
     public String getTokenByCode(String authCode) {
-        NaverTokenResponseDto naverTokenResponseDto = fetchNaverToken(authCode);
-        validateTokenResponse(naverTokenResponseDto);
+        NaverTokenResponseDto responseDto = fetchNaverToken(authCode);
+        validateTokenResponse(responseDto);
 
-        return (naverTokenResponseDto.getExpiresIn() <= 10)
-                ? refreshToken(naverTokenResponseDto.getRefreshToken()).getAccessToken()
-                : naverTokenResponseDto.getAccessToken();
+        return (responseDto.getExpiresIn() <= 10)
+                ? refreshToken(responseDto.getRefreshToken()).getAccessToken()
+                : responseDto.getAccessToken();
     }
 
     public String getUserInfoByToken(String accessToken) {
-        NaverUserInfoResponseDto response = fetchNaverUserInfo(accessToken);
-        validateUserInfoResponse(response);
-        return response.getResponse().getId();
+        NaverUserInfoResponseDto responseDto = fetchNaverUserInfo(accessToken);
+        validateUserInfoResponse(responseDto);
+        return responseDto.getResponse().getId();
     }
 
     public void deleteToken(String accessToken) {
-        NaverDeleteTokenDto response = deleteNaverToken(accessToken);
-        validateDeleteTokenResponse(response);
+        NaverDeleteTokenDto responseDto = deleteNaverToken(accessToken);
+        validateDeleteTokenResponse(responseDto);
     }
 
     private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId,
@@ -150,15 +149,15 @@ public class NaverOAuthService {
                 .block();
     }
 
-    private void validateTokenResponse(NaverTokenResponseDto naverTokenResponseDto) {
-        if (naverTokenResponseDto == null || "invalid_request".equals(naverTokenResponseDto.getError())) {
+    private void validateTokenResponse(NaverTokenResponseDto responseDto) {
+        if (responseDto == null || "invalid_request".equals(responseDto.getError())) {
             throw new ErrorException(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
         }
-        // oauthUtil.logNaverTokenResponse(naverTokenResponseDto);
+        // oauthUtil.logNaverTokenResponse(responseDto);
     }
 
-    private void validateUserInfoResponse(NaverUserInfoResponseDto response) {
-        if (response == null) {
+    private void validateUserInfoResponse(NaverUserInfoResponseDto responseDto) {
+        if (responseDto == null) {
             throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
         }
     }

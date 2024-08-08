@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
-import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequest;
+import com.sololiving.domain.auth.dto.oauth.request.CreateOAuthTokenRequestDto;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleRefreshTokenDto;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleTokenResponseDto;
 import com.sololiving.domain.auth.dto.oauth.response.google.GoogleUserInfoResponseDto;
@@ -40,7 +40,7 @@ public class GoogleOAuthService {
     @Value("${sololiving.google.oauth2.state}")
     private String state;
 
-    public SignInResponseDto handleGoogleSignInBody(CreateOAuthTokenRequest createOAuthTokenRequest, UserVo userVo,
+    public SignInResponseDto handleGoogleSignInBody(UserVo userVo,
             String oauth2UserId) {
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
         UserType userType = UserType.GENERAL;
@@ -56,23 +56,23 @@ public class GoogleOAuthService {
         return userAuthService.findByOauth2UserId(oauth2UserId);
     }
 
-    public String getOauth2UserId(CreateOAuthTokenRequest createOAuthTokenRequest) {
-        return GOOGLE_ID_PREFIX + getUserInfoByToken(getTokenByCode(createOAuthTokenRequest.getAuthCode()));
+    public String getOauth2UserId(CreateOAuthTokenRequestDto requestDto) {
+        return GOOGLE_ID_PREFIX + getUserInfoByToken(getTokenByCode(requestDto.getAuthCode()));
     }
 
     public String getUserInfoByToken(String accessToken) {
-        GoogleUserInfoResponseDto response = fetchGoogleUserInfo(accessToken);
-        validateUserInfoResponse(response);
-        return response.getId();
+        GoogleUserInfoResponseDto responseDto = fetchGoogleUserInfo(accessToken);
+        validateUserInfoResponse(responseDto);
+        return responseDto.getId();
     }
 
     public String getTokenByCode(String authCode) {
-        GoogleTokenResponseDto googleTokenResponseDto = fetchGoogleToken(authCode);
-        validateTokenResponse(googleTokenResponseDto);
+        GoogleTokenResponseDto responseDto = fetchGoogleToken(authCode);
+        validateTokenResponse(responseDto);
 
-        return (googleTokenResponseDto.getExpiresIn() <= 10)
-                ? refreshToken(googleTokenResponseDto.getRefreshToken()).getAccessToken()
-                : googleTokenResponseDto.getAccessToken();
+        return (responseDto.getExpiresIn() <= 10)
+                ? refreshToken(responseDto.getRefreshToken()).getAccessToken()
+                : responseDto.getAccessToken();
     }
 
     private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId,
@@ -85,15 +85,15 @@ public class GoogleOAuthService {
                 .build();
     }
 
-    private void validateTokenResponse(GoogleTokenResponseDto googleTokenResponseDto) {
-        if (googleTokenResponseDto == null) {
+    private void validateTokenResponse(GoogleTokenResponseDto responseDto) {
+        if (responseDto == null) {
             throw new ErrorException(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
         }
         // oauthUtil.logGoogleTokenResponse(googleTokenResponseDto);
     }
 
-    private void validateUserInfoResponse(GoogleUserInfoResponseDto response) {
-        if (response == null) {
+    private void validateUserInfoResponse(GoogleUserInfoResponseDto responseDto) {
+        if (responseDto == null) {
             throw new ErrorException(AuthErrorCode.FAIL_TO_RETRIEVE_USER_INFO);
         }
     }

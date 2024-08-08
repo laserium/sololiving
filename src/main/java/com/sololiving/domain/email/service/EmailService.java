@@ -31,12 +31,12 @@ public class EmailService {
 
     // 임시 비밀번호 설정 메일
     @Async("emailTaskExecutor")
-    public void sendMailPasswordReset(EmailResponseDto emailResponseDto, String type) {
+    public void sendMailPasswordReset(EmailResponseDto responseDto, String type) {
         String authNum = createCode();
-        userAuthService.setTempPassword(emailResponseDto.getTo(), authNum);
+        userAuthService.setTempPassword(responseDto.getTo(), authNum);
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(), emailResponseDto.getSubject(),
+            createMimeMessageHelper(mimeMessage, responseDto.getTo(), responseDto.getSubject(),
                     setContext(authNum, type));
             javaMailSender.send(mimeMessage);
 
@@ -47,11 +47,11 @@ public class EmailService {
 
     // 아이디 찾기 인증 메일
     @Async("emailTaskExecutor")
-    public void sendMailIdRecover(String email, EmailResponseDto emailResponseDto, String type) {
+    public void sendMailIdRecover(String email, EmailResponseDto responseDto, String type) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(),
-                    emailResponseDto.getSubject(), setContext(userAuthService.findUserIdByEmail(email), type));
+            createMimeMessageHelper(mimeMessage, responseDto.getTo(),
+                    responseDto.getSubject(), setContext(userAuthService.findUserIdByEmail(email), type));
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
@@ -61,13 +61,13 @@ public class EmailService {
 
     // 회원 정보 수정 - 이메일 수정 인증 메일
     @Async("emailTaskExecutor")
-    public void sendMailUpdateEmail(String email, String userId, EmailResponseDto emailResponseDto, String type) {
+    public void sendMailUpdateEmail(String email, String userId, EmailResponseDto responseDto, String type) {
         try {
             String token = emailVerificationService.createVerificationToken(userId, email);
             String confirmationUrl = url + "/email/confirmation/" + token;
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            createMimeMessageHelper(mimeMessage, emailResponseDto.getTo(),
-                    emailResponseDto.getSubject(), setContext(confirmationUrl, type));
+            createMimeMessageHelper(mimeMessage, responseDto.getTo(),
+                    responseDto.getSubject(), setContext(confirmationUrl, type));
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
+import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.CheckSignUpVerificationSmsRequestDto;
+import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
@@ -13,6 +15,7 @@ import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.security.jwt.service.TokenProvider;
+import com.sololiving.global.security.sms.service.SmsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,15 +24,23 @@ import lombok.RequiredArgsConstructor;
 public class UserAuthService {
 
     private final UserAuthMapper userAuthMapper;
+    private final SmsService smsService;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    // 회원가입 시 휴대폰 인증번호 전송
+    public void sendSignUpVerificationSms(SendSignUpVerificationSmsRequestDto requestDto) {
+        String contact = requestDto.getContact();
+        validateUniqueField(contact, this::isUserContactAvailable, UserErrorCode.CONTACT_ALREADY_EXISTS);
+        smsService.sendSms(contact);
+    }
+
     // 회원가입 - 중복데이터 검증
-    protected void validateSignUpRequest(SignUpRequestDto signUpRequestDto) {
-        validateUniqueField(signUpRequestDto.getUserId(), this::isUserIdAvailable, UserErrorCode.ID_ALREADY_EXISTS);
-        validateUniqueField(signUpRequestDto.getEmail(), this::isUserEmailAvailable,
+    protected void validateSignUpRequest(SignUpRequestDto requestDto) {
+        validateUniqueField(requestDto.getUserId(), this::isUserIdAvailable, UserErrorCode.ID_ALREADY_EXISTS);
+        validateUniqueField(requestDto.getEmail(), this::isUserEmailAvailable,
                 UserErrorCode.EMAIL_ALREADY_EXISTS);
-        validateUniqueField(signUpRequestDto.getContact(), this::isUserContactAvailable,
+        validateUniqueField(requestDto.getContact(), this::isUserContactAvailable,
                 UserErrorCode.CONTACT_ALREADY_EXISTS);
     }
 
