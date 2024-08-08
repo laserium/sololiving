@@ -28,7 +28,7 @@ import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.security.jwt.service.TokenService;
+import com.sololiving.global.security.jwt.service.AccessTokenService;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
 import com.sololiving.global.security.sms.service.SmsService;
 
@@ -42,7 +42,7 @@ public class UserService {
 
     private static final String USER_NICK_NAME = "익명";
     private final UserAuthService userAuthService;
-    private final TokenService tokenService;
+    private final AccessTokenService tokenService;
     private final TokenProvider tokenProvider;
     private final UserMapper userMapper;
     private final EmailService emailService;
