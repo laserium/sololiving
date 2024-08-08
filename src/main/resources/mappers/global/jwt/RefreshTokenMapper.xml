@@ -34,5 +34,20 @@
     <select id="existsByUserId" resultType="boolean" parameterType="String">
         SELECT EXISTS(SELECT 1 FROM REFRESH_TOKEN WHERE user_id = #{userId})
     </select>
+
+    <select id="findExpiredTokens" resultType="com.sololiving.global.security.jwt.vo.RefreshTokenVo">
+        SELECT id, expires_in, token_status
+        FROM REFRESH_TOKEN
+        WHERE expires_in &lt; #{now} AND token_status != 'EXPIRED'
+    </select>
+
+    <update id="updateExpiredTokens">
+        UPDATE REFRESH_TOKEN
+        SET token_status = 'EXPIRED'
+        WHERE id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
     
 </mapper>

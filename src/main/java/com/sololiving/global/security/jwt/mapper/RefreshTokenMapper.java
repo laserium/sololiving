@@ -5,6 +5,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.sololiving.global.security.jwt.vo.RefreshTokenVo;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Mapper
 public interface RefreshTokenMapper {
     RefreshTokenVo findRefreshTokenByUserId(@Param("userId") String userId);
@@ -16,4 +19,9 @@ public interface RefreshTokenMapper {
     int deleteByRefreshToken(@Param("refreshToken") String refreshToken);
 
     boolean existsByUserId(@Param("userId") String userId);
+
+    List<RefreshTokenVo> findExpiredTokens(@Param("now") LocalDateTime now);
+
+    void updateExpiredTokens(@Param("ids") List<Long> ids);
+
 }

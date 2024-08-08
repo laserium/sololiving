@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TokenService {
+public class AccessTokenService {
 
     public void validateAccessToken(String accessToken) {
         if (accessToken == null || accessToken.isEmpty()) {
