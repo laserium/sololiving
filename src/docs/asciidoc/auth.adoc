@@ -1,0 +1,14 @@
+== AuthController
+=== 로그인(SignIn)
+==== 요청(Request)
+include::{snippets}/auth/signin/http-request.adoc[]
+===== 요청(Request) Body
+include::{snippets}/auth/signin/request-body.adoc[]
+include::{snippets}/auth/signin/request-fields.adoc[]
+
+==== 응답(Response)
+include::{snippets}/auth/signin/http-response.adoc[]
+include::{snippets}/auth/signin/response-body.adoc[]
+
+==== Curl
+include::{snippets}/auth/signin/curl-request.adoc[]

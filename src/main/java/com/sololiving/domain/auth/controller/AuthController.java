@@ -46,7 +46,7 @@ public class AuthController {
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
         SignInResponseDto signInResponse = authService.createSignInResponse(requestDto, tokenResponse);
         userService.setLastSignInAt(requestDto.getUserId());
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .header("Set-Cookie", accessTokenCookie.toString())
                 .body(signInResponse);

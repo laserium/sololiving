@@ -38,9 +38,9 @@ public class TokenProvider {
     private final RefreshTokenMapper refreshTokenMapper;
 
     // 토큰 생성
-    public String generateToken(UserVo userVo, Duration expiredAt) {
+    public String generateToken(UserVo userVo, Duration expiresIn) {
         Date now = new Date();
-        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), userVo);
+        return makeToken(new Date(now.getTime() + expiresIn.toMillis()), userVo);
     }
 
     private String makeToken(Date expiry, UserVo userVo) {

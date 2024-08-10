@@ -6,4 +6,5 @@
 :toclevels: 2
 :seclinks:
 
+include::auth.adoc[]
 include::user.adoc[]

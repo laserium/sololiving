@@ -1,0 +1,12 @@
+|===
+    |변수명|데이터타입|설명|필수여부|제약조건
+
+{{#fields}}
+    |{{path}}
+    |{{type}}
+    |{{description}}
+    |{{#optional}}Y{{/optional}}
+    |{{#constraint}}{{.}}{{/constraint}}
+
+{{/fields}}
+|===
