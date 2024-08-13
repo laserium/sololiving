@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>UserViewController</title>
+<title>Success Code</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -441,94 +441,114 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_userviewcontroller">UserViewController</h2>
+<h2 id="_success_code">Success Code</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_관리자사용자_정보_불러오기">[관리자]사용자 정보 불러오기</h3>
-<div class="sect3">
-<h4 id="_curl">Curl</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/users/list' -i -X GET \
-    -H 'accessToken: dummyAccessToken'</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_요청request">요청(Request)</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /users/list HTTP/1.1
-accessToken: dummyAccessToken
-Host: localhost:8080</code></pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_request_header">Request Header</h5>
+<h3 id="_parameter">Parameter</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">속성</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>accessToken</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">액세스 토큰</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">에러 코드</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">에러 메시지</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
 </table>
 </div>
-</div>
+<div class="sect2">
+<h3 id="_user_관련">User 관련</h3>
 <div class="sect3">
-<h4 id="_응답response">응답(Response)</h4>
+<h4 id="_json">Json</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Content-Type: application/json
-Content-Length: 590
-
-[ {
-  "userId" : "user1",
-  "email" : "user1@example.com",
-  "contact" : "01012345678",
-  "status" : "ACTIVE",
-  "userType" : "GENERAL",
-  "createdAt" : "2024-08-13 23:12:30",
-  "updatedAt" : "2024-08-13 23:12:30",
-  "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-13 23:12:30"
+<pre class="highlight nowrap"><code class="language-json" data-lang="json">[ {
+  "code" : "USER_S001",
+  "message" : "회원가입에 성공하셨습니다."
 }, {
-  "userId" : "user2",
-  "email" : "user2@example.com",
-  "contact" : "01022222222",
-  "status" : "ACTIVE",
-  "userType" : "GENERAL",
-  "createdAt" : "2024-08-13 23:12:30",
-  "updatedAt" : "2024-08-13 23:12:30",
-  "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-13 23:12:30"
+  "code" : "USER_S002",
+  "message" : "회원탈퇴에 성공하셨습니다."
+}, {
+  "code" : "USER_S003",
+  "message" : "회원상태가 성공적으로 '활동'으로 변경되었습니다."
+}, {
+  "code" : "USER_S004",
+  "message" : "회원상태가 성공적으로 '차단'으로 변경되었습니다."
+}, {
+  "code" : "USER_S005",
+  "message" : "회원상태가 성공적으로 '탈퇴'로 변경되었습니다."
+}, {
+  "code" : "USER_S006",
+  "message" : "이메일 변경 요청 메일 전송 완료"
+}, {
+  "code" : "USER_S007",
+  "message" : "회원 정보 수정 완료"
 } ]</code></pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_에러">에러</h4>
-<div class="sect4">
-<h5 id="_token_e001">TOKEN_E001<br></h5>
-
 </div>
-<div class="sect4">
-<h5 id="_user_e009">USER_E009</h5>
-
+<div class="sect2">
+<h3 id="_auth_관련">Auth 관련</h3>
+<div class="sect3">
+<h4 id="_json_2">Json</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-json" data-lang="json">[ {
+  "code" : "AUTH_S001",
+  "message" : "회원가입에 성공하셨습니다."
+}, {
+  "code" : "AUTH_S002",
+  "message" : "성공적으로 로그아웃 하셨습니다."
+}, {
+  "code" : "AUTH_S003",
+  "message" : "OAuth2.0 인증 완료"
+}, {
+  "code" : "AUTH_S004",
+  "message" : "비밀번호 초기화 - 임시 비밀번호 설정 메일 전송 완료"
+}, {
+  "code" : "AUTH_S005",
+  "message" : "아이디 찾기 - 메일 전송 완료"
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_email_관련">Email 관련</h3>
+<div class="sect3">
+<h4 id="_json_3">Json</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-json" data-lang="json">[ {
+  "code" : "EMAIL_S001",
+  "message" : "/confirmation-success"
+} ]</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -538,7 +558,7 @@ Content-Length: 590
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-08-13 22:58:32 +0900
+Last updated 2024-08-13 21:43:15 +0900
 </div>
 </div>
 </body>

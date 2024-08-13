@@ -11,7 +11,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
+import com.sololiving.domain.email.exception.EmailErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
+import com.sololiving.global.exception.error.ErrorException;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -41,7 +43,7 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new ErrorException(EmailErrorCode.EMAIL_SEND_FAILED);
         }
     }
 
@@ -55,7 +57,7 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new ErrorException(EmailErrorCode.EMAIL_SEND_FAILED);
         }
     }
 
@@ -71,7 +73,7 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new ErrorException(EmailErrorCode.EMAIL_SEND_FAILED);
         }
     }
 

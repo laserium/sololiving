@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import lombok.Getter;
 
-@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+@ResponseStatus(code = HttpStatus.NOT_FOUND)
 @Getter
 public class ErrorException extends RuntimeException {
 

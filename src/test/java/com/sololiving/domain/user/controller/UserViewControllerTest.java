@@ -63,15 +63,15 @@ public class UserViewControllerTest extends AbstractRestDocsConfig {
                 .thenReturn(Arrays.asList(user1, user2));
 
         Mockito.when(cookieService.extractAccessTokenFromCookie(Mockito.any(HttpServletRequest.class)))
-                .thenReturn("dummyAccessToken");
+                .thenReturn("testAccessToken");
 
         mockMvc.perform(get("/users/list")
-                .header("Cookie", "accessToken=dummyAccessToken"))
+                .header("Set-Cookie", "accessToken=testAccessToken"))
                 .andExpect(status().isOk())
-                .andDo(document("users-list",
+                .andDo(document("users/view/users-list",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
-                                headerWithName("Cookie").description("세션 식별을 위한 쿠키. 액세스 토큰이 포함됩니다."))));
+                                headerWithName("Set-Cookie").description("accessToken = 엑세스토큰"))));
     }
 }

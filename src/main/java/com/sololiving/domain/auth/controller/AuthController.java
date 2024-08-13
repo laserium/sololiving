@@ -40,7 +40,7 @@ public class AuthController {
     private final CookieService cookieService;
 
     @PostMapping("/signin")
-    public ResponseEntity<SignInResponseDto> postSignIn(@RequestBody SignInRequestDto requestDto) {
+    public ResponseEntity<?> postSignIn(@RequestBody SignInRequestDto requestDto) {
         CreateTokenResponse tokenResponse = authService.createTokenResponse(requestDto);
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());

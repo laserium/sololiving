@@ -1,21 +1,12 @@
 |===
-    |변수명|데이터타입|설명|필수여부|제약조건
+    |필드명|타입|설명|필수여부|속성
 
 {{#fields}}
     |{{path}}
     |{{type}}
     |{{description}}
-    |{{#optional}}Y{{/optional}}
+    |{{#optional}}{{false}}{{/optional}}
     |{{#constraint}}{{.}}{{/constraint}}
 
-{{/fields}}
-|===
-
-|===
-    |응답 코드|응답 메시지
-
-{{#fields}}
-    |{{code}}
-    |{{message}}
 {{/fields}}
 |===

@@ -127,10 +127,10 @@ public class UserAuthService {
     }
 
     // 아이디와 이메일 검증
-    public String validateUserIdAndEmail(String userId, String email) {
-        String userEmail = userAuthMapper.findEmailByUserId(userId);
-        if (userEmail.equals(email)) {
-            return userEmail;
+    public String validateUserIdAndEmail(String userId, String inputEmail) {
+        String email = userAuthMapper.findEmailByUserId(userId);
+        if (email.equals(inputEmail)) {
+            return email;
         } else
             throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
     }

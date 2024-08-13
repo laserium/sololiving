@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>UserViewController</title>
+<title>Error Code</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -441,94 +441,161 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_userviewcontroller">UserViewController</h2>
+<h2 id="_error_code">Error Code</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_관리자사용자_정보_불러오기">[관리자]사용자 정보 불러오기</h3>
-<div class="sect3">
-<h4 id="_curl">Curl</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/users/list' -i -X GET \
-    -H 'accessToken: dummyAccessToken'</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_요청request">요청(Request)</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /users/list HTTP/1.1
-accessToken: dummyAccessToken
-Host: localhost:8080</code></pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_request_header">Request Header</h5>
+<h3 id="_parameter">Parameter</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">속성</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>accessToken</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">액세스 토큰</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">에러 코드</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">에러 메시지</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
 </table>
 </div>
-</div>
+<div class="sect2">
+<h3 id="_user_관련">User 관련</h3>
 <div class="sect3">
-<h4 id="_응답response">응답(Response)</h4>
+<h4 id="_json">Json</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Content-Type: application/json
-Content-Length: 590
-
-[ {
-  "userId" : "user1",
-  "email" : "user1@example.com",
-  "contact" : "01012345678",
-  "status" : "ACTIVE",
-  "userType" : "GENERAL",
-  "createdAt" : "2024-08-13 23:12:30",
-  "updatedAt" : "2024-08-13 23:12:30",
-  "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-13 23:12:30"
+<pre class="highlight nowrap"><code class="language-json" data-lang="json">[ {
+  "code" : "USER_E001",
+  "message" : "아이디가 이미 존재합니다."
 }, {
-  "userId" : "user2",
-  "email" : "user2@example.com",
-  "contact" : "01022222222",
-  "status" : "ACTIVE",
-  "userType" : "GENERAL",
-  "createdAt" : "2024-08-13 23:12:30",
-  "updatedAt" : "2024-08-13 23:12:30",
-  "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-13 23:12:30"
+  "code" : "USER_E002",
+  "message" : "이메일이 이미 존재합니다."
+}, {
+  "code" : "USER_E003",
+  "message" : "연락처가 이미 존재합니다."
+}, {
+  "code" : "USER_E004",
+  "message" : "해당하는 유저정보를 찾을 수 없음"
+}, {
+  "code" : "USER_E005",
+  "message" : "해당하는 유저의 이메일을 찾을 수 없음"
+}, {
+  "code" : "USER_E006",
+  "message" : "해당하는 유저의 아이디를 찾을 수 없음"
+}, {
+  "code" : "USER_E007",
+  "message" : "해당하는 유저의 비밀번호를 찾을 수 없음"
+}, {
+  "code" : "USER_E008",
+  "message" : "해당하는 유저의 아이디가 일치하지 않음"
+}, {
+  "code" : "USER_E009",
+  "message" : "해당하는 유저는 권한이 없습니다."
+}, {
+  "code" : "USER_E010",
+  "message" : "유저아이디 값이 정확하게 요청되지 않았습니다."
+}, {
+  "code" : "USER_E011",
+  "message" : "유저 상태 값이 정확하게 요청되지 않았습니다."
+}, {
+  "code" : "USER_E012",
+  "message" : "유저 정보 수정 요청 데이터 값이 없습니다(NULL)"
 } ]</code></pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_에러">에러</h4>
-<div class="sect4">
-<h5 id="_token_e001">TOKEN_E001<br></h5>
-
 </div>
-<div class="sect4">
-<h5 id="_user_e009">USER_E009</h5>
-
+<div class="sect2">
+<h3 id="_auth_관련">Auth 관련</h3>
+<div class="sect3">
+<h4 id="_json_2">Json</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-json" data-lang="json">[ {
+  "code" : "AUTH_E001",
+  "message" : "비밀번호가 일치하지 않습니다."
+}, {
+  "code" : "AUTH_E002",
+  "message" : "카카오 로그인 관련 토큰을 회수할 수 없습니다."
+}, {
+  "code" : "AUTH_E003",
+  "message" : "OAUTH2 관련 정보를 찾을 수 없습니다."
+}, {
+  "code" : "AUTH_E004",
+  "message" : "사용자 정보 조회 실패(OAuth2.0, NAVER)"
+}, {
+  "code" : "AUTH_E005",
+  "message" : "파라미터가 잘못되었거나 요청문이 잘못되었습니다."
+}, {
+  "code" : "AUTH_E006",
+  "message" : "로그아웃을 할 수 없습니다."
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tokenjwt_관련">Token(JWT) 관련</h3>
+<div class="sect3">
+<h4 id="_json_3">Json</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-json" data-lang="json">[ {
+  "code" : "TOKEN_E001",
+  "message" : "엑세스 토큰이 존재하지 않습니다."
+}, {
+  "code" : "TOKEN_E002",
+  "message" : "해당하는 유저의 RefreshToken을 찾을 수 없습니다."
+}, {
+  "code" : "TOKEN_E003",
+  "message" : "RefreshToken을 삭제할 수 없습니다."
+}, {
+  "code" : "TOKEN_E004",
+  "message" : "해당하는 유저의 AccessToken을 찾을 수 없습니다."
+}, {
+  "code" : "TOKEN_E005",
+  "message" : "토큰 갱신 중 오류발생"
+}, {
+  "code" : "TOKEN_E006",
+  "message" : "AccessToken 에서 추출한 User 데이터가 존재하지 않습니다."
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_email_관련">Email 관련</h3>
+<div class="sect3">
+<h4 id="_json_4">Json</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-json" data-lang="json">[ {
+  "code" : "EMAIL_E001",
+  "message" : "해당하는 이메일 인증 토큰을 찾을 수 없습니다."
+} ]</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -538,7 +605,7 @@ Content-Length: 590
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-08-13 22:58:32 +0900
+Last updated 2024-08-13 22:04:53 +0900
 </div>
 </div>
 </body>
