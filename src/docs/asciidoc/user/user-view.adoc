@@ -5,7 +5,7 @@ include::{snippets}/users/view/users-list/curl-request.adoc[]
 
 ==== 요청(Request)
 include::{snippets}/users/view/users-list/http-request.adoc[]
-===== Request Header
+===== 요청 헤더 (Request Header)
 include::{snippets}/users/view/users-list/request-headers.adoc[]
 
 ==== 응답(Response)

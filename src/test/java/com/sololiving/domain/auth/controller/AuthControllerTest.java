@@ -8,20 +8,17 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.snippet.Attributes.key;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
-import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
@@ -31,7 +28,6 @@ import com.sololiving.global.config.AbstractRestDocsConfig;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
 import com.sololiving.global.security.jwt.enums.ClientId;
-import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.util.CookieService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +35,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -48,9 +43,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import java.time.Duration;
 
 public class AuthControllerTest extends AbstractRestDocsConfig {
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockBean
     private AuthService authService;
@@ -63,7 +55,7 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
 
     @Test
     @DisplayName("로그인 - 테스트")
-    void postSignIn() throws Exception {
+    void postSignInTest() throws Exception {
 
         // given
         SignInRequestDto requestDto = SignInRequestDto.builder()
@@ -135,7 +127,7 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
 
     @Test
     @DisplayName("로그아웃 - 테스트")
-    void postSignOutSuccess() throws Exception {
+    void postSignOutTest() throws Exception {
         // given
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", "testRefreshToken")
                 .httpOnly(true)
@@ -176,7 +168,7 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
 
     @Test
     @DisplayName("아이디 찾기 - 테스트")
-    void postUsersIdRecover() throws Exception {
+    void postUsersIdRecoverTest() throws Exception {
         // given
         IdRecoverRequestDto requestDto = IdRecoverRequestDto.builder()
                 .email("testUser@naver.com")
@@ -204,7 +196,7 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
 
     @Test
     @DisplayName("비밀번호 찾기 - 테스트")
-    void postUsersPasswordReset() throws Exception {
+    void postUsersPasswordResetTest() throws Exception {
         // given
         PasswordResetRequestDto requestDto = PasswordResetRequestDto.builder()
                 .userId("testUser")

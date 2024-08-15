@@ -3,6 +3,8 @@ package com.sololiving.domain.user.controller;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -36,6 +38,8 @@ public class UserViewControllerTest extends AbstractRestDocsConfig {
     @Test
     void testGetUserList() throws Exception {
 
+        // given
+        String accessToken = "testAccessToken";
         ViewUserListResponseDto user1 = ViewUserListResponseDto.builder()
                 .userId("user1")
                 .email("user1@example.com")
@@ -59,19 +63,30 @@ public class UserViewControllerTest extends AbstractRestDocsConfig {
                 .lastActivityAt(LocalDateTime.now())
                 .build();
 
+        // mocking
         Mockito.when(userViewService.viewUserList(Mockito.anyString()))
                 .thenReturn(Arrays.asList(user1, user2));
-
         Mockito.when(cookieService.extractAccessTokenFromCookie(Mockito.any(HttpServletRequest.class)))
-                .thenReturn("testAccessToken");
+                .thenReturn(accessToken);
 
+        // when & then
         mockMvc.perform(get("/users/list")
-                .header("Set-Cookie", "accessToken=testAccessToken"))
+                .header("Set-Cookie", "accessToken=" + accessToken))
                 .andExpect(status().isOk())
                 .andDo(document("users/view/users-list",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
-                                headerWithName("Set-Cookie").description("accessToken = 엑세스토큰"))));
+                                headerWithName("Set-Cookie").description("accessToken = 엑세스토큰")),
+                        requestFields(
+                                fieldWithPath("userId").description("사용자 아이디"),
+                                fieldWithPath("email").description("사용자 이메일"),
+                                fieldWithPath("contact").description("사용자 연락처"),
+                                fieldWithPath("status").description("사용자 상태"),
+                                fieldWithPath("userType").description("사용자 타입"),
+                                fieldWithPath("createdAt").description("사용자가 회원가입한 날짜"),
+                                fieldWithPath("updatedAt").description("최근 사용자 정보 수정 날짜 및 시간"),
+                                fieldWithPath("lastSignInAt").description("사용자의 최근 로그인 날짜 및 시간"),
+                                fieldWithPath("lastActivityAt").description("사용자의 최근 활동 날짜 및 시간"))));
     }
 }

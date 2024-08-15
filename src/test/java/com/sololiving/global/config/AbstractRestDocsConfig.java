@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -23,8 +26,12 @@ public abstract class AbstractRestDocsConfig {
     @Autowired
     public MockMvc mockMvc;
 
+    @Autowired
+    protected ObjectMapper objectMapper;
+
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
+        objectMapper.registerModule(new JavaTimeModule());
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).snippets()
                         .withTemplateFormat(TemplateFormats.asciidoctor()))

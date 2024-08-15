@@ -124,6 +124,18 @@ public class UserController {
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
     }
 
+    // 회원 비밀번호 변경
+    @PatchMapping("/password")
+    public ResponseEntity<SuccessResponse> updateUserPassword(
+            @RequestBody UpdateUserPasswordRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        userService.updateUserPassword(accessToken, requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage
+                        .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
+    }
+
     // 회원 닉네임 변경
     @PatchMapping("/nickname")
     public ResponseEntity<SuccessResponse> updateUserNickname(
@@ -160,7 +172,7 @@ public class UserController {
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
     }
 
-    // 회원 주소 변경
+    // 회원 생일 변경
     @PatchMapping("/birth")
     public ResponseEntity<SuccessResponse> updateUserBirth(
             @RequestBody UpdateUserBirthRequestDto requestDto,
@@ -172,15 +184,4 @@ public class UserController {
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
     }
 
-    // 회원 비밀번호 변경
-    @PatchMapping("/password")
-    public ResponseEntity<SuccessResponse> updateUserPassword(
-            @RequestBody UpdateUserPasswordRequestDto requestDto,
-            HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserPassword(accessToken, requestDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage
-                        .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
-    }
 }

@@ -24,8 +24,8 @@ public class UserVo {
     private String address;
     private LocalDate birth;
     private Status status;
-    private String followersCnt;
-    private String followingCnt;
+    private int followersCnt;
+    private int followingCnt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserType userType;
