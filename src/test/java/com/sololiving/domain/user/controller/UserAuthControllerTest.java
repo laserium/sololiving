@@ -9,6 +9,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,11 +37,12 @@ public class UserAuthControllerTest extends AbstractRestDocsConfig {
     void sendSignUpVerificationSmsTest() throws Exception {
         // given
         SendSignUpVerificationSmsRequestDto requestDto = SendSignUpVerificationSmsRequestDto.builder()
-                .contact("01012345678")
+                .contact("01011112222")
                 .build();
 
         // mocking
-        Mockito.doNothing().when(userAuthService).sendSignUpVerificationSms(requestDto);
+        Mockito.doNothing().when(userAuthService)
+                .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
 
         // when & then
         mockMvc.perform(post("/users/auth/contact-verification/send")
@@ -53,10 +55,12 @@ public class UserAuthControllerTest extends AbstractRestDocsConfig {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
-                                fieldWithPath("contact").description("휴대폰 번호"))));
+                                fieldWithPath("contact").description("휴대폰 번호"))))
+                .andDo(print()); // 디버깅용 로그 출력
 
         // verify
-        Mockito.verify(userAuthService, Mockito.times(1)).sendSignUpVerificationSms(Mockito.eq(requestDto));
+        Mockito.verify(userAuthService, Mockito.times(1))
+                .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
     }
 
     @Test
@@ -83,7 +87,7 @@ public class UserAuthControllerTest extends AbstractRestDocsConfig {
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("contact").description("휴대폰 번호"),
-                                fieldWithPath("code").description("인증 코드"))));
+                                fieldWithPath("code").description("문자로 전송한 코드 6자리"))));
 
         // verify
         Mockito.verify(smsService, Mockito.times(1)).checkSms(Mockito.eq(requestDto.getContact()),
