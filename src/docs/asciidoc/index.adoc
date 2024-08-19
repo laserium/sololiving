@@ -6,4 +6,10 @@
 :toclevels: 2
 :seclinks:
 
-include::user.adoc[]
+include::exception/error-codes.adoc[]
+include::exception/success-codes.adoc[]
+
+include::auth/auth.adoc[]
+
+include::user/user.adoc[]
+include::user/user-view.adoc[]

@@ -1,0 +1,17 @@
+== UserViewController
+=== [관리자]사용자 정보 불러오기
+==== Curl
+include::{snippets}/users/view/users-list/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/users/view/users-list/http-request.adoc[]
+===== 요청 헤더 (Request Header)
+include::{snippets}/users/view/users-list/request-headers.adoc[]
+
+==== 응답(Response)
+include::{snippets}/users/view/users-list/http-response.adoc[]
+
+==== 에러
+
+===== TOKEN_E001 +
+===== USER_E009

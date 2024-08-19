@@ -1,0 +1,70 @@
+== AuthController
+=== 로그인(SignIn)
+==== Curl
+include::{snippets}/auth/signin/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/auth/signin/http-request.adoc[]
+===== Parameter
+include::{snippets}/auth/signin/request-fields.adoc[]
+
+==== 응답(Response)
+include::{snippets}/auth/signin/http-response.adoc[]
+===== Parameter
+include::{snippets}/auth/signin/response-fields.adoc[]
+
+==== 에러 
+
+===== USER_E004 +
+===== AUTH_E001
+
+=== 로그아웃(SignOut)
+==== Curl
+include::{snippets}/auth/signout/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/auth/signout/http-request.adoc[]
+
+==== 응답(Response)
+include::{snippets}/auth/signout/http-response.adoc[]
+
+==== 에러 
+
+===== TOKEN_E002 +
+===== TOKEN_E003
+
+
+=== 아이디 찾기
+==== Curl
+include::{snippets}/auth/users/id-recover/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/auth/users/id-recover/http-request.adoc[]
+===== Parameter
+include::{snippets}/auth/users/id-recover/request-fields.adoc[]
+
+==== 응답(Response)
+include::{snippets}/auth/users/id-recover/http-response.adoc[]
+
+==== 에러 
+
+===== EMAIL_E002
+
+=== 비밀번호 찾기 (임시 비밀번호 설정)
+==== Curl
+include::{snippets}/auth/users/password-reset/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/auth/users/password-reset/http-request.adoc[]
+===== Parameter
+include::{snippets}/auth/users/password-reset/request-fields.adoc[]
+
+==== 응답(Response)
+include::{snippets}/auth/users/password-reset/http-response.adoc[]
+
+==== 에러 
+
+===== USER_E005 +
+===== EMAIL_E002
+
+

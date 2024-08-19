@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>UserViewTestController</title>
+<title>UserViewController</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -441,15 +441,52 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_userviewtestcontroller">UserViewTestController</h2>
+<h2 id="_userviewcontroller">UserViewController</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_관리자사용자_정보_불러오기">[관리자]사용자 정보 불러오기</h3>
+<div class="sect3">
+<h4 id="_curl">Curl</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/users/list' -i -X GET \
+    -H 'accessToken: dummyAccessToken'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_요청request">요청(Request)</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /users/list HTTP/1.1
-Cookie: accessToken=dummyAccessToken
+accessToken: dummyAccessToken
 Host: localhost:8080</code></pre>
 </div>
 </div>
+<div class="sect4">
+<h5 id="_request_header">Request Header</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>accessToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">액세스 토큰</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_응답response">응답(Response)</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -465,27 +502,34 @@ Content-Length: 590
   "contact" : "01012345678",
   "status" : "ACTIVE",
   "userType" : "GENERAL",
-  "createdAt" : "2024-08-02 21:55:05",
-  "updatedAt" : "2024-08-02 21:55:05",
+  "createdAt" : "2024-08-13 23:12:30",
+  "updatedAt" : "2024-08-13 23:12:30",
   "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-02 21:55:05"
+  "lastActivityAt" : "2024-08-13 23:12:30"
 }, {
   "userId" : "user2",
   "email" : "user2@example.com",
   "contact" : "01022222222",
   "status" : "ACTIVE",
   "userType" : "GENERAL",
-  "createdAt" : "2024-08-02 21:55:05",
-  "updatedAt" : "2024-08-02 21:55:05",
+  "createdAt" : "2024-08-13 23:12:30",
+  "updatedAt" : "2024-08-13 23:12:30",
   "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-02 21:55:05"
+  "lastActivityAt" : "2024-08-13 23:12:30"
 } ]</code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/users/list' -i -X GET \
-    -H 'Cookie: accessToken=dummyAccessToken'</code></pre>
+</div>
+<div class="sect3">
+<h4 id="_에러">에러</h4>
+<div class="sect4">
+<h5 id="_token_e001">TOKEN_E001<br></h5>
+
+</div>
+<div class="sect4">
+<h5 id="_user_e009">USER_E009</h5>
+
+</div>
 </div>
 </div>
 </div>
@@ -494,7 +538,7 @@ Content-Length: 590
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-08-02 20:47:25 +0900
+Last updated 2024-08-13 22:58:32 +0900
 </div>
 </div>
 </body>

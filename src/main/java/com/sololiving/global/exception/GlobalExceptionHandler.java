@@ -15,13 +15,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ErrorException.class)
     public ResponseEntity<ErrorResponse> handleErrorException(ErrorException ex) {
-        ErrorResponse errorResponse = ErrorResponse.builder().code(ex.getErrorCode().getCode()).message(ex.getErrorCode().getMessage()).build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        ErrorResponse errorResponse = ErrorResponse.builder().code(ex.getErrorCode().getCode())
+                .message(ex.getErrorCode().getMessage()).build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(SuccessException.class)
     public ResponseEntity<SuccessResponse> handleSuccessException(SuccessException ex) {
-        SuccessResponse successResponse = SuccessResponse.builder().code(ex.getSuccessCode().getCode()).message(ex.getSuccessCode().getMessage()).build();
+        SuccessResponse successResponse = SuccessResponse.builder().code(ex.getSuccessCode().getCode())
+                .message(ex.getSuccessCode().getMessage()).build();
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 

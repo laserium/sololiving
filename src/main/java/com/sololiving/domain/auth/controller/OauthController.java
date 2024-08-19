@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/oauth")
-public class OauthController {
+public class OAuthController {
 
     private final NaverOAuthService naverOAuthService;
     private final KakaoOAuthService kakaoOAuthService;

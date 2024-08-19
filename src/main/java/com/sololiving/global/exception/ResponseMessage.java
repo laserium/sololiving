@@ -20,5 +20,5 @@ public class ResponseMessage {
                 .message(errorCode.getMessage())
                 .build();
     }
-    
+
 }

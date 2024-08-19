@@ -1,0 +1,16 @@
+== Success Code
+
+=== Parameter
+include::{snippets}/success-codes/user/response-fields.adoc[]
+
+=== User 관련
+==== Json
+include::{snippets}/success-codes/user/response-body.adoc[]
+
+=== Auth 관련
+==== Json
+include::{snippets}/success-codes/auth/response-body.adoc[]
+
+=== Email 관련
+==== Json
+include::{snippets}/success-codes/email/response-body.adoc[]

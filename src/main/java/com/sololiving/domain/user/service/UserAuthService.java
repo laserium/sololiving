@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
-import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.CheckSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
@@ -67,7 +66,7 @@ public class UserAuthService {
         return !userAuthMapper.existsByEmail(email);
     }
 
-    // 중복 검사 - 연락처
+    // 중복 검사 - 연락처(존재하면 false 반환)
     private boolean isUserContactAvailable(String contact) {
         return !userAuthMapper.existsByContact(contact);
     }
@@ -127,10 +126,10 @@ public class UserAuthService {
     }
 
     // 아이디와 이메일 검증
-    public String validateUserIdAndEmail(String userId, String email) {
-        String userEmail = userAuthMapper.findEmailByUserId(userId);
-        if (userEmail.equals(email)) {
-            return userEmail;
+    public String validateUserIdAndEmail(String userId, String inputEmail) {
+        String email = userAuthMapper.findEmailByUserId(userId);
+        if (email.equals(inputEmail)) {
+            return email;
         } else
             throw new ErrorException(UserErrorCode.USER_EMAIL_NOT_FOUND);
     }

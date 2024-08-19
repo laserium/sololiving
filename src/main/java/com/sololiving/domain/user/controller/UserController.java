@@ -20,6 +20,7 @@ import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserNic
 import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserPasswordRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.ValidateUpdateUserContactRequestDto;
 import com.sololiving.domain.user.enums.Status;
+import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserService;
 import com.sololiving.global.exception.ResponseMessage;
@@ -65,7 +66,7 @@ public class UserController {
 
     // 상태변경
     @PatchMapping("/status/{status}")
-    public ResponseEntity<SuccessResponse> updateUserStatus(@PathVariable Status status,
+    public ResponseEntity<?> updateUserStatus(@PathVariable Status status,
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         userService.updateStatus(accessToken, status);
@@ -73,14 +74,19 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseMessage
                             .createSuccessResponse(UserSuccessCode.USER_STATUS_ACTIVE));
-        } else if (status == Status.BLOCKED) {
+        }
+        if (status == Status.BLOCKED) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseMessage
                             .createSuccessResponse(UserSuccessCode.USER_STATUS_BLOCKED));
-        } else
+        }
+        if (status == Status.WITHDRAWN) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseMessage
                             .createSuccessResponse(UserSuccessCode.USER_STATUS_WITHDRAWN));
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(UserErrorCode.NO_USER_STATUS_REQUEST);
     }
 
     // 회원 이메일 변경
@@ -113,6 +119,18 @@ public class UserController {
             HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
         userService.updateUserContact(accessToken, requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage
+                        .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
+    }
+
+    // 회원 비밀번호 변경
+    @PatchMapping("/password")
+    public ResponseEntity<SuccessResponse> updateUserPassword(
+            @RequestBody UpdateUserPasswordRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        userService.updateUserPassword(accessToken, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -154,7 +172,7 @@ public class UserController {
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
     }
 
-    // 회원 주소 변경
+    // 회원 생일 변경
     @PatchMapping("/birth")
     public ResponseEntity<SuccessResponse> updateUserBirth(
             @RequestBody UpdateUserBirthRequestDto requestDto,
@@ -166,15 +184,4 @@ public class UserController {
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
     }
 
-    // 회원 비밀번호 변경
-    @PatchMapping("/password")
-    public ResponseEntity<SuccessResponse> updateUserPassword(
-            @RequestBody UpdateUserPasswordRequestDto requestDto,
-            HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserPassword(accessToken, requestDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage
-                        .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
-    }
 }
