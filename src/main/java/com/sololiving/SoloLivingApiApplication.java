@@ -1,8 +1,8 @@
 package com.sololiving;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 // CI/CD TEST 1
@@ -10,9 +10,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableAspectJAutoProxy
 public class SoloLivingApiApplication {
     public static void main(String[] args) {
-        new SpringApplicationBuilder(SoloLivingApiApplication.class)
-                .profiles("dev")
-                .run(args);
+        SpringApplication.run(SoloLivingApiApplication.class, args);
     }
-
 }

@@ -9,7 +9,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.CheckSignUpVerificationSmsRequestDto;
-import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.config.AbstractRestDocsConfig;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
@@ -37,32 +35,33 @@ public class UserAuthControllerTest extends AbstractRestDocsConfig {
     // void sendSignUpVerificationSmsTest() throws Exception {
     //     // given
     //     SendSignUpVerificationSmsRequestDto requestDto = SendSignUpVerificationSmsRequestDto.builder()
-    //             .contact("01011112222")
-    //             .build();
-
-    //     // mocking
+    //         .contact("01011112222")
+    //         .build();
+    // 
+ 
+    // ng
     //     Mockito.doNothing().when(userAuthService)
-    //             .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
-
-    //     // when & then
+    //         .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
+ 
+    // & then
     //     mockMvc.perform(post("/users/auth/contact-verification/send")
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .content(objectMapper.writeValueAsString(requestDto)))
-    //             .andExpect(status().isOk())
-    //             .andExpect(jsonPath("$.code").value(SmsSuccessCode.SUCCESS_TO_SEND.getCode()))
-    //             .andExpect(jsonPath("$.message").value(SmsSuccessCode.SUCCESS_TO_SEND.getMessage()))
-    //             .andDo(document("/users/auth/signup-contact-verification/send",
-    //                     preprocessRequest(prettyPrint()),
-    //                     preprocessResponse(prettyPrint()),
-    //                     requestFields(
-    //                             fieldWithPath("contact").description("휴대폰 번호"))))
-    //             .andDo(print()); // 디버깅용 로그 출력
-
-    //     // verify
+    //         .contentType(MediaType.APPLICATION_JSON)
+    //         .content(objectMapper.writeValueAsString(requestDto)))
+    // .andExpect(status().isOk())
+    // .andExpect(jsonPath("$.code").value(SmsSuccessCode.SUCCESS_TO_SEND.getCode()))
+    // .andExpect(jsonPath("$.message").value(SmsSuccessCode.SUCCESS_TO_SEND.getMessage()))
+    // .andDo(document("/users/auth/signup-contact-verification/send",
+    //         preprocessRequest(prettyPrint()),
+    //         preprocessResponse(prettyPrint()),
+    // requestFields(
+    //         fieldWithPath("contact").description("휴대폰 번호"))))
+    // rint()); // 디버깅용 로그 출력
+ 
+    // y
     //     Mockito.verify(userAuthService, Mockito.times(1))
-    //             .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
-    // }
-
+    //         .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
+    // 
+ 
     @Test
     @DisplayName("회원가입 시 휴대폰 인증번호 검증 테스트")
     void checkSignUpVerificationCodeTest() throws Exception {
