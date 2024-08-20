@@ -70,6 +70,9 @@ phases:
 
     pre_build:
         commands:
+            - echo "Creating directories for Asciidoctor..."
+            - mkdir -p build/generated-snippets
+            - mkdir -p src/main/resources/static/docs
             - echo "Cleaning up old files..."
             - rm -rf /path/to/old/deployments/* || true
             - echo "Restoring cache..."
