@@ -32,13 +32,13 @@ public class ExecutionTimeLoggerAspect {
     @Order(1)
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
-        
+
         Object proceed = joinPoint.proceed();
-        
+
         long executionTime = System.currentTimeMillis() - start;
 
         logExecutionTimeAsync(joinPoint.getSignature().toString(), executionTime);
-        
+
         return proceed;
     }
 
@@ -47,7 +47,8 @@ public class ExecutionTimeLoggerAspect {
     public Object logTotalExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes != null) {
-            requestAttributes.setAttribute(START_TIME_ATTR, System.currentTimeMillis(), RequestAttributes.SCOPE_REQUEST);
+            requestAttributes.setAttribute(START_TIME_ATTR, System.currentTimeMillis(),
+                    RequestAttributes.SCOPE_REQUEST);
             requestAttributes.setAttribute(CONTROLLER_EXECUTED_ATTR, true, RequestAttributes.SCOPE_REQUEST);
         }
 
@@ -55,7 +56,8 @@ public class ExecutionTimeLoggerAspect {
 
         if (requestAttributes != null) {
             Long startTime = (Long) requestAttributes.getAttribute(START_TIME_ATTR, RequestAttributes.SCOPE_REQUEST);
-            Boolean controllerExecuted = (Boolean) requestAttributes.getAttribute(CONTROLLER_EXECUTED_ATTR, RequestAttributes.SCOPE_REQUEST);
+            Boolean controllerExecuted = (Boolean) requestAttributes.getAttribute(CONTROLLER_EXECUTED_ATTR,
+                    RequestAttributes.SCOPE_REQUEST);
             if (startTime != null && controllerExecuted != null && controllerExecuted) {
                 long totalExecutionTime = System.currentTimeMillis() - startTime;
                 logTotalExecutionTimeAsync(joinPoint.getSignature().toString(), totalExecutionTime);

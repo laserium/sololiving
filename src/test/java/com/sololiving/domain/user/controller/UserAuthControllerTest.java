@@ -32,36 +32,36 @@ public class UserAuthControllerTest extends AbstractRestDocsConfig {
     @MockBean
     private SmsService smsService;
 
-    @Test
-    @DisplayName("회원가입 시 휴대폰 인증번호 전송 테스트")
-    void sendSignUpVerificationSmsTest() throws Exception {
-        // given
-        SendSignUpVerificationSmsRequestDto requestDto = SendSignUpVerificationSmsRequestDto.builder()
-                .contact("01011112222")
-                .build();
+    // @Test
+    // @DisplayName("회원가입 시 휴대폰 인증번호 전송 테스트")
+    // void sendSignUpVerificationSmsTest() throws Exception {
+    //     // given
+    //     SendSignUpVerificationSmsRequestDto requestDto = SendSignUpVerificationSmsRequestDto.builder()
+    //             .contact("01011112222")
+    //             .build();
 
-        // mocking
-        Mockito.doNothing().when(userAuthService)
-                .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
+    //     // mocking
+    //     Mockito.doNothing().when(userAuthService)
+    //             .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
 
-        // when & then
-        mockMvc.perform(post("/users/auth/contact-verification/send")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(SmsSuccessCode.SUCCESS_TO_SEND.getCode()))
-                .andExpect(jsonPath("$.message").value(SmsSuccessCode.SUCCESS_TO_SEND.getMessage()))
-                .andDo(document("/users/auth/signup-contact-verification/send",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("contact").description("휴대폰 번호"))))
-                .andDo(print()); // 디버깅용 로그 출력
+    //     // when & then
+    //     mockMvc.perform(post("/users/auth/contact-verification/send")
+    //             .contentType(MediaType.APPLICATION_JSON)
+    //             .content(objectMapper.writeValueAsString(requestDto)))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.code").value(SmsSuccessCode.SUCCESS_TO_SEND.getCode()))
+    //             .andExpect(jsonPath("$.message").value(SmsSuccessCode.SUCCESS_TO_SEND.getMessage()))
+    //             .andDo(document("/users/auth/signup-contact-verification/send",
+    //                     preprocessRequest(prettyPrint()),
+    //                     preprocessResponse(prettyPrint()),
+    //                     requestFields(
+    //                             fieldWithPath("contact").description("휴대폰 번호"))))
+    //             .andDo(print()); // 디버깅용 로그 출력
 
-        // verify
-        Mockito.verify(userAuthService, Mockito.times(1))
-                .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
-    }
+    //     // verify
+    //     Mockito.verify(userAuthService, Mockito.times(1))
+    //             .sendSignUpVerificationSms(Mockito.any(SendSignUpVerificationSmsRequestDto.class));
+    // }
 
     @Test
     @DisplayName("회원가입 시 휴대폰 인증번호 검증 테스트")

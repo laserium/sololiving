@@ -1,16 +1,22 @@
 package com.sololiving.global.config;
 
+import java.time.Duration;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.DefaultClientResources;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,8 +37,20 @@ public class RedisConfig {
         redisConfig.setHostName(host);
         redisConfig.setPort(port);
         // redisConfig.setPassword(password); // 비밀번호 설정
+        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                .useSsl() // TLS/SSL 사용
+                .and()
+                .commandTimeout(Duration.ofSeconds(30))
+                .clientResources(clientResources())
+                .clientOptions(ClientOptions.builder().autoReconnect(true).build())
+                .build();
 
-        return new LettuceConnectionFactory(redisConfig);
+        return new LettuceConnectionFactory(redisConfig, clientConfig);
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public ClientResources clientResources() {
+        return DefaultClientResources.create();
     }
 
     // RedisTemplate 설정
