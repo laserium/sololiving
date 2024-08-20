@@ -3,7 +3,7 @@ package com.sololiving;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = SoloLivingApiApplication.class)
+@SpringBootTest(classes = HomeApplicationTests.class)
 class HomeApplicationTests {
 
     @Test
