@@ -81,12 +81,14 @@ phases:
 
     build:
         commands:
-            - echo "Building the project with tests..."
-            - ./gradlew build
+            - echo "Building the project..."
+            - ./gradlew build -x test
 
     post_build:
         commands:
-            - echo "Build and tests completed on `date`"
+            - echo "Build completed on `date`"
+            - echo "Running tests..."
+            - ./gradlew test
             - echo "Copying build artifacts..."
             - mkdir -p /home/ubuntu/codebuild/output/
             - cp build/libs/*.jar /home/ubuntu/codebuild/output/
