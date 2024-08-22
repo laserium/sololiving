@@ -1,6 +1,12 @@
 spring:
-    config:
-        import: "aws-secretsmanager:sololiving/secrets"
+    cloud:
+        aws:
+            secretsmanager:
+                enable: true
+                prefix: sololiving
+                region: ap-northeast-2
+                defaultContext: secrets
+                fail-fast: true
     app:
         url: "${sololiving.app.url}"
     ## MYSQL SETTING ##

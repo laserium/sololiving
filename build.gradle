@@ -68,8 +68,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     // AWS Security Manager
-    implementation"io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4"
-    
+    implementation 'org.springframework.cloud:spring-cloud-starter-config:4.1.3'
+    implementation 'software.amazon.awssdk:secretsmanager'
+
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
