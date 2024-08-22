@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+    secrets-manager:
+        AWS_ACCESS_KEY_ID: "sololiving-dev/access-key:access-key-id"
+        AWS_SECRET_ACCESS_KEY: "sololiving-dev/access-key:access-key"
+
 phases:
     install:
         runtime-versions:

@@ -80,7 +80,3 @@ sololiving:
     google:
         oauth2:
             state: "${google.oauth2.state}"
-
-cloud:
-    aws:
-        secretsManager:
