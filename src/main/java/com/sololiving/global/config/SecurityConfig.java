@@ -16,20 +16,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(authorize -> 
-                authorize
-                    .requestMatchers("/**").permitAll()
-                    .anyRequest().permitAll()
-            )
-            .csrf((csrfConfig) -> csrfConfig.disable())
-            .oauth2Login(withDefaults());
-        //     .headers(headers -> headers
-        //         .contentSecurityPolicy(csp -> csp
-        //             .policyDirectives("default-src 'self'; script-src 'self' https://trusted.cdn.com")
-        //         )
-        //         .frameOptions(frameOptions -> frameOptions
-        //             .deny() 
-        //         )
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .anyRequest().permitAll())
+                .csrf((csrfConfig) -> csrfConfig.disable())
+                .oauth2Login(withDefaults());
+        // .headers(headers -> headers
+        // .contentSecurityPolicy(csp -> csp
+        // .policyDirectives("default-src 'self'; script-src 'self'
+        // https://trusted.cdn.com")
+        // )
+        // .frameOptions(frameOptions -> frameOptions
+        // .deny()
+        // )
         // );
         return http.build();
     }

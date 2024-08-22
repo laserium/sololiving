@@ -69,6 +69,9 @@ dependencies {
 
     // AWS Security Manager
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.0.1'
+    
+    // AWS ALB Health Check
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
