@@ -1,4 +1,6 @@
 spring:
+    config:
+        import: "aws-secretsmanager:sololiving/secrets"
     app:
         url: "${sololiving.app.url}"
     ## MYSQL SETTING ##
@@ -78,3 +80,7 @@ sololiving:
     google:
         oauth2:
             state: "${google.oauth2.state}"
+
+cloud:
+    aws:
+        secretsManager:

@@ -1,8 +1,0 @@
-aws:
-    secretsmanager:
-        name: secrets
-        prefix: /sololiving
-cloud:
-    aws:
-        region:
-            static: ap-northeast-2
