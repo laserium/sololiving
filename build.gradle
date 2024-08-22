@@ -68,8 +68,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     // AWS Security Manager
-    implementation 'org.springframework.cloud:spring-cloud-starter-config:4.1.3'
-    implementation 'software.amazon.awssdk:secretsmanager:2.27.9'
+    implementation 'io.awspring.cloud:spring-cloud-aws-dependencies:3.0.1'
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter'
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
@@ -103,6 +105,12 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation 'org.mockito:mockito-core'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
+    }
 }
 
 ext {
