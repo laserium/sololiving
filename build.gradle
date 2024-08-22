@@ -68,10 +68,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     // AWS Security Manager
-    implementation 'io.awspring.cloud:spring-cloud-aws-dependencies:3.0.1'
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter'
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.0.1'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
@@ -107,11 +104,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
-    }
-}
 
 ext {
 	snippetsDir = file('build/generated-snippets')

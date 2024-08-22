@@ -1,6 +1,6 @@
 spring:
     config:
-        import: aws-secretsmanager:/sololiving/secrets
+        import: aws-secretsmanager:sololiving/secrets
     app:
         url: "${sololiving.app.url}"
     ## MYSQL SETTING ##
