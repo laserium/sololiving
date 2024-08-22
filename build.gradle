@@ -69,7 +69,7 @@ dependencies {
 
     // AWS Security Manager
     implementation 'org.springframework.cloud:spring-cloud-starter-config:4.1.3'
-    implementation 'software.amazon.awssdk:secretsmanager'
+    implementation 'software.amazon.awssdk:secretsmanager:2.27.9'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
