@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if CodeDeploy Agent is installed
-if systemctl status codedeploy-agent > /dev/null 2>&1; then
+if dpkg -l | grep codedeploy-agent > /dev/null 2>&1; then
     echo "CodeDeploy Agent is already installed."
 else
     echo "Installing CodeDeploy Agent..."
@@ -17,7 +17,7 @@ else
 fi
 
 # Confirm that the CodeDeploy agent is running
-if systemctl status codedeploy-agent > /dev/null 2>&1; then
+if sudo systemctl is-active --quiet codedeploy-agent; then
     echo "CodeDeploy Agent is running."
 else
     echo "CodeDeploy Agent failed to start. Please check the logs."
