@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Starting application..."
-nohup java -jar /home/ubuntu/sololiving.jar > /home/ubuntu/nohup.out 2>&1 &
+nohup java -jar /home/ubuntu/sololiving.jar/sololiving-0.0.1-SNAPSHOT.jar > /home/ubuntu/nohup.out 2>&1 &
 
 # 애플리케이션이 시작될 때까지 대기
 echo "Waiting for the application to start..."
