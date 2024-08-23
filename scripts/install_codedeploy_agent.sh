@@ -1,14 +1,16 @@
 #!/bin/bash
-# Install AWS CodeDeploy Agent
-echo "Installing CodeDeploy Agent..."
-sudo su
-apt-get update
-apt-get install -y ruby wget
+# Check if CodeDeploy Agent is installed
+if systemctl status codedeploy-agent > /dev/null 2>&1; then
+    echo "CodeDeploy Agent is already installed."
+else
+    echo "Installing CodeDeploy Agent..."
+    sudo apt-get update
+    sudo apt-get install -y ruby wget
+    cd /home/ubuntu
+    wget https://aws-codedeploy-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/latest/install
+    chmod +x ./install
+    sudo ./install auto
+    sudo service codedeploy-agent start
+fi
 
-cd /home/ubuntu
-wget https://bucket-name.s3.amazonaws.com/latest/install
-chmod +x ./install
-./install auto
-
-# Start the CodeDeploy Agent
-systemctl codedeploy-agent start
+sudo service codedeploy-agent status
