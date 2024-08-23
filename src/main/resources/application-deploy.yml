@@ -80,3 +80,6 @@ sololiving:
     google:
         oauth2:
             state: "${google.oauth2.state}"
+
+server:
+    port: 8080
