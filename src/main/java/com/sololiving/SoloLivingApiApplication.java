@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-// CI/CD TEST 52
+// CI/CD TEST 53
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableAspectJAutoProxy
 public class SoloLivingApiApplication {
