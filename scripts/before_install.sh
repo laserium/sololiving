@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Stopping any existing Java applications..."
-pkill -f 'java -jar /home/ubuntu/sololiving.jar' || true
+pkill -f 'java -jar /home/ubuntu/sololiving.jar/sololiving-0.0.1-SNAPSHOT.jar' || true
 
 # Java 설치
 if ! java -version &>/dev/null; then
