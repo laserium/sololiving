@@ -1,5 +1,3 @@
 #!/bin/bash
-echo "Stopping existing application..."
-sudo systemctl stop sololiving.service || {
-  echo "Service is not running or already stopped."
-}
+echo "Stopping any existing Java applications..."
+pkill -f 'java -jar /home/ubuntu/sololiving.jar' || true
