@@ -8,10 +8,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableAspectJAutoProxy
 public class SoloLivingApiApplication {
-	public static void main(String[] args) {
-		new SpringApplicationBuilder(SoloLivingApiApplication.class)
-				.profiles("dev")
-				.run(args);
-	}
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(SoloLivingApiApplication.class)
+                .profiles("develop")
+                .run(args);
+    }
 
 }

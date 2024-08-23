@@ -39,6 +39,9 @@ out/
 
 ## SECURITY ##
 application-dev.properties
+application-develop.properties
+application-develop.yml
 application-test.properties
+application-test.yml
 application.properties
 keystore.p12
