@@ -38,8 +38,9 @@ public class RedisConfig {
         redisConfig.setPort(port);
         // redisConfig.setPassword(password); // 비밀번호 설정
         LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .useSsl() // TLS/SSL 사용
-                .and()
+                // deploy 시 주석해제 / develop 시 주석처리
+                // .useSsl() // TLS/SSL 사용
+                // .and()
                 .commandTimeout(Duration.ofSeconds(30))
                 .clientResources(clientResources())
                 .clientOptions(ClientOptions.builder().autoReconnect(true).build())
