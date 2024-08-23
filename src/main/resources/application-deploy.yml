@@ -1,0 +1,85 @@
+spring:
+    config:
+        import: aws-secretsmanager:sololiving/secrets
+    app:
+        url: "${sololiving.app.url}"
+    ## MYSQL SETTING ##
+    datasource:
+        driver-class-name: "${spring.datasource.driver-class-name}"
+        url: "${spring.datasource.url}"
+        username: "${spring.datasource.username}"
+        password: "${spring.datasource.password}"
+    ## Redis ##
+    data:
+        redis:
+            host: "${redis.host}"
+            port: "${redis.port}"
+
+    ## OAuth2 - Kakao, Naver, Google ##
+    security:
+        oauth2:
+            client:
+                registration:
+                    kakao:
+                        client-id: "${kakao.client-id}"
+                        client-secret: "${kakao.client-secret}"
+                        redirect-uri: "${kakao.redirect-uri}"
+                        authorization-grant-type: "${kakao.authorization-grant-type}"
+                        scope: "${kakao.scope}"
+                    naver:
+                        client-id: "${naver.client-id}"
+                        client-secret: "${naver.client-secret}"
+                        redirect-uri: "${naver.redirect-uri}"
+                        authorization-grant-type: "${naver.authorization-grant-type}"
+                    google:
+                        client-id: "${google.client-id}"
+                        client-secret: "${google.client-secret}"
+                        redirect-uri: "${google.redirect-uri}"
+                        authorization-grant-type: "${google.authorization-grant-type}"
+                provider:
+                    kakao:
+                        token-uri: "${kakao.token-uri}"
+                        authorization-uri: "${kakao.authorization-uri}"
+                        user-info-uri: "${kakao.user-info-uri}"
+                        user-name-attribute: "${kakao.user-name-attribute}"
+                    naver:
+                        token-uri: "${naver.token-uri}"
+                        authorization-uri: "${naver.authorization-uri}"
+                    google:
+                        token-uri: "${google.token-uri}"
+                        authorization-uri: "${google.authorization-uri}"
+
+    ## EMAIL ##
+    mail:
+        host: "${mail.host}"
+        port: "${mail.port}"
+        username: "${mail.username}"
+        password: "${mail.password}"
+        properties:
+            mail:
+                smtp:
+                    auth: "${mail.properties.mail.smtp.auth}"
+                    starttls:
+                        enable: "${mail.properties.mail.smtp.starttls.enable}"
+
+## JWT ##
+jwt:
+    issuer: "${jwt.issuer}"
+    secretKey: "${jwt.secretKey}"
+
+## SMS ##
+sololiving:
+    coolsms:
+        api:
+            key: "${coolsms.api.key}"
+            secret: "${coolsms.api.secret}"
+        fromnumber: "${coolsms.fromnumber}"
+    naver:
+        oauth2:
+            state: "${naver.oauth2.state}"
+    google:
+        oauth2:
+            state: "${google.oauth2.state}"
+
+server:
+    port: 8080

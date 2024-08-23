@@ -1,18 +1,18 @@
 version: 0.0
 os: linux
 files:
-    - source: /build/libs/sololiving-0.0.1-SNAPSHOT ## CodeBuild 빌드 아티팩트 디렉터리 내의 경로
+    - source: /build/libs/ ## CodeBuild 빌드 아티팩트 디렉터리 내의 경로
       destination: /home/ubuntu/sololiving.jar ##  EC2 인스턴스에서 JAR 파일이 저장될 위치
 hooks:
     BeforeInstall:
+        - location: scripts/install_codedeploy_agent.sh
+          timeout: 300
+          runas: ubuntu
         - location: scripts/before_install.sh
           timeout: 300
           runas: ubuntu
     AfterInstall:
         - location: scripts/after_install.sh
-          timeout: 300
-          runas: ubuntu
-        - location: scripts/create_application_properties.sh
           timeout: 300
           runas: ubuntu
     ApplicationStart:

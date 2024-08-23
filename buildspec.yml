@@ -2,62 +2,8 @@ version: 0.2
 
 env:
     secrets-manager:
-        # Load all secrets as environment variables
-        SPRING_DATASOURCE_URL: sololiving/rds/secrets:host
-        SPRING_DATASOURCE_USERNAME: sololiving/rds/secrets:username
-        SPRING_DATASOURCE_PASSWORD: sololiving/rds/secrets:password
-        SPRING_DATASOURCE_DRIVER_CLASS_NAME: sololiving/rds/secrets:engine
-
-        # Kakao OAuth2 settings
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID: sololiving/secrets:kakao.client-id
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_SECRET: sololiving/secrets:kakao.client-secret
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT_URI: sololiving/secrets:kakao.redirect-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_AUTHORIZATION_GRANT_TYPE: sololiving/secrets:kakao.authorization-grant-type
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_SCOPE: sololiving/secrets:kakao.scope
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_TOKEN_URI: sololiving/secrets:kakao.token-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_AUTHORIZATION_URI: sololiving/secrets:kakao.authorization-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_INFO_URI: sololiving/secrets:kakao.user-info-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KAKAO_USER_NAME_ATTRIBUTE: sololiving/secrets:kakao.user-name-attribute
-
-        # Naver OAuth2 settings
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID: sololiving/secrets:naver.client-id
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_SECRET: sololiving/secrets:naver.client-secret
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_REDIRECT_URI: sololiving/secrets:naver.redirect-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_AUTHORIZATION_GRANT_TYPE: sololiving/secrets:naver.authorization-grant-type
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_NAVER_TOKEN_URI: sololiving/secrets:naver.token-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_NAVER_AUTHORIZATION_URI: sololiving/secrets:naver.authorization-uri
-        SOLOLIVING_NAVER_OAUTH2_STATE: sololiving/secrets:naver.oauth2.state
-
-        # Google OAuth2 settings
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID: sololiving/secrets:google.client-id
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET: sololiving/secrets:google.client-secret
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI: sololiving/secrets:google.redirect-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE: sololiving/secrets:google.authorization-grant-type
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI: sololiving/secrets:google.token-uri
-        SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI: sololiving/secrets:google.authorization-uri
-        SOLOLIVING_GOOGLE_OAUTH2_STATE: sololiving/secrets:google.oauth2.state
-
-        # JWT settings
-        JWT_ISSUER: sololiving/secrets:jwt.issuer
-        JWT_SECRETKEY: sololiving/secrets:jwt.secretKey
-
-        # Email settings
-        SPRING_MAIL_HOST: sololiving/secrets:mail.host
-        SPRING_MAIL_PORT: sololiving/secrets:mail.port
-        SPRING_MAIL_USERNAME: sololiving/secrets:mail.username
-        SPRING_MAIL_PASSWORD: sololiving/secrets:mail.password
-        SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: sololiving/secrets:mail.properties.mail.smtp.auth
-        SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: sololiving/secrets:mail.properties.mail.smtp.starttls.enable
-        SOLOLIVING_APP_URL: sololiving/secrets:sololiving.app.url
-
-        # SMS settings
-        SOLOLIVING_COOLSMS_API_KEY: sololiving/secrets:coolsms.api.key
-        SOLOLIVING_COOLSMS_API_SECRET: sololiving/secrets:coolsms.api.secret
-        SOLOLIVING_COOLSMS_FROMNUMBER: sololiving/secrets:coolsms.fromnumber
-
-        # Redis settings
-        SPRING_DATA_REDIS_HOST: sololiving/secrets:redis.host
-        SPRING_DATA_REDIS_PORT: sololiving/secrets:redis.port
+        AWS_ACCESS_KEY_ID: "sololiving-dev/access-key:access-key-id"
+        AWS_SECRET_ACCESS_KEY: "sololiving-dev/access-key:access-key"
 
 phases:
     install:
@@ -70,33 +16,28 @@ phases:
 
     pre_build:
         commands:
+            - echo "Creating directories for Asciidoctor..."
+            - mkdir -p build/generated-snippets
+            - mkdir -p src/main/resources/static/docs
             - echo "Cleaning up old files..."
             - rm -rf /path/to/old/deployments/* || true
             - echo "Restoring cache..."
-            - mkdir -p /codebuild/output/.cache # 캐시 디렉토리를 생성합니다.
+            - mkdir -p /codebuild/output/.cache
             - cp -R /root/.gradle/cache /codebuild/output/.cache/ || true
 
     build:
         commands:
-            - echo "Building the project..."
-            - ./gradlew build -x test
+            - echo "Building the project with tests..."
+            - ./gradlew build
 
     post_build:
         commands:
-            - echo "Build completed on `date`"
-            - echo "Running tests..."
-            - ./gradlew test
-
-            # Gradle 빌드에서 생성된 JAR 파일을 복사합니다.
+            - echo "Build and tests completed on `date`"
             - echo "Copying build artifacts..."
             - mkdir -p /home/ubuntu/codebuild/output/
             - cp build/libs/*.jar /home/ubuntu/codebuild/output/
-
-            # aws codedeploy 에서 사용될 appspec.yml, scripts 내부 스크립트 파일들 복사
             - cp appspec.yml /home/ubuntu/codebuild/output/
             - cp -R scripts/ /home/ubuntu/codebuild/output/
-
-            # Gradle 캐시를 복사합니다. 해당 경로가 존재하지 않을 경우 에러를 무시합니다.
             - echo "Saving Gradle cache..."
             - cp -R /home/ubuntu/codebuild/output/.cache /root/.gradle/cache || true
 

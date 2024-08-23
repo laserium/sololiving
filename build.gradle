@@ -67,6 +67,12 @@ dependencies {
 	// WebFlux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+    // AWS Security Manager
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.0.1'
+    
+    // AWS ALB Health Check
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
@@ -100,6 +106,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-core'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
+
 
 ext {
 	snippetsDir = file('build/generated-snippets')
