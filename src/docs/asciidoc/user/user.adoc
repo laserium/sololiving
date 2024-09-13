@@ -5,7 +5,7 @@ include::{snippets}/users/signup/curl-request.adoc[]
 
 ==== 요청(Request)
 include::{snippets}/users/signup/http-request.adoc[]
-===== Parameter
+===== Request Body
 include::{snippets}/users/signup/request-fields.adoc[]
 
 ==== 응답(Response)
@@ -19,15 +19,15 @@ include::{snippets}/users/signup/http-response.adoc[]
 
 === 회원탈퇴
 ==== Curl
-include::{snippets}/users/delete-user/curl-request.adoc[]
+include::{snippets}/users/delete/user/curl-request.adoc[]
 
 ==== 요청(Request)
-include::{snippets}/users/delete-user/http-request.adoc[]
+include::{snippets}/users/delete/user/http-request.adoc[]
 ===== 요청 헤더 (Request Header)
-include::{snippets}/users/delete-user/request-headers.adoc[]
+include::{snippets}/users/delete/user/request-headers.adoc[]
 
 ==== 응답(Response)
-include::{snippets}/users/delete-user/http-response.adoc[]
+include::{snippets}/users/delete/user/http-response.adoc[]
 
 ==== 에러
 

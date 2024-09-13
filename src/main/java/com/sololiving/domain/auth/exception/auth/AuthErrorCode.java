@@ -14,7 +14,8 @@ public enum AuthErrorCode implements ErrorCode {
     MISSING_OAUTH2_CONFIGURATION_PROPERTIES("AUTH_E003", "OAUTH2 관련 정보를 찾을 수 없습니다."),
     FAIL_TO_RETRIEVE_USER_INFO("AUTH_E004", "사용자 정보 조회 실패(OAuth2.0, NAVER)"),
     WRONG_PARAMETER_OR_REQUEST("AUTH_E005", "파라미터가 잘못되었거나 요청문이 잘못되었습니다."),
-    CANNOT_SIGN_OUT("AUTH_E006", "로그아웃을 할 수 없습니다.");
+    CANNOT_SIGN_OUT("AUTH_E006", "로그아웃을 할 수 없습니다."),
+    VERIFY_FAILED("AUTH_E007", "회원 인증 실패 - 권한 없음");
 
     private final String code;
     private final String message;

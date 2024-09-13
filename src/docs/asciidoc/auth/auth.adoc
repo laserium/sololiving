@@ -5,12 +5,12 @@ include::{snippets}/auth/signin/curl-request.adoc[]
 
 ==== 요청(Request)
 include::{snippets}/auth/signin/http-request.adoc[]
-===== Parameter
+===== Request Body
 include::{snippets}/auth/signin/request-fields.adoc[]
 
 ==== 응답(Response)
 include::{snippets}/auth/signin/http-response.adoc[]
-===== Parameter
+===== Response Body
 include::{snippets}/auth/signin/response-fields.adoc[]
 
 ==== 에러 
@@ -40,7 +40,7 @@ include::{snippets}/auth/users/id-recover/curl-request.adoc[]
 
 ==== 요청(Request)
 include::{snippets}/auth/users/id-recover/http-request.adoc[]
-===== Parameter
+===== Request Body
 include::{snippets}/auth/users/id-recover/request-fields.adoc[]
 
 ==== 응답(Response)
@@ -56,7 +56,7 @@ include::{snippets}/auth/users/password-reset/curl-request.adoc[]
 
 ==== 요청(Request)
 include::{snippets}/auth/users/password-reset/http-request.adoc[]
-===== Parameter
+===== Request Body
 include::{snippets}/auth/users/password-reset/request-fields.adoc[]
 
 ==== 응답(Response)

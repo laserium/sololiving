@@ -18,3 +18,7 @@ include::{snippets}/error-codes/token/response-body.adoc[]
 === Email 관련
 ==== Json
 include::{snippets}/error-codes/email/response-body.adoc[]
+
+=== Sms 관련
+==== Json
+include::{snippets}/error-codes/sms/response-body.adoc[]

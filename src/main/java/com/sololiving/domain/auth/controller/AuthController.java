@@ -12,6 +12,7 @@ import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
@@ -23,6 +24,7 @@ import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.util.CookieService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -93,6 +95,16 @@ public class AuthController {
         authEmailService.sendMailPasswordReset(emailResponseDto, "password-reset");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.PASSWORD_RESET_SUCCESS));
+    }
+
+    @PostMapping("/verification")
+    public ResponseEntity<SuccessResponse> postVerificationWithData(HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        if (userAuthService.validateUserIdwithAccessToken(accessToken)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.VERIFY_SUCCESS));
+        } else
+            throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
     }
 
 }

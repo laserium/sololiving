@@ -72,6 +72,8 @@ public class UserService {
                 .status(Status.ACTIVE)
                 .followersCnt(0)
                 .followingCnt(0)
+                .profileImage(null)
+                .profileBio(null)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .userType(UserType.GENERAL)
