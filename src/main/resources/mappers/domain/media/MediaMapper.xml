@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.media.mapper.MediaMapper">
+    <insert id="insertMedia" parameterType="com.sololiving.domain.media.vo.MediaVo">
+        INSERT INTO MEDIA (article_id, media_type, media_url, media_name, file_size)
+        VALUES (
+            #{articleId}, 
+            #{mediaType}, 
+            #{mediaUrl}, 
+            #{mediaName}, 
+            #{fileSize}
+        )
+    </insert>
+</mapper>

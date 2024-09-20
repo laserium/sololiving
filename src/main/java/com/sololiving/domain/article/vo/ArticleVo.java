@@ -6,14 +6,16 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class Article {
+public class ArticleVo {
     private Long articleId;
     private String writer;
+    private String title;
     private String content;
-    private LocalDateTime createdAt;
-    private Category category;
+    private Long categoryId;
     private int likeCnt;
     private int viewCnt;
     private int score;
     private boolean isBlinded;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

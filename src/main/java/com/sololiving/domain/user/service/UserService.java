@@ -42,7 +42,7 @@ public class UserService {
 
     private static final String USER_NICK_NAME = "익명";
     private final UserAuthService userAuthService;
-    private final AccessTokenService tokenService;
+    private final AccessTokenService accessTokenService;
     private final TokenProvider tokenProvider;
     private final UserMapper userMapper;
     private final EmailService emailService;
@@ -66,19 +66,6 @@ public class UserService {
                 .nickname(USER_NICK_NAME)
                 .contact(requestDto.getContact())
                 .email(requestDto.getEmail())
-                .gender(Gender.DEFAULT)
-                .address(null)
-                .birth(null)
-                .status(Status.ACTIVE)
-                .followersCnt(0)
-                .followingCnt(0)
-                .profileImage(null)
-                .profileBio(null)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .userType(UserType.GENERAL)
-                .lastSignInAt(null)
-                .lastActivityAt(LocalDateTime.now())
                 .build();
 
         userMapper.insertUser(user);
@@ -86,8 +73,8 @@ public class UserService {
 
     // 회원탈퇴
     public void deleteUserRequest(String accessToken) {
-        if (userAuthService.validateUserIdwithAccessToken(accessToken)) {
-            String userId = tokenProvider.getUserId(accessToken);
+        String userId = tokenProvider.getUserId(accessToken);
+        if (userId != null && userAuthService.isUserIdAvailable(userId) == false) {
             deleteUser(userId);
         } else
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
@@ -107,7 +94,7 @@ public class UserService {
     // 회원 상태 변경
     @Transactional
     public void updateStatus(String accessToken, Status status) {
-        tokenService.validateAccessToken(accessToken);
+        accessTokenService.checkAccessToken(accessToken);
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
         userAuthService.validateStatus(status);

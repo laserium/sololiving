@@ -2,7 +2,9 @@ package com.sololiving.domain.article.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
-public class ArticleMapper {
+import com.sololiving.domain.article.vo.ArticleVo;
 
+@Mapper
+public interface ArticleMapper {
+    void insertArticle(ArticleVo article);
 }

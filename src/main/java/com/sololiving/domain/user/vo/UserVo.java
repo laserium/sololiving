@@ -28,6 +28,7 @@ public class UserVo {
     private int followingCnt;
     private String profileImage;
     private String profileBio;
+    private int points;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserType userType;
