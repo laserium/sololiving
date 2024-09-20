@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sololiving.domain.media.dto.request.UploadMediaRequestDto;
 import com.sololiving.domain.media.exception.MediaErrorCode;
 import com.sololiving.domain.media.exception.MediaSuccessCode;
-import com.sololiving.domain.media.service.MediaService;
+import com.sololiving.domain.media.service.MediaUploadService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
@@ -36,6 +36,7 @@ public class MediaController {
     private final TokenProvider tokenProvider;
     private final CookieService cookieService;
     private final UserAuthService userAuthService;
+    private final MediaUploadService mediaUploadService;
     private final S3Uploader s3Uploader;
 
     // 미디어 파일 임시 저장
@@ -53,6 +54,7 @@ public class MediaController {
 
             // 각각의 파일을 S3에 업로드하고 URL을 리스트에 추가
             for (MultipartFile multipartFile : multipartFiles) {
+                mediaUploadService.validateFileSize(multipartFile);
                 String fileUrl = s3Uploader.uploadFileToS3(multipartFile, "media/articles/temp");
                 uploadedFileUrls.add(fileUrl);
             }

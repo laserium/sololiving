@@ -3,6 +3,7 @@ package com.sololiving.domain.media.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sololiving.domain.media.enums.MediaType;
 import com.sololiving.domain.media.exception.MediaErrorCode;
@@ -17,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class MediaService {
+public class MediaUploadService {
+
+    private static final long MAX_FILE_SIZE = 20 * 1024 * 1024;
 
     private final S3Uploader s3Uploader;
     private final MediaMapper mediaMapper;
@@ -94,6 +97,13 @@ public class MediaService {
     // URL에서 S3 키를 추출하는 메소드
     private String extractS3Key(String fileUrl) {
         return fileUrl.substring(fileUrl.indexOf(".com/") + 5);
+    }
+
+    // 파일 크기 검증 메소드
+    public void validateFileSize(MultipartFile multipartFile) {
+        if (multipartFile.getSize() > MAX_FILE_SIZE) {
+            throw new ErrorException(MediaErrorCode.FILE_SIZE_EXCEEDS_LIMIT);
+        }
     }
 
 }

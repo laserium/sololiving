@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleVo;
-import com.sololiving.domain.media.service.MediaService;
+import com.sololiving.domain.media.service.MediaUploadService;
 import com.sololiving.global.util.aws.S3Uploader;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class ArticleService {
 
     private final S3Uploader s3Uploader;
     private final ArticleMapper articleMapper;
-    private final MediaService mediaService;
+    private final MediaUploadService mediaService;
 
     public void createArticle(CreateArticleRequestDto requestDto, String userId, List<String> tempMediaUrls) {
         // 게시글 저장
