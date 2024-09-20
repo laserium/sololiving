@@ -24,6 +24,7 @@ import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.config.AbstractRestDocsConfig;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
@@ -46,6 +47,9 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
 
     @MockBean
     private AuthService authService;
+
+    @MockBean
+    private UserAuthService userAuthService;
 
     @MockBean
     private CookieService cookieService;
@@ -83,7 +87,6 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
                 .maxAge(Duration.ofMinutes(30))
                 .build();
         SignInResponseDto responseDto = SignInResponseDto.builder()
-                .expiresIn(Duration.ofMinutes(30))
                 .userType(UserType.GENERAL)
                 .clientId(ClientId.SOLOLIVING)
                 .oauth2UserId("testOauth2UserId")
@@ -113,7 +116,6 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
                                                 .attributes(key("constraint")
                                                         .value("SOLOLIVING(default) / KAKAO / NAVER / GOOGLE"))),
                                 responseFields(
-                                        fieldWithPath("expiresIn").type(JsonFieldType.NUMBER).description("토큰 만료 시간"),
                                         fieldWithPath("userType").type(JsonFieldType.STRING).description("사용자 타입"),
                                         fieldWithPath("clientId").type(JsonFieldType.STRING).description("토큰 발급 기관"),
                                         fieldWithPath("oauth2UserId").type(JsonFieldType.STRING)
@@ -177,12 +179,12 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
                 .to(requestDto.getEmail())
                 .subject("[홀로서기] 아이디 찾기 인증 메일입니다.")
                 .build();
-
+        // when
         Mockito.doNothing().when(emailService).sendMailIdRecover(
                 Mockito.eq(requestDto.getEmail()),
                 Mockito.eq(emailResponseDto),
                 Mockito.eq("id-recover"));
-
+        // then
         mockMvc.perform(post("/auth/users/id-recover")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)))
@@ -206,11 +208,11 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
                 .to(requestDto.getEmail())
                 .subject("[홀로서기] 임시 비밀번호 발급 메일입니다.")
                 .build();
-
+        // when
         Mockito.doNothing().when(emailService).sendMailPasswordReset(
                 Mockito.eq(emailResponseDto),
                 Mockito.eq("password-reset"));
-
+        // then
         mockMvc.perform(post("/auth/users/password-reset")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)))
@@ -222,5 +224,28 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
                 .andDo(document("auth/users/password-reset",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())));
+    }
+
+    @Test
+    @DisplayName("사용자 인증 - 테스트")
+    void postVerificationTest() throws Exception {
+        // given
+        String dummyAccessToken = "testAccessToken";
+
+        // 모킹 설정: HttpServletRequest에서 액세스 토큰 추출 및 검증 로직
+        Mockito.when(cookieService.extractAccessTokenFromCookie(Mockito.any(HttpServletRequest.class)))
+                .thenReturn(dummyAccessToken); // 요청 헤더의 쿠키에서 액세스 토큰을 추출
+        Mockito.when(userAuthService.validateUserIdwithAccessToken(dummyAccessToken))
+                .thenReturn(true); // 액세스 토큰을 통해 유효성 검증 성공
+
+        // when & then: MockMvc를 사용해 요청을 보내고 응답 검증
+        mockMvc.perform(post("/auth/verification")
+                .header("Set-Cookie", "accessToken=testAccessToken") // 요청 헤더에 액세스 토큰을 담은 쿠키 추가
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()) // 성공적인 검증 결과로 200 상태 코드 기대
+                .andDo(
+                        document("/auth/verification",
+                                preprocessRequest(prettyPrint()), // 요청 및 응답을 보기 좋게 포매팅
+                                preprocessResponse(prettyPrint())));
     }
 }

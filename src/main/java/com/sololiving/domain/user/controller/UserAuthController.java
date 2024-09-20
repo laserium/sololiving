@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.CheckSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
+import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
@@ -17,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -46,7 +50,19 @@ public class UserAuthController {
                     .body(ResponseMessage.createSuccessResponse(SmsSuccessCode.CERTIFICATION_NUMBER_CORRECT));
         } else
             throw new ErrorException(SmsErrorCode.CERTIFICATION_NUMBER_INCORRECT);
+    }
 
+    // 회원가입 시 아이디 중복 확인 검증
+    @GetMapping("/id-duplicate-verification/{userId}")
+    public ResponseEntity<SuccessResponse> getIdDuplicateVerification(@PathVariable String userId) {
+        if (userId == null) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        if (userAuthService.isUserIdAvailable(userId)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseMessage.createSuccessResponse(UserSuccessCode.USER_ID_AVAILABLE));
+        } else
+            throw new ErrorException(UserErrorCode.ID_ALREADY_EXISTS);
     }
 
 }

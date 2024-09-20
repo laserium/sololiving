@@ -12,4 +12,5 @@ include::exception/success-codes.adoc[]
 include::auth/auth.adoc[]
 
 include::user/user.adoc[]
+include::user/user-auth.adoc[]
 include::user/user-view.adoc[]

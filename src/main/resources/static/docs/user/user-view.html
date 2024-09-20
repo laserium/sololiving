@@ -447,77 +447,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h3 id="_관리자사용자_정보_불러오기">[관리자]사용자 정보 불러오기</h3>
 <div class="sect3">
 <h4 id="_curl">Curl</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/users/list' -i -X GET \
-    -H 'Set-Cookie: accessToken=testAccessToken'</code></pre>
-</div>
+<div class="paragraph">
+<p>Unresolved directive in user-view.adoc - include::C:\Users\user\Desktop\SoloLiving\sololiving_api_server\build\generated-snippets/users/view/users-list/curl-request.adoc[]</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_요청request">요청(Request)</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /users/list HTTP/1.1
-Set-Cookie: accessToken=testAccessToken
-Host: localhost:8080</code></pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_요청_헤더_request_header">요청 헤더 (Request Header)</h5>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Set-Cookie</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">accessToken = 엑세스토큰</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Unresolved directive in user-view.adoc - include::C:\Users\user\Desktop\SoloLiving\sololiving_api_server\build\generated-snippets/users/view/users-list/http-request.adoc[]
+===== 요청 헤더 (Request Header)
+Unresolved directive in user-view.adoc - include::C:\Users\user\Desktop\SoloLiving\sololiving_api_server\build\generated-snippets/users/view/users-list/request-headers.adoc[]</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_응답response">응답(Response)</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Content-Type: application/json
-Content-Length: 590
-
-[ {
-  "userId" : "user1",
-  "email" : "user1@example.com",
-  "contact" : "01012345678",
-  "status" : "ACTIVE",
-  "userType" : "GENERAL",
-  "createdAt" : "2024-08-22 19:53:35",
-  "updatedAt" : "2024-08-22 19:53:35",
-  "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-22 19:53:35"
-}, {
-  "userId" : "user2",
-  "email" : "user2@example.com",
-  "contact" : "01022222222",
-  "status" : "ACTIVE",
-  "userType" : "GENERAL",
-  "createdAt" : "2024-08-22 19:53:35",
-  "updatedAt" : "2024-08-22 19:53:35",
-  "lastSignInAt" : null,
-  "lastActivityAt" : "2024-08-22 19:53:35"
-} ]</code></pre>
-</div>
+<div class="paragraph">
+<p>Unresolved directive in user-view.adoc - include::C:\Users\user\Desktop\SoloLiving\sololiving_api_server\build\generated-snippets/users/view/users-list/http-response.adoc[]</p>
 </div>
 </div>
 <div class="sect3">

@@ -75,13 +75,11 @@ public class AuthService {
     }
 
     public SignInResponseDto createSignInResponse(SignInRequestDto signInRequest, CreateTokenResponse tokensResponse) {
-        Duration expiresIn = tokensResponse.getExpiresIn();
         UserVo userVo = userAuthService.findByUserId(signInRequest.getUserId());
         UserType userType = userVo.getUserType();
         ClientId clientId = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId()).getClientId();
 
         return SignInResponseDto.builder()
-                .expiresIn(expiresIn)
                 .userType(userType)
                 .clientId(clientId)
                 .oauth2UserId(userVo.getOauth2UserId())

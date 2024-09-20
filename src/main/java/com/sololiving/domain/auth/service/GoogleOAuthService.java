@@ -78,7 +78,6 @@ public class GoogleOAuthService {
     private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId,
             String oauth2UserId) {
         return SignInResponseDto.builder()
-                .expiresIn(expiresIn)
                 .userType(userType)
                 .clientId(clientId)
                 .oauth2UserId(oauth2UserId)

@@ -14,3 +14,7 @@ include::{snippets}/success-codes/auth/response-body.adoc[]
 === Email 관련
 ==== Json
 include::{snippets}/success-codes/email/response-body.adoc[]
+
+=== Sms 관련
+==== Json
+include::{snippets}/success-codes/sms/response-body.adoc[]

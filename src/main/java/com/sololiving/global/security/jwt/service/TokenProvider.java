@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.enums.ClientId;
@@ -36,6 +37,7 @@ public class TokenProvider {
     public static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
     private final JwtProperties jwtProperties;
     private final RefreshTokenMapper refreshTokenMapper;
+    // private final UserAuthService userAuthService;
 
     // 토큰 생성
     public String generateToken(UserVo userVo, Duration expiresIn) {
@@ -57,6 +59,18 @@ public class TokenProvider {
                 .compact();
     }
 
+    // 엑세스 토큰 & 리프레쉬 토큰 검증
+    // public String validateAccessToken(String accessToken, String refreshToken) {
+    // if (validToken(accessToken)) {
+    // return accessToken; // 유효하면 그대로 사용
+    // }
+    // if (validToken(refreshToken)) {
+    // return refreshAccessToken(refreshToken); // 새로운 액세스 토큰 발급
+    // }
+    // throw new ErrorException(TokenErrorCode.INVALID_REFRESH_TOKEN);
+    // }
+
+    // 토큰 검증
     public boolean validToken(String token) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
@@ -69,6 +83,29 @@ public class TokenProvider {
             return false;
         }
     }
+
+    // 엑세스 토큰 재발급
+    // public String refreshAccessToken(String refreshToken) {
+    // // 리프레시 토큰이 유효한지 확인
+    // if (!validToken(refreshToken)) {
+    // throw new ErrorException(TokenErrorCode.INVALID_REFRESH_TOKEN);
+    // }
+
+    // // 리프레시 토큰에서 유저 ID 추출
+    // String userId = getUserId(refreshToken);
+
+    // // DB에서 해당 유저의 리프레시 토큰이 실제로 유효한지 확인
+    // RefreshTokenVo storedRefreshToken =
+    // refreshTokenMapper.findRefreshTokenByUserId(userId);
+    // if (storedRefreshToken == null ||
+    // !storedRefreshToken.getRefreshToken().equals(refreshToken)) {
+    // throw new ErrorException(TokenErrorCode.CANNOT_FIND_RT);
+    // }
+
+    // // 새로운 액세스 토큰 생성
+    // UserVo userVo = userAuthService.findByUserId(userId);
+    // return generateToken(userVo, ACCESS_TOKEN_DURATION); // 새로운 액세스 토큰 발급
+    // }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         Claims claims = getClaims(token);

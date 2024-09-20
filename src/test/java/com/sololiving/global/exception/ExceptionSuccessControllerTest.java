@@ -74,4 +74,16 @@ public class ExceptionSuccessControllerTest extends AbstractRestDocsConfig {
                         preprocessResponse(prettyPrint())));
     }
 
+    @Test
+    @DisplayName("SmsSuccessCode 열거형 데이터 출력")
+    void getSmsSuccessCodes() throws Exception {
+        ResultActions result = mockMvc.perform(get("/docs/success-codes/sms")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andDo(document("success-codes/sms",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())));
+    }
+
 }

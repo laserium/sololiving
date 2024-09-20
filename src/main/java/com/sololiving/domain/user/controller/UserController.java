@@ -27,6 +27,7 @@ import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
 import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.CookieService;
@@ -42,6 +43,7 @@ public class UserController {
     private final UserService userService;
     private final CookieService cookieService;
     private final SmsService smsService;
+    private final TokenProvider tokenProvider;
 
     // 회원가입
     @PostMapping("/signup")
@@ -55,7 +57,7 @@ public class UserController {
     @DeleteMapping("")
     public ResponseEntity<SuccessResponse> deleteUser(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        if (accessToken != null) {
+        if (accessToken != null && tokenProvider.validToken(accessToken)) {
             userService.deleteUserRequest(accessToken);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseMessage

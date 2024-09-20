@@ -6,6 +6,7 @@ import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.email.exception.EmailSuccessCode;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.security.sms.exception.SmsSuccessCode;
 
 import java.util.List;
 import java.util.Arrays;
@@ -51,6 +52,16 @@ public class ExceptionSuccessController {
     @GetMapping("/email")
     public List<SuccessResponse> getEmailErrorCode() {
         return Arrays.stream(EmailSuccessCode.values())
+                .map(successCode -> SuccessResponse.builder()
+                        .code(successCode.getCode())
+                        .message(successCode.getMessage())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/sms")
+    public List<SuccessResponse> getSmsErrorCode() {
+        return Arrays.stream(SmsSuccessCode.values())
                 .map(successCode -> SuccessResponse.builder()
                         .code(successCode.getCode())
                         .message(successCode.getMessage())
