@@ -5,7 +5,7 @@
 
 <mapper namespace="com.sololiving.domain.article.mapper.ArticleMapper">
     <insert id="insertArticle" parameterType="com.sololiving.domain.article.vo.ArticleVo" useGeneratedKeys="true" keyProperty="articleId">
-        INSERT INTO ARTICLE (writer, title, content, category_id, is_blinded)
-        VALUES (#{writer}, #{title}, #{content}, #{categoryId}, #{isBlinded})
+        INSERT INTO ARTICLE (writer, title, content, category_id)
+        VALUES (#{writer}, #{title}, #{content}, #{categoryId})
     </insert>
 </mapper>

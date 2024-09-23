@@ -5,10 +5,15 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.sololiving.domain.article.vo.ArticleVo;
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
 
 @Mapper
 public interface ArticleViewMapper {
-    List<ArticleVo> getArticlesByScroll(@Param("offset") int offset, @Param("size") int size);
+    List<ViewArticlesListResponseDto> findArticlesByCategoryId(
+            @Param("categoryId") Long categoryId,
+            @Param("page") int page);
+
+    ViewArticleDetailsResponseDto findByArticleId(Long articleId);
 
 }

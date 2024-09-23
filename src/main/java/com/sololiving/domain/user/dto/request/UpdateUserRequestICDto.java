@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class UpdateUserRequestDto {
+public class UpdateUserRequestICDto {
 
     @Getter
     @Builder

@@ -5,11 +5,37 @@
 
 <mapper namespace="com.sololiving.domain.article.mapper.ArticleViewMapper">
 
-    <select id="getArticlesByScroll" resultType="com.sololiving.domain.article.vo.ArticleVo">
-        SELECT *
+    <select id="findArticlesByCategoryId" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticlesListResponseDto">
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY created_at DESC) AS displayNumber,
+            article_id AS articleId,
+            title,
+            content,
+            like_cnt AS likeCnt,
+            view_cnt AS viewCnt,
+            created_at AS createdAt
         FROM ARTICLE
+        WHERE category_id = #{categoryId}
         ORDER BY created_at DESC
-        LIMIT #{offset}, #{size}
+        LIMIT 10 OFFSET #{page}
+    </select>
+
+     <!-- 게시글 상세 조회 -->
+    <select id="findByArticleId" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticleDetailsResponseDto">
+        SELECT
+            article_id AS articleId,
+            writer,
+            title,
+            content,
+            category_id AS categoryId,
+            like_cnt AS likeCnt,
+            view_cnt AS viewCnt,
+            score,
+            status,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM ARTICLE
+        WHERE article_id = #{articleId}
     </select>
 
 </mapper>
