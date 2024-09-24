@@ -13,7 +13,8 @@ public class RefreshTokenStatusScheduler {
 
     private final RefreshTokenService refreshTokenService;
 
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 3) // 3시간마다 실행 (밀리초)
+    // 토큰 만료 업데이트 스케쥴링 : 3시간 마다
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 3)
     public void scheduleTokenStatuUpdate() {
         refreshTokenService.updateExpiredTokens();
     }

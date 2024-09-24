@@ -18,4 +18,11 @@
         )
     </update>
 
+    <!-- 조회수 업데이트  -->
+    <update id="updateViewCount">
+        UPDATE ARTICLE
+        SET view_cnt = view_cnt + #{viewCount}
+        WHERE article_id = #{articleId}
+    </update>
+
 </mapper>

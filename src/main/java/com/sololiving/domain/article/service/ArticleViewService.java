@@ -3,6 +3,7 @@ package com.sololiving.domain.article.service;
 import java.util.List;
 import java.time.LocalDateTime;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ArticleViewService {
 
+    private final RedisTemplate<String, String> redisTemplate;
     private final ArticleViewMapper articleViewMapper;
 
     // 게시글 목록 조회
@@ -41,6 +43,9 @@ public class ArticleViewService {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
         responseDto.setTimeAgo(TimeAgoUtil.getTimeAgo(responseDto.getCreatedAt()));
+
+        // redis 에 임시 조회 수 저장
+        redisTemplate.opsForValue().increment("ARTICLE:" + articleId + ":view_cnt");
         return responseDto;
     }
 
