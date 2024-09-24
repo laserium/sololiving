@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
 import com.sololiving.domain.article.service.ArticleViewService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ public class ArticleViewController {
 
     private final ArticleViewService articleViewService;
 
-    // 페이지 번호와 페이지 당 게시글 수를 전달받아 처리
-    @GetMapping("/list")
+    // 게시글 목록 조회
+    @GetMapping("/list/{categoryCode}")
     public ResponseEntity<List<ViewArticlesListResponseDto>> viewArticlesList(
-            @RequestParam("categoryId") Long categoryId,
+            @PathVariable("categoryCode") String categoryCode,
             @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticlesList(categoryId, page));
+        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticlesList(categoryCode, page));
     }
 
     // 게시글 상세 조회
@@ -37,10 +38,17 @@ public class ArticleViewController {
         return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId));
     }
 
-    // 인기 게시글 조회
-    @GetMapping("/top")
-    public ResponseEntity<ViewArticleDetailsResponseDto> viewTopArticleList(@RequestParam String param) {
-        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId));
+    // 메인 페이지 : 일주일간 인기 게시글 TOP 5 조회
+    @GetMapping("/main/popular")
+    public ResponseEntity<List<ViewTopArticlesResponseDto>> viewPopularArticleListInMain() {
+        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewPopularArticleListInMain());
+    }
+
+    // 메인 페이지 : 대표 카테고리의 게시글 목록 조회
+    @GetMapping("/main/{categoryCode}")
+    public ResponseEntity<List<ViewTopArticlesResponseDto>> viewArticlesListInMain(
+            @PathVariable("categoryCode") String categoryCode) {
+        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticlesListInMain(categoryCode));
     }
 
 }

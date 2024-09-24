@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleViewMapper;
 import com.sololiving.domain.article.util.TimeAgoUtil;
@@ -21,8 +22,9 @@ public class ArticleViewService {
     private final ArticleViewMapper articleViewMapper;
 
     // 게시글 목록 조회
-    public List<ViewArticlesListResponseDto> viewArticlesList(Long categoryId, int page) {
-        List<ViewArticlesListResponseDto> articles = articleViewMapper.findArticlesByCategoryId(categoryId, page);
+    public List<ViewArticlesListResponseDto> viewArticlesList(String categoryCode, int page) {
+
+        List<ViewArticlesListResponseDto> articles = articleViewMapper.findArticlesByCategoryId(categoryCode, page);
 
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
@@ -40,6 +42,26 @@ public class ArticleViewService {
         }
         responseDto.setTimeAgo(TimeAgoUtil.getTimeAgo(responseDto.getCreatedAt()));
         return responseDto;
+    }
+
+    // 메인 페이지 : 일주일간 인기 게시글 TOP 5 조회
+    public List<ViewTopArticlesResponseDto> viewPopularArticleListInMain() {
+        List<ViewTopArticlesResponseDto> articles = articleViewMapper.findPopularArticleListInMain();
+        articles.forEach(article -> {
+            String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
+            article.setTimeAgo(timeAgo);
+        });
+        return articles;
+    }
+
+    // 메인 페이지 : 대표 카테고리의 게시글 목록 조회
+    public List<ViewTopArticlesResponseDto> viewArticlesListInMain(String categoryCode) {
+        List<ViewTopArticlesResponseDto> articles = articleViewMapper.findArticlesListInMain(categoryCode);
+        articles.forEach(article -> {
+            String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
+            article.setTimeAgo(timeAgo);
+        });
+        return articles;
     }
 
 }

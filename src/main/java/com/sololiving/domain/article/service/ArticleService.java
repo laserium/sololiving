@@ -3,10 +3,8 @@ package com.sololiving.domain.article.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
-import com.sololiving.domain.article.enums.Status;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleVo;
 import com.sololiving.domain.media.service.MediaUploadService;
@@ -39,7 +37,7 @@ public class ArticleService {
                 .writer(userId)
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
-                .categoryId(requestDto.getCategoryId())
+                .categoryCode(requestDto.getCategoryCode())
                 .build();
     }
 

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
+import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleService;
 import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
@@ -24,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,4 +56,11 @@ public class ArticleController {
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_POST_ARTICLE));
     }
 
+    @PutMapping("/{articleId}")
+    public ResponseEntity<?> updateArticle(@PathVariable Long articleId,
+            @RequestBody UpdateArticleRequestDto requestDto) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(null);
+    }
 }

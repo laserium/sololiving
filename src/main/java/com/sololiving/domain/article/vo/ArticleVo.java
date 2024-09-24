@@ -13,7 +13,7 @@ public class ArticleVo {
     private String writer;
     private String title;
     private String content;
-    private Long categoryId;
+    private String categoryCode;
     private int likeCnt;
     private int viewCnt;
     private int score;
