@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class ViewArticleResponseICDto {
@@ -15,7 +17,9 @@ public class ViewArticleResponseICDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ViewArticleDetailsResponseDto {
+    public static class ViewArticleDetailsResponseDto implements Serializable {
+
+        private static final long serialVersionUID = 1000L;
 
         private Long articleId;
         private String writer;
@@ -43,7 +47,10 @@ public class ViewArticleResponseICDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ViewArticlesListResponseDto {
+    public static class ViewArticlesListResponseDto implements Serializable {
+
+        private static final long serialVersionUID = 2000L;
+
         private int displayNumber;
         private Long articleId;
         private String title;
@@ -63,7 +70,10 @@ public class ViewArticleResponseICDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ViewTopArticlesResponseDto {
+    public static class ViewTopArticlesResponseDto implements Serializable {
+
+        private static final long serialVersionUID = 3000L;
+
         private Long articleId;
         private String title;
         private int likeCnt;
