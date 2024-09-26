@@ -5,7 +5,24 @@
 
 <mapper namespace="com.sololiving.domain.article.mapper.ArticleMapper">
     <insert id="insertArticle" parameterType="com.sololiving.domain.article.vo.ArticleVo" useGeneratedKeys="true" keyProperty="articleId">
-        INSERT INTO ARTICLE (writer, title, content, category_id, is_blinded)
-        VALUES (#{writer}, #{title}, #{content}, #{categoryId}, #{isBlinded})
+        INSERT INTO ARTICLE (writer, title, content, category_code)
+        VALUES (#{writer}, #{title}, #{content}, #{categoryCode})
     </insert>
+
+        <!-- 모든 게시글의 score 컬럼을 업데이트하는 SQL -->
+    <update id="updateAllArticleScores">
+        UPDATE ARTICLE a
+        SET a.score = (
+            a.like_cnt * 10 + 
+            (SELECT COUNT(*) FROM COMMENT c WHERE c.article_id = a.article_id) * 2
+        )
+    </update>
+
+    <!-- 조회수 업데이트  -->
+    <update id="updateViewCount">
+        UPDATE ARTICLE
+        SET view_cnt = view_cnt + #{viewCount}
+        WHERE article_id = #{articleId}
+    </update>
+
 </mapper>

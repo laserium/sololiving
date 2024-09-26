@@ -4,17 +4,5 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.sololiving.domain.category.mapper.CategoryMapper">
-    <!-- <select id="findCategoryById" resultType="com.sololiving.domain.category.vo.CategoryVo">
-        SELECT
-            category_id AS categoryId,
-            name,
-            description,
-            manager,
-            created_at AS createdAt,
-            updated_at AS updatedAt
-        FROM
-            category
-        WHERE
-            category_id = #{categoryId}
-    </select> -->
+
 </mapper>

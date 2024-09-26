@@ -7,11 +7,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateArticleRequestDto {
+public class UpdateArticleRequestDto {
 
     private String title;
     private String content;
     private String categoryCode;
     private List<String> tempMediaUrls;
-
 }

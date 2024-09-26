@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
+import com.sololiving.domain.article.enums.Status;
+
 @Getter
 @Builder
 public class ArticleVo {
@@ -11,11 +13,11 @@ public class ArticleVo {
     private String writer;
     private String title;
     private String content;
-    private Long categoryId;
+    private String categoryCode;
     private int likeCnt;
     private int viewCnt;
     private int score;
-    private boolean isBlinded;
+    private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
