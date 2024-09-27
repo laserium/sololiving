@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ViewArticleResponseICDto {
 
@@ -25,6 +26,7 @@ public class ViewArticleResponseICDto {
         private String writer;
         private String title;
         private String content;
+        private List<String> mediaUrls;
         private String categoryCode;
         private int likeCnt;
         private int viewCnt;
@@ -57,9 +59,14 @@ public class ViewArticleResponseICDto {
         private String content;
         private int likeCnt;
         private int viewCnt;
+        private boolean hasMedia;
         private String timeAgo;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
+
+        public void setHasMedia(boolean hasMedia) {
+            this.hasMedia = hasMedia;
+        }
 
         public void setTimeAgo(String timeAgo) {
             this.timeAgo = timeAgo;

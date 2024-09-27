@@ -12,6 +12,7 @@ import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewT
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleViewMapper;
 import com.sololiving.domain.article.util.TimeAgoUtil;
+import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ArticleViewService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ArticleViewMapper articleViewMapper;
+    private final MediaMapper mediaMapper;
 
     // 게시글 목록 조회
     // @Cacheable(value = "articleList", key = "'ARTICLE_VIEW:LIST:' + #categoryCode
@@ -33,6 +35,9 @@ public class ArticleViewService {
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
+
+            boolean hasMedia = checkIfArticleHasMedia(article.getArticleId());
+            article.setHasMedia(hasMedia);
         });
 
         return articles;
@@ -85,6 +90,11 @@ public class ArticleViewService {
             article.setTimeAgo(timeAgo);
         });
         return articles;
+    }
+
+    private boolean checkIfArticleHasMedia(Long articleId) {
+        // 미디어 테이블에서 articleId로 미디어가 있는지 확인하는 로직
+        return mediaMapper.existsByArticleId(articleId); // 예: 미디어가 존재하면 true 반환
     }
 
 }

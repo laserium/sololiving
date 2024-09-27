@@ -59,7 +59,7 @@ public class ArticleController {
     @PutMapping("/{articleId}")
     public ResponseEntity<?> updateArticle(@PathVariable Long articleId,
             @RequestBody UpdateArticleRequestDto requestDto) {
-
+                
         return ResponseEntity.status(HttpStatus.OK)
                 .body(null);
     }
