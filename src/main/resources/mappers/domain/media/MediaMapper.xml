@@ -15,9 +15,23 @@
         )
     </insert>
 
-        <select id="existsByArticleId" resultType="boolean">
+    <select id="existsByArticleId" resultType="boolean">
         SELECT COUNT(1) &gt; 0
         FROM MEDIA
         WHERE article_id = #{articleId}
     </select>
+
+    <!-- 게시글(articleId)에 대한 미디어 조회 -->
+    <select id="findByArticleId" resultType="com.sololiving.domain.media.dto.response.ViewMediaInArticleResponseDto">
+        SELECT 
+            article_id AS articleId,
+            media_type AS mediaType,
+            media_url AS mediaUrl,
+            media_name AS mediaName,
+            file_size AS fileSize,
+            created_at AS createdAt
+        FROM MEDIA
+        WHERE article_id = #{articleId}
+    </select>
+
 </mapper>

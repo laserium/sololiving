@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
+import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleVo;
 import com.sololiving.domain.media.service.MediaUploadService;
@@ -20,7 +21,8 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final MediaUploadService mediaService;
 
-    public void createArticle(CreateArticleRequestDto requestDto, String userId, List<String> tempMediaUrls) {
+    public CreateArticleResponseDto createArticle(CreateArticleRequestDto requestDto, String userId,
+            List<String> tempMediaUrls) {
         // 게시글 저장
         ArticleVo article = buildArticle(requestDto, userId);
         articleMapper.insertArticle(article);
@@ -29,6 +31,7 @@ public class ArticleService {
         if (tempMediaUrls != null && !tempMediaUrls.isEmpty()) {
             mediaService.attachFilesToArticle(article.getArticleId(), tempMediaUrls);
         }
+        return CreateArticleResponseDto.builder().articleId(article.getArticleId()).build();
     }
 
     // ArticleVo 빌더 로직을 메서드로 분리

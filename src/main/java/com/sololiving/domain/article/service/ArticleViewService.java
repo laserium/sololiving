@@ -60,6 +60,7 @@ public class ArticleViewService {
         if (responseDto == null) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
+        responseDto.setMediaList(mediaMapper.findByArticleId(articleId));
         responseDto.setTimeAgo(TimeAgoUtil.getTimeAgo(responseDto.getCreatedAt()));
         return responseDto;
     }

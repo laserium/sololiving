@@ -2,6 +2,7 @@ package com.sololiving.domain.article.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sololiving.domain.article.enums.Status;
+import com.sololiving.domain.media.dto.response.ViewMediaInArticleResponseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,11 +27,11 @@ public class ViewArticleResponseICDto {
         private String writer;
         private String title;
         private String content;
-        private List<String> mediaUrls;
         private String categoryCode;
         private int likeCnt;
         private int viewCnt;
         private int score;
+        private List<ViewMediaInArticleResponseDto> mediaList;
         private Status status;
         private String timeAgo;
 
@@ -43,6 +44,11 @@ public class ViewArticleResponseICDto {
         public void setTimeAgo(String timeAgo) {
             this.timeAgo = timeAgo;
         }
+
+        public void setMediaList(List<ViewMediaInArticleResponseDto> mediaList) {
+            this.mediaList = mediaList;
+        }
+
     }
 
     @Getter
