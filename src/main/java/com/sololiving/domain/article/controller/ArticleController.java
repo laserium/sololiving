@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -67,5 +68,16 @@ public class ArticleController {
         articleService.modifyArticle(requestDto, articleId, userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_UPDATE_ARTICLE));
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/{articleId}")
+    public ResponseEntity<?> removeArticle(@PathVariable Long articleId, HttpServletRequest httpServletRequest) {
+        // 작성자(회원) 검증
+        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        articleService.validateWriter(articleId, userId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_DELETE_ARTICLE));
     }
 }

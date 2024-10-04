@@ -11,6 +11,7 @@ import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleVo;
+import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.media.service.MediaService;
 import com.sololiving.domain.media.service.MediaUploadService;
 import com.sololiving.global.exception.error.ErrorException;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class ArticleService {
 
     private final ArticleMapper articleMapper;
+    private final MediaMapper mediaMapper;
     private final MediaUploadService mediaUploadService;
     private final MediaService mediaService;
 
@@ -51,6 +53,7 @@ public class ArticleService {
     }
 
     // 게시글 수정
+    @Transactional
     public void modifyArticle(UpdateArticleRequestDto requestDto, Long articleId, String userId) {
         ArticleVo articleVo = articleMapper.selectByArticleId(articleId);
         if (articleVo == null) {
@@ -65,6 +68,32 @@ public class ArticleService {
 
         // 미디어 파일들도 저장
         mediaService.updateMediaInArticle(articleId, requestDto.getUpdatedMediaUrls());
+
+    }
+
+    // 게시글 삭제
+    @Transactional
+    public void removeArticle(Long articleId) {
+
+        // 1. 미디어 파일 조회 및 삭제
+        // List<String> mediaUrls = mediaMapper.selectMediaUrlsByArticleId(articleId);
+        // if (mediaUrls != null && !mediaUrls.isEmpty()) {
+        // // S3에서 파일 삭제
+        // for (String mediaUrl : mediaUrls) {
+        // try {
+        // s3Uploader.deleteS3(mediaUrl);
+        // } catch (Exception e) {
+        // log.error("Failed to delete media from S3 for mediaUrl: {}", mediaUrl, e);
+        // }
+        // }
+        // // DB에서 미디어 정보 삭제
+        // mediaMapper.deleteMediaByArticleId(articleId);
+        // }
+
+        // // 3. 게시글 정보 초기화 (삭제된 게시글 처리)
+        // articleMapper.updateArticleAsDeleted(articleId);
+        // final String DELETED_TITLE = "삭제된 게시글입니다";
+        // final String DELETED_CONTENT = "삭제된 게시글입니다";
 
     }
 
