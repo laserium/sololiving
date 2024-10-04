@@ -52,7 +52,7 @@ public class KakaoOAuthService {
     public UserVo getUserVoFromOAuthToken(CreateOAuthTokenRequestDto requestDto) {
         String oauth2UserId = KAKAO_ID_PREFIX
                 + getUserInfoByToken(getTokenByCode(requestDto.getAuthCode()));
-        return userAuthService.findByOauth2UserId(oauth2UserId);
+        return userAuthService.selectByOauth2UserId(oauth2UserId);
     }
 
     public String getOauth2UserId(CreateOAuthTokenRequestDto requestDto) {

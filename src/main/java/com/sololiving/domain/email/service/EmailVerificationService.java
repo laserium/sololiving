@@ -35,7 +35,7 @@ public class EmailVerificationService {
 
     // GET
     public EmailVerificationTokenVo getVerificationToken(String token) {
-        EmailVerificationTokenVo emailVerificationTokenVo = emailVerificationTokenMapper.findByToken(token);
+        EmailVerificationTokenVo emailVerificationTokenVo = emailVerificationTokenMapper.selectByToken(token);
         if (emailVerificationTokenVo != null) {
             return emailVerificationTokenVo;
         } else

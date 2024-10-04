@@ -24,6 +24,12 @@ public class ArticleViewController {
 
     private final ArticleViewService articleViewService;
 
+    // 전체 게시글 목록 조회
+    @GetMapping("/all")
+    public ResponseEntity<List<ViewArticlesListResponseDto>> getMethodName() {
+        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewAllArticlesList());
+    }
+
     // 게시글 목록 조회
     @GetMapping("/list/{categoryCode}")
     public ResponseEntity<List<ViewArticlesListResponseDto>> viewArticlesList(

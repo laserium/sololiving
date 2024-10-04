@@ -5,15 +5,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sololiving.domain.media.dto.request.UploadMediaRequestDto;
 import com.sololiving.domain.media.exception.MediaErrorCode;
-import com.sololiving.domain.media.exception.MediaSuccessCode;
 import com.sololiving.domain.media.service.MediaUploadService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
-import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.util.CookieService;
 import com.sololiving.global.util.aws.S3Uploader;

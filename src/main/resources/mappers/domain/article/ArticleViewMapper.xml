@@ -5,8 +5,22 @@
 
 <mapper namespace="com.sololiving.domain.article.mapper.ArticleViewMapper">
 
+    <!-- 전체 게시글 목록 조회 -->
+    <select id="selectAllArticlesList" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticlesListResponseDto">
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY created_at DESC) AS displayNumber,
+            article_id AS articleId,
+            title,
+            content,
+            like_cnt AS likeCnt,
+            view_cnt AS viewCnt,
+            created_at AS createdAt
+        FROM ARTICLE
+        ORDER BY created_at DESC
+    </select>
+
     <!-- 게시글 목록 조회 -->
-    <select id="findArticlesByCategoryId" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticlesListResponseDto">
+    <select id="selectArticlesByCategoryId" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticlesListResponseDto">
         SELECT 
             ROW_NUMBER() OVER (ORDER BY created_at DESC) AS displayNumber,
             article_id AS articleId,
@@ -22,7 +36,7 @@
     </select>
 
      <!-- 게시글 상세 조회 -->
-    <select id="findByArticleId" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticleDetailsResponseDto">
+    <select id="selectByArticleId" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticleDetailsResponseDto">
         SELECT
             article_id AS articleId,
             writer,
@@ -40,7 +54,7 @@
     </select>
     
     <!-- 메인 페이지 : 일주일간 인기 게시글 TOP 5 조회 -->
-    <select id="findPopularArticleListInMain" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewTopArticlesResponseDto">
+    <select id="selectPopularArticleListInMain" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewTopArticlesResponseDto">
         SELECT
             article_id AS articleId,
             title,
@@ -57,7 +71,7 @@
 
 
     <!-- 메인 페이지 : 대표 카테고리의 게시글 목록 조회 -->
-    <select id="findArticlesListInMain" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewTopArticlesResponseDto">
+    <select id="selectArticlesListInMain" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewTopArticlesResponseDto">
         SELECT
             article_id AS articleId,
             title,

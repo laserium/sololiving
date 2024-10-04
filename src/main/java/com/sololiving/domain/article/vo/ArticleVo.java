@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import com.sololiving.domain.article.enums.Status;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class ArticleVo {
     private Long articleId;
     private String writer;

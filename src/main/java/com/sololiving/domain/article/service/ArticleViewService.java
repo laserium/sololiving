@@ -12,6 +12,7 @@ import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewT
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleViewMapper;
 import com.sololiving.domain.article.util.TimeAgoUtil;
+import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
@@ -22,17 +23,36 @@ public class ArticleViewService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ArticleViewMapper articleViewMapper;
+    private final MediaMapper mediaMapper;
+
+    // 전체 게시글 조회
+    public List<ViewArticlesListResponseDto> viewAllArticlesList() {
+        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectAllArticlesList();
+
+        articles.forEach(article -> {
+            String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
+            article.setTimeAgo(timeAgo);
+
+            boolean hasMedia = checkIfArticleHasMedia(article.getArticleId());
+            article.setHasMedia(hasMedia);
+        });
+
+        return articles;
+    }
 
     // 게시글 목록 조회
     // @Cacheable(value = "articleList", key = "'ARTICLE_VIEW:LIST:' + #categoryCode
     // + ':' + #page")
     public List<ViewArticlesListResponseDto> viewArticlesList(String categoryCode, int page) {
 
-        List<ViewArticlesListResponseDto> articles = articleViewMapper.findArticlesByCategoryId(categoryCode, page);
+        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectArticlesByCategoryId(categoryCode, page);
 
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
+
+            boolean hasMedia = checkIfArticleHasMedia(article.getArticleId());
+            article.setHasMedia(hasMedia);
         });
 
         return articles;
@@ -41,7 +61,7 @@ public class ArticleViewService {
     // 게시글 상세 조회 API
     public ViewArticleDetailsResponseDto viewArticleDetails(Long articleId) {
         // 1. 캐시된 게시글 정보 가져오기
-        ViewArticleDetailsResponseDto responseDto = getCachedArticleDetails(articleId);
+        ViewArticleDetailsResponseDto responseDto = setArticleDetails(articleId);
         // 2. 조회수 증가
         incrementArticleViewCount(articleId);
         return responseDto;
@@ -50,11 +70,12 @@ public class ArticleViewService {
     // 게시글 상세 조회
     // @Cacheable(value = "articleDetails", key = "'ARTICLE_VIEW:DETAIL:' +
     // #articleId")
-    private ViewArticleDetailsResponseDto getCachedArticleDetails(Long articleId) {
-        ViewArticleDetailsResponseDto responseDto = articleViewMapper.findByArticleId(articleId);
+    private ViewArticleDetailsResponseDto setArticleDetails(Long articleId) {
+        ViewArticleDetailsResponseDto responseDto = articleViewMapper.selectByArticleId(articleId);
         if (responseDto == null) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
+        responseDto.setMediaList(mediaMapper.selectByArticleId(articleId));
         responseDto.setTimeAgo(TimeAgoUtil.getTimeAgo(responseDto.getCreatedAt()));
         return responseDto;
     }
@@ -67,7 +88,7 @@ public class ArticleViewService {
     // 메인 페이지 : 일주일간 인기 게시글 TOP 5 조회
     // @Cacheable(value = "popularArticles", key = "'ARTICLE_VIEW:MAIN:POPULAR'")
     public List<ViewTopArticlesResponseDto> viewPopularArticleListInMain() {
-        List<ViewTopArticlesResponseDto> articles = articleViewMapper.findPopularArticleListInMain();
+        List<ViewTopArticlesResponseDto> articles = articleViewMapper.selectPopularArticleListInMain();
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
@@ -79,12 +100,17 @@ public class ArticleViewService {
     // @Cacheable(value = "mainCategoryArticles", key = "'ARTICLE_VIEW:MAIN:' +
     // #categoryCode")
     public List<ViewTopArticlesResponseDto> viewArticlesListInMain(String categoryCode) {
-        List<ViewTopArticlesResponseDto> articles = articleViewMapper.findArticlesListInMain(categoryCode);
+        List<ViewTopArticlesResponseDto> articles = articleViewMapper.selectArticlesListInMain(categoryCode);
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
         });
         return articles;
+    }
+
+    private boolean checkIfArticleHasMedia(Long articleId) {
+        // 미디어 테이블에서 articleId로 미디어가 있는지 확인하는 로직
+        return mediaMapper.existsByArticleId(articleId); // 예: 미디어가 존재하면 true 반환
     }
 
 }

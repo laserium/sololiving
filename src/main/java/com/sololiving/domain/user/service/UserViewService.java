@@ -28,7 +28,7 @@ public class UserViewService {
 
     private boolean validateViewUserList(String accessToken) {
         String userId = tokenProvider.getUserId(accessToken);
-        if (userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
+        if (userAuthService.selectUserTypeByUserId(userId) == UserType.ADMIN) {
             return true;
         } else
             throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
@@ -36,7 +36,7 @@ public class UserViewService {
     }
 
     private List<ViewUserListResponseDto> responseViewUserList() {
-        return userViewMapper.findUserList();
+        return userViewMapper.selectUserList();
     }
 
 }

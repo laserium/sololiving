@@ -53,7 +53,7 @@ public class EmailService {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             createMimeMessageHelper(mimeMessage, responseDto.getTo(),
-                    responseDto.getSubject(), setContext(userAuthService.findUserIdByEmail(email), type));
+                    responseDto.getSubject(), setContext(userAuthService.selectUserIdByEmail(email), type));
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {

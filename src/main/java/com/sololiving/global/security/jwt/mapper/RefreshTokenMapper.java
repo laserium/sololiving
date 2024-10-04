@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface RefreshTokenMapper {
-    RefreshTokenVo findRefreshTokenByUserId(@Param("userId") String userId);
+    RefreshTokenVo selectRefreshTokenByUserId(@Param("userId") String userId);
 
     void insert(RefreshTokenVo refreshToken);
 
@@ -20,7 +20,7 @@ public interface RefreshTokenMapper {
 
     boolean existsByUserId(@Param("userId") String userId);
 
-    List<RefreshTokenVo> findExpiredTokens(@Param("now") LocalDateTime now);
+    List<RefreshTokenVo> selectExpiredTokens(@Param("now") LocalDateTime now);
 
     void updateExpiredTokens(@Param("ids") List<Long> ids);
 

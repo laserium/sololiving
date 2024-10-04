@@ -2,6 +2,7 @@ package com.sololiving.domain.article.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sololiving.domain.article.enums.Status;
+import com.sololiving.domain.media.dto.response.ViewMediaInArticleResponseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ViewArticleResponseICDto {
 
@@ -29,6 +31,7 @@ public class ViewArticleResponseICDto {
         private int likeCnt;
         private int viewCnt;
         private int score;
+        private List<ViewMediaInArticleResponseDto> mediaList;
         private Status status;
         private String timeAgo;
 
@@ -41,6 +44,11 @@ public class ViewArticleResponseICDto {
         public void setTimeAgo(String timeAgo) {
             this.timeAgo = timeAgo;
         }
+
+        public void setMediaList(List<ViewMediaInArticleResponseDto> mediaList) {
+            this.mediaList = mediaList;
+        }
+
     }
 
     @Getter
@@ -57,9 +65,14 @@ public class ViewArticleResponseICDto {
         private String content;
         private int likeCnt;
         private int viewCnt;
+        private boolean hasMedia;
         private String timeAgo;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
+
+        public void setHasMedia(boolean hasMedia) {
+            this.hasMedia = hasMedia;
+        }
 
         public void setTimeAgo(String timeAgo) {
             this.timeAgo = timeAgo;

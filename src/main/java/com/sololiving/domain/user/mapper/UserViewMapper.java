@@ -8,5 +8,5 @@ import com.sololiving.domain.user.dto.response.ViewUserListResponseDto;
 
 @Mapper
 public interface UserViewMapper {
-    List<ViewUserListResponseDto> findUserList();
+    List<ViewUserListResponseDto> selectUserList();
 }
