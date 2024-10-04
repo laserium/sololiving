@@ -5,7 +5,7 @@
 
 <mapper namespace="com.sololiving.global.security.jwt.mapper.RefreshTokenMapper">
 
-    <select id="findRefreshTokenByUserId" resultType="com.sololiving.global.security.jwt.vo.RefreshTokenVo">
+    <select id="selectRefreshTokenByUserId" resultType="com.sololiving.global.security.jwt.vo.RefreshTokenVo">
         SELECT *
         FROM REFRESH_TOKEN
         WHERE user_id = #{userId}
@@ -35,7 +35,7 @@
         SELECT EXISTS(SELECT 1 FROM REFRESH_TOKEN WHERE user_id = #{userId})
     </select>
 
-    <select id="findExpiredTokens" resultType="com.sololiving.global.security.jwt.vo.RefreshTokenVo">
+    <select id="selectExpiredTokens" resultType="com.sololiving.global.security.jwt.vo.RefreshTokenVo">
         SELECT id, expires_in, token_status
         FROM REFRESH_TOKEN
         WHERE expires_in &lt; #{now} AND token_status != 'EXPIRED'

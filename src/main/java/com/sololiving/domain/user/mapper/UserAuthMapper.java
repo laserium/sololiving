@@ -18,21 +18,21 @@ public interface UserAuthMapper {
     // 유효성검사(중복확인) - 연락처
     boolean existsByContact(String contact);
 
-    UserVo findByUserId(@Param("userId") String userId);
+    UserVo selectByUserId(@Param("userId") String userId);
 
-    UserVo findByOauth2UserId(@Param("oauth2UserId") String oauth2UserId);
+    UserVo selectByOauth2UserId(@Param("oauth2UserId") String oauth2UserId);
 
-    String findPasswordByUserId(@Param("userId") String userId);
+    String selectPasswordByUserId(@Param("userId") String userId);
 
-    String findEmailByUserId(@Param("userId") String userId);
+    String selectEmailByUserId(@Param("userId") String userId);
 
-    String findUserIdByEmail(@Param("email") String email);
+    String selectUserIdByEmail(@Param("email") String email);
 
-    String findPwdByIdAndEmail(@Param("userId") String userId, @Param("email") String email);
+    String selectPwdByIdAndEmail(@Param("userId") String userId, @Param("email") String email);
 
-    UserVo findByEmail(@Param("email") String email);
+    UserVo selectByEmail(@Param("email") String email);
 
     void updatePassword(@Param("userPwd") String userPwd, @Param("userId") String userId);
 
-    UserType findUserTypeByUserId(@Param("userId") String userId);
+    UserType selectUserTypeByUserId(@Param("userId") String userId);
 }

@@ -20,7 +20,7 @@ public class RefreshTokenService {
 
     @Transactional
     public void updateExpiredTokens() {
-        List<RefreshTokenVo> expiredTokens = refreshTokenMapper.findExpiredTokens(LocalDateTime.now());
+        List<RefreshTokenVo> expiredTokens = refreshTokenMapper.selectExpiredTokens(LocalDateTime.now());
 
         List<Long> expiredTokenIds = expiredTokens.stream()
                 .map(RefreshTokenVo::getId)

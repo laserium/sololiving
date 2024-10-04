@@ -13,9 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.sololiving.domain.media.exception.MediaErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -73,8 +70,8 @@ public class S3Uploader {
     // S3에 있는 파일 삭제 (영어 파일만 삭제 가능)
     public void deleteS3(String filePath) throws Exception {
         try {
-            String key = filePath.substring(56); // 폴더/파일.확장자
-
+            String key = filePath.substring(filePath.indexOf("/", 8) + 1); // 폴더/파일.확장자
+            log.info(key);
             try {
                 amazonS3Client.deleteObject(bucket, key);
             } catch (AmazonServiceException e) {
@@ -90,10 +87,10 @@ public class S3Uploader {
     // 로컬에 저장된 파일 삭제
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
-            log.info("[파일 업로드] : 파일 삭제 성공");
+            log.info("[S3Uploader] : 로컬 파일 삭제 성공");
             return;
         }
-        log.info("[파일 업로드] : 파일 삭제 실패");
+        log.info("[S3Uploader] : 로컬 파일 삭제 실패");
     }
 
     // 로컬에 파일 업로드 및 변환

@@ -1,4 +1,4 @@
-package com.sololiving.domain.article.service;
+package com.sololiving.domain.article.scheduler;
 
 import java.util.Set;
 

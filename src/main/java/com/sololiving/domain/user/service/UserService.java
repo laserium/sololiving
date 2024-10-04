@@ -98,7 +98,7 @@ public class UserService {
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
         userAuthService.validateStatus(status);
-        if (userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
+        if (userAuthService.selectUserTypeByUserId(userId) == UserType.ADMIN) {
             userMapper.updateUserStatus(userId, status);
         } else
             throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
@@ -239,7 +239,7 @@ public class UserService {
     public void updateUserPassword(String accessToken, UpdateUserPasswordRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
-        String oldPassword = userAuthService.findPasswordByUserId(userId);
+        String oldPassword = userAuthService.selectPasswordByUserId(userId);
         String password = requestDto.getPassword();
         authService.verifyPassword(oldPassword, password);
         String newPassword = requestDto.getNewPassword();

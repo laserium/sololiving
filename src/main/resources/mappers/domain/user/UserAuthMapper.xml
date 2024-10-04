@@ -20,37 +20,37 @@
         SELECT EXISTS(SELECT 1 FROM USER WHERE contact = #{contact})
     </select>
 
-    <select id="findByUserId" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">
+    <select id="selectByUserId" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">
         SELECT * 
         FROM USER 
         WHERE user_id = #{userId}
     </select>
     
-    <select id="findByOauth2UserId" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">
+    <select id="selectByOauth2UserId" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">
         SELECT * 
         FROM USER 
         WHERE oauth2_user_id = #{oauth2UserId}
     </select>
 
-    <select id="findByEmail" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">
+    <select id="selectByEmail" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">
         SELECT *
         FROM USER
         WHERE email = #{email}
     </select>
 
-    <select id="findPasswordByUserId" parameterType="string" resultType="string">
+    <select id="selectPasswordByUserId" parameterType="string" resultType="string">
         SELECT user_pwd
         FROM USER
         WHERE user_id = #{userId}
     </select>
 
-    <select id="findEmailByUserId" parameterType="string" resultType="string">
+    <select id="selectEmailByUserId" parameterType="string" resultType="string">
         SELECT email
         FROM USER
         WHERE user_id = #{userId}
     </select>
 
-    <select id="findUserIdByEmail" parameterType="string" resultType="string">
+    <select id="selectUserIdByEmail" parameterType="string" resultType="string">
         SELECT user_id
         FROM USER
         WHERE email = #{email}
@@ -62,7 +62,7 @@
         WHERE user_id = #{userId}
     </update>
 
-    <select id = "findUserTypeByUserId" parameterType="string" resultType="com.sololiving.domain.user.enums.UserType">
+    <select id = "selectUserTypeByUserId" parameterType="string" resultType="com.sololiving.domain.user.enums.UserType">
         SELECT user_type
         FROM USER
         WHERE user_id = #{userId}

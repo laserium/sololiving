@@ -5,7 +5,7 @@
 
 <mapper namespace="com.sololiving.domain.user.mapper.UserViewMapper">
 
-    <select id="findUserList" resultType="com.sololiving.domain.user.dto.response.ViewUserListResponseDto">
+    <select id="selectUserList" resultType="com.sololiving.domain.user.dto.response.ViewUserListResponseDto">
         SELECT
             user_id AS userId,
             email,

@@ -13,16 +13,16 @@ import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewT
 public interface ArticleViewMapper {
 
     // 게시글 목록 조회
-    List<ViewArticlesListResponseDto> findArticlesByCategoryId(
+    List<ViewArticlesListResponseDto> selectArticlesByCategoryId(
             @Param("categoryCode") String categoryCode,
             @Param("page") int page);
 
     // 게시글 상세 조회
-    ViewArticleDetailsResponseDto findByArticleId(Long articleId);
+    ViewArticleDetailsResponseDto selectByArticleId(Long articleId);
 
     // 메인 페이지 : 일주일간 인기 게시글 TOP 5 조회
-    List<ViewTopArticlesResponseDto> findPopularArticleListInMain();
+    List<ViewTopArticlesResponseDto> selectPopularArticleListInMain();
 
     // 메인 페이지 : 대표 카테고리의 게시글 목록 조회
-    List<ViewTopArticlesResponseDto> findArticlesListInMain(@Param("categoryCode") String categoryCode);
+    List<ViewTopArticlesResponseDto> selectArticlesListInMain(@Param("categoryCode") String categoryCode);
 }

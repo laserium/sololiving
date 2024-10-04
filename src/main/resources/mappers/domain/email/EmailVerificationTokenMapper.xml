@@ -5,7 +5,7 @@
 
 <mapper namespace="com.sololiving.domain.email.mapper.EmailVerificationTokenMapper">
 
-    <select id="findByToken" parameterType="string" resultType="com.sololiving.domain.email.vo.EmailVerificationTokenVo">
+    <select id="selectByToken" parameterType="string" resultType="com.sololiving.domain.email.vo.EmailVerificationTokenVo">
         SELECT *
         FROM EMAIL_VERIFICATION_TOKEN
         WHERE token = #{token}

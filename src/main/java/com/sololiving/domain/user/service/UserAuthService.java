@@ -72,8 +72,8 @@ public class UserAuthService {
     }
 
     // 아이디로 유저 찾기
-    public UserVo findByUserId(String userId) {
-        UserVo userVo = userAuthMapper.findByUserId(userId);
+    public UserVo selectByUserId(String userId) {
+        UserVo userVo = userAuthMapper.selectByUserId(userId);
         if (userVo != null) {
             return userVo;
         } else
@@ -81,8 +81,8 @@ public class UserAuthService {
     }
 
     // Oauth2UserId로 유저 찾기(회원가입 분기 로직 전용)
-    public UserVo findByOauth2UserId(String userId) {
-        UserVo userVo = userAuthMapper.findByOauth2UserId(userId);
+    public UserVo selectByOauth2UserId(String userId) {
+        UserVo userVo = userAuthMapper.selectByOauth2UserId(userId);
         if (userVo != null) {
             return userVo;
         } else
@@ -90,8 +90,8 @@ public class UserAuthService {
     }
 
     // 이메일로 유저 찾기
-    public UserVo findByEmail(String email) {
-        UserVo userVo = userAuthMapper.findByEmail(email);
+    public UserVo selectByEmail(String email) {
+        UserVo userVo = userAuthMapper.selectByEmail(email);
         if (userVo != null) {
             return userVo;
         } else
@@ -99,8 +99,8 @@ public class UserAuthService {
     }
 
     // 아이디로 이메일 찾기
-    public String findEmailByUserId(String userId) {
-        String email = userAuthMapper.findEmailByUserId(userId);
+    public String selectEmailByUserId(String userId) {
+        String email = userAuthMapper.selectEmailByUserId(userId);
         if (email != null) {
             return email;
         } else
@@ -108,8 +108,8 @@ public class UserAuthService {
     }
 
     // 아이디로 비밀번호 찾기
-    public String findPasswordByUserId(String userId) {
-        String password = userAuthMapper.findPasswordByUserId(userId);
+    public String selectPasswordByUserId(String userId) {
+        String password = userAuthMapper.selectPasswordByUserId(userId);
         if (password != null) {
             return password;
         } else
@@ -117,8 +117,8 @@ public class UserAuthService {
     }
 
     // 이메일로 아이디 찾기
-    public String findUserIdByEmail(String email) {
-        String userId = userAuthMapper.findUserIdByEmail(email);
+    public String selectUserIdByEmail(String email) {
+        String userId = userAuthMapper.selectUserIdByEmail(email);
         if (userId != null) {
             return userId;
         } else
@@ -127,7 +127,7 @@ public class UserAuthService {
 
     // 아이디와 이메일 검증
     public String validateUserIdAndEmail(String userId, String inputEmail) {
-        String email = userAuthMapper.findEmailByUserId(userId);
+        String email = userAuthMapper.selectEmailByUserId(userId);
         if (email.equals(inputEmail)) {
             return email;
         } else
@@ -153,13 +153,13 @@ public class UserAuthService {
     // 임시 비밀번호 설정
     @Transactional
     public void setTempPassword(String userEmail, String tempPassword) {
-        UserVo userVo = findByEmail(userEmail);
+        UserVo userVo = selectByEmail(userEmail);
 
         userAuthMapper.updatePassword(bCryptPasswordEncoder.encode(tempPassword), userVo.getUserId());
     }
 
     // userId 로 userType 확인
-    public UserType findUserTypeByUserId(String userId) {
-        return userAuthMapper.findUserTypeByUserId(userId);
+    public UserType selectUserTypeByUserId(String userId) {
+        return userAuthMapper.selectUserTypeByUserId(userId);
     }
 }
