@@ -1,7 +1,6 @@
 package com.sololiving.domain.user.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

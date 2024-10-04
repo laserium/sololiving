@@ -12,6 +12,9 @@ import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewT
 @Mapper
 public interface ArticleViewMapper {
 
+    // 게시글 전체 목록 조회
+    List<ViewArticlesListResponseDto> selectAllArticlesList();
+
     // 게시글 목록 조회
     List<ViewArticlesListResponseDto> selectArticlesByCategoryId(
             @Param("categoryCode") String categoryCode,

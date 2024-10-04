@@ -5,6 +5,20 @@
 
 <mapper namespace="com.sololiving.domain.article.mapper.ArticleViewMapper">
 
+    <!-- 전체 게시글 목록 조회 -->
+    <select id="selectAllArticlesList" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticlesListResponseDto">
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY created_at DESC) AS displayNumber,
+            article_id AS articleId,
+            title,
+            content,
+            like_cnt AS likeCnt,
+            view_cnt AS viewCnt,
+            created_at AS createdAt
+        FROM ARTICLE
+        ORDER BY created_at DESC
+    </select>
+
     <!-- 게시글 목록 조회 -->
     <select id="selectArticlesByCategoryId" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewArticlesListResponseDto">
         SELECT 

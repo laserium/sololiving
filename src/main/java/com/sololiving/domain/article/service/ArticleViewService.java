@@ -25,6 +25,21 @@ public class ArticleViewService {
     private final ArticleViewMapper articleViewMapper;
     private final MediaMapper mediaMapper;
 
+    // 전체 게시글 조회
+    public List<ViewArticlesListResponseDto> viewAllArticlesList() {
+        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectAllArticlesList();
+
+        articles.forEach(article -> {
+            String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
+            article.setTimeAgo(timeAgo);
+
+            boolean hasMedia = checkIfArticleHasMedia(article.getArticleId());
+            article.setHasMedia(hasMedia);
+        });
+
+        return articles;
+    }
+
     // 게시글 목록 조회
     // @Cacheable(value = "articleList", key = "'ARTICLE_VIEW:LIST:' + #categoryCode
     // + ':' + #page")
