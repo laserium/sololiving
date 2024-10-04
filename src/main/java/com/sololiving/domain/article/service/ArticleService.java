@@ -64,7 +64,7 @@ public class ArticleService {
         articleMapper.updateArticle(articleVo);
 
         // 미디어 파일들도 저장
-        mediaService.updateMediaInArticle(articleId, requestDto.getTempMediaUrls());
+        mediaService.updateMediaInArticle(articleId, requestDto.getUpdatedMediaUrls());
 
     }
 

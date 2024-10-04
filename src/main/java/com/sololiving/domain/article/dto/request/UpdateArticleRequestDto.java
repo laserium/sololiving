@@ -12,5 +12,5 @@ public class UpdateArticleRequestDto {
     private String title;
     private String content;
     private String categoryCode;
-    private List<String> tempMediaUrls;
+    private List<String> updatedMediaUrls;
 }
