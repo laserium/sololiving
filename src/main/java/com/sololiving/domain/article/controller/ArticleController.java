@@ -66,6 +66,6 @@ public class ArticleController {
         // 수정
         articleService.modifyArticle(requestDto, articleId, userId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body("수정완료");
+                .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_UPDATE_ARTICLE));
     }
 }
