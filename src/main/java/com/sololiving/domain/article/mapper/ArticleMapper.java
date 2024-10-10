@@ -24,4 +24,7 @@ public interface ArticleMapper {
     ArticleVo selectByArticleId(@Param("articleId") Long articleId);
 
     void updateArticle(ArticleVo articleVo);
+
+    // 게시글 삭제 - 게시글 상태를 삭제로 변경 UPDATE
+    void updateArticleAsDeleted(@Param("articleId") Long articleId);
 }

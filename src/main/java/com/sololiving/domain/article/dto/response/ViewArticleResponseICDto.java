@@ -83,9 +83,38 @@ public class ViewArticleResponseICDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ViewTopArticlesResponseDto implements Serializable {
+    public static class ViewAllArticlesListResponseDto implements Serializable {
 
         private static final long serialVersionUID = 3000L;
+
+        private int displayNumber;
+        private Long articleId;
+        private String title;
+        private String content;
+        private String categoryCode;
+        private int likeCnt;
+        private int viewCnt;
+        private boolean hasMedia;
+        private String timeAgo;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime createdAt;
+
+        public void setHasMedia(boolean hasMedia) {
+            this.hasMedia = hasMedia;
+        }
+
+        public void setTimeAgo(String timeAgo) {
+            this.timeAgo = timeAgo;
+        }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ViewTopArticlesResponseDto implements Serializable {
+
+        private static final long serialVersionUID = 4000L;
 
         private Long articleId;
         private String title;

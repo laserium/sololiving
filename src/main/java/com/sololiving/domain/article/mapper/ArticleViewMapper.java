@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
@@ -13,7 +14,7 @@ import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewT
 public interface ArticleViewMapper {
 
     // 게시글 전체 목록 조회
-    List<ViewArticlesListResponseDto> selectAllArticlesList();
+    List<ViewAllArticlesListResponseDto> selectAllArticlesList();
 
     // 게시글 목록 조회
     List<ViewArticlesListResponseDto> selectArticlesByCategoryId(

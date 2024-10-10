@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.global.util.aws.S3Uploader;
@@ -21,7 +20,6 @@ public class MediaService {
     private final MediaUploadService mediaUploadService;
     private final S3Uploader s3Uploader;
 
-    @Transactional
     public void updateMediaInArticle(Long articleId, List<String> updatedMediaUrls) {
         // 1. 기존의 미디어 파일 목록을 조회 (DB 또는 S3에 저장된 목록에서 가져옴)
         List<String> existingMediaUrls = mediaMapper.selectMediaUrlsByArticleId(articleId);
