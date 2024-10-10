@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
@@ -26,7 +27,7 @@ public class ArticleViewController {
 
     // 전체 게시글 목록 조회
     @GetMapping("/all")
-    public ResponseEntity<List<ViewArticlesListResponseDto>> getMethodName() {
+    public ResponseEntity<List<ViewAllArticlesListResponseDto>> getMethodName() {
         return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewAllArticlesList());
     }
 

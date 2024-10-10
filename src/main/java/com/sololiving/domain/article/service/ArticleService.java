@@ -15,10 +15,13 @@ import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.media.service.MediaService;
 import com.sololiving.domain.media.service.MediaUploadService;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.util.aws.S3Uploader;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ArticleService {
 
@@ -26,6 +29,7 @@ public class ArticleService {
     private final MediaMapper mediaMapper;
     private final MediaUploadService mediaUploadService;
     private final MediaService mediaService;
+    private final S3Uploader s3Uploader;
 
     // 게시글 작성
     @Transactional
@@ -76,24 +80,22 @@ public class ArticleService {
     public void removeArticle(Long articleId) {
 
         // 1. 미디어 파일 조회 및 삭제
-        // List<String> mediaUrls = mediaMapper.selectMediaUrlsByArticleId(articleId);
-        // if (mediaUrls != null && !mediaUrls.isEmpty()) {
-        // // S3에서 파일 삭제
-        // for (String mediaUrl : mediaUrls) {
-        // try {
-        // s3Uploader.deleteS3(mediaUrl);
-        // } catch (Exception e) {
-        // log.error("Failed to delete media from S3 for mediaUrl: {}", mediaUrl, e);
-        // }
-        // }
-        // // DB에서 미디어 정보 삭제
-        // mediaMapper.deleteMediaByArticleId(articleId);
-        // }
+        List<String> mediaUrls = mediaMapper.selectMediaUrlsByArticleId(articleId);
+        if (mediaUrls != null && !mediaUrls.isEmpty()) {
+            // S3에서 파일 삭제
+            for (String mediaUrl : mediaUrls) {
+                try {
+                    s3Uploader.deleteS3(mediaUrl);
+                } catch (Exception e) {
+                    log.error("Failed to delete media from S3 for mediaUrl: {}", mediaUrl, e);
+                }
+            }
+            // DB에서 미디어 정보 삭제
+            mediaMapper.deleteMediaUrlsByArticleId(articleId);
+        }
 
-        // // 3. 게시글 정보 초기화 (삭제된 게시글 처리)
-        // articleMapper.updateArticleAsDeleted(articleId);
-        // final String DELETED_TITLE = "삭제된 게시글입니다";
-        // final String DELETED_CONTENT = "삭제된 게시글입니다";
+        // 3. 게시글 정보 초기화 (삭제된 게시글 처리)
+        articleMapper.updateArticleAsDeleted(articleId);
 
     }
 

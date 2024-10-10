@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
@@ -26,8 +27,8 @@ public class ArticleViewService {
     private final MediaMapper mediaMapper;
 
     // 전체 게시글 조회
-    public List<ViewArticlesListResponseDto> viewAllArticlesList() {
-        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectAllArticlesList();
+    public List<ViewAllArticlesListResponseDto> viewAllArticlesList() {
+        List<ViewAllArticlesListResponseDto> articles = articleViewMapper.selectAllArticlesList();
 
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());

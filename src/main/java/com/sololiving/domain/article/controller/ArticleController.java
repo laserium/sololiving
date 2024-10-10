@@ -76,7 +76,7 @@ public class ArticleController {
         // 작성자(회원) 검증
         String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
         articleService.validateWriter(articleId, userId);
-
+        articleService.removeArticle(articleId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_DELETE_ARTICLE));
     }
