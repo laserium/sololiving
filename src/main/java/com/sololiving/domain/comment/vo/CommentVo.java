@@ -12,6 +12,7 @@ import lombok.Getter;
 public class CommentVo {
 
     private Long commentId;
+    private Long parentCommentId;
     private Long articleId;
     private String writer;
     private String content;
