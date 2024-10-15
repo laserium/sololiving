@@ -46,7 +46,7 @@ public class CommentController {
     }
 
     // 대댓글 작성
-    @PostMapping("path")
+    @PostMapping("/re")
     public ResponseEntity<?> addReComment(@RequestBody CreateReCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
