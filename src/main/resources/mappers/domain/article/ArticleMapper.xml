@@ -66,4 +66,14 @@
         WHERE article_id = #{articleId}
     </update>
 
+    <!-- 게시글 아이디로 게시글 유무 확인 -->
+    <select id="checkArticleExists" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM ARTICLE
+            WHERE article_id = #{articleId}
+        ) AS isExists
+    </select>
+
+
 </mapper>
