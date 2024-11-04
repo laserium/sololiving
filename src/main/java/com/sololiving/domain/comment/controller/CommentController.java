@@ -3,8 +3,8 @@ package com.sololiving.domain.comment.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sololiving.domain.comment.dto.request.CreateCommentRequestDto;
-import com.sololiving.domain.comment.dto.request.CreateReCommentRequestDto;
+import com.sololiving.domain.comment.dto.request.AddCommentRequestDto;
+import com.sololiving.domain.comment.dto.request.AddReCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentSuccessCode;
 import com.sololiving.domain.comment.service.CommentService;
 import com.sololiving.domain.user.exception.UserErrorCode;
@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,7 +36,7 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping
-    public ResponseEntity<?> addComment(@RequestBody CreateCommentRequestDto requestDto,
+    public ResponseEntity<?> addComment(@RequestBody AddCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
         if (userAuthService.isUserIdAvailable(userId)) {
@@ -47,7 +49,7 @@ public class CommentController {
 
     // 대댓글 작성
     @PostMapping("/re")
-    public ResponseEntity<?> addReComment(@RequestBody CreateReCommentRequestDto requestDto,
+    public ResponseEntity<?> addReComment(@RequestBody AddReCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
         if (userAuthService.isUserIdAvailable(userId)) {
@@ -59,4 +61,18 @@ public class CommentController {
 
     }
 
+    @DeleteMapping("{commentId}")
+    public ResponseEntity<?> removeComment(@PathVariable Long commentId,
+            HttpServletRequest httpServletRequest) {
+        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        commentService.removeComment(commentId, userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_DELETE_COMMENT));
+
+    }
+
+    
 }

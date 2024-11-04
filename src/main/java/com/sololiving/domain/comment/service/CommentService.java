@@ -5,10 +5,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleMapper;
-import com.sololiving.domain.comment.dto.request.CreateCommentRequestDto;
-import com.sololiving.domain.comment.dto.request.CreateReCommentRequestDto;
+import com.sololiving.domain.comment.dto.request.AddCommentRequestDto;
+import com.sololiving.domain.comment.dto.request.AddReCommentRequestDto;
+import com.sololiving.domain.comment.exception.CommentErrorCode;
 import com.sololiving.domain.comment.mapper.CommentMapper;
 import com.sololiving.domain.comment.vo.CommentVo;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public void addComment(CreateCommentRequestDto requestDto, String writer) {
+    public void addComment(AddCommentRequestDto requestDto, String writer) {
         if (!articleMapper.checkArticleExists(requestDto.getArticleId())) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
@@ -39,7 +41,7 @@ public class CommentService {
 
     // 대댓글 작성
     @Transactional
-    public void addReComment(CreateReCommentRequestDto requestDto, String writer) {
+    public void addReComment(AddReCommentRequestDto requestDto, String writer) {
         if (!articleMapper.checkArticleExists(requestDto.getArticleId())) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
@@ -52,5 +54,16 @@ public class CommentService {
                 .build();
 
         commentMapper.insertComment(commentVo);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public void removeComment(Long commentId, String writer) {
+        if (!commentMapper.checkComment(commentId)) {
+            throw new ErrorException(CommentErrorCode.NOT_FOUND_COMMENT);
+        }
+        if (!commentMapper.verifyCommentWriter(commentId, writer)) {
+            throw new ErrorException(GlobalErrorCode.NO_PERMISSION);
+        }
     }
 }
