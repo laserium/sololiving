@@ -34,7 +34,8 @@
     <update id="deleteComment">
         UPDATE COMMENT
         SET content = '삭제된 댓글입니다',
-            status = 'DELETED'
+            status = 'DELETED',
+            like_cnt = 0
         WHERE comment_id = #{commentId}
     </update>
 

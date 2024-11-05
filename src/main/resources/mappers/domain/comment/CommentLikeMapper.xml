@@ -5,7 +5,7 @@
 
 <mapper namespace="com.sololiving.domain.comment.mapper.CommentLikeMapper">
 
-    <!-- 댓글 추천 추가 -->
+    <!-- 댓글 추천  -->
     <insert id="insertCommentLike" parameterType="com.sololiving.domain.comment.vo.CommentLikeVo">
         INSERT INTO COMMENT_LIKE (comment_id, user_id)
         VALUES (#{commentId}, #{userId})
@@ -19,4 +19,11 @@
             WHERE comment_id = #{commentId} AND user_id = #{userId}
         )
     </select>
+
+    <!-- 댓글 추천 취소 -->
+    <delete id="deleteCommentLike">
+        DELETE FROM COMMENT_LIKE
+        WHERE comment_id = #{commentId} AND user_id = #{userId};
+    </delete>
+    
 </mapper>

@@ -11,4 +11,7 @@ public interface CommentLikeMapper {
 
     // 이미 추천한 댓글에 재추천 불가
     boolean hasUserLikedComment(@Param("commentId") Long commentId, @Param("userId") String userId);
+
+    // 댓글 추천 취소
+    void deleteCommentLike(@Param("commentId") Long commentId, @Param("userId") String userId);
 }

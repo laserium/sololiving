@@ -91,17 +91,4 @@ public class CommentController {
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_UPDATE_COMMENT));
 
     }
-
-    // 댓글 추천
-    @PatchMapping("/{commentId}/like")
-    public ResponseEntity<?> likeComment(@PathVariable Long commentId, HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
-        if (userAuthService.isUserIdAvailable(userId)) {
-            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
-        }
-        commentService.likeComment(commentId, userId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_LIKE_COMMENT));
-    }
-
 }
