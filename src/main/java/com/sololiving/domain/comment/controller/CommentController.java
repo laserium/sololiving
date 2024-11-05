@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.comment.dto.request.AddCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.AddReCommentRequestDto;
+import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentSuccessCode;
 import com.sololiving.domain.comment.service.CommentService;
 import com.sololiving.domain.user.exception.UserErrorCode;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,6 +63,7 @@ public class CommentController {
 
     }
 
+    // 댓글 삭제
     @DeleteMapping("{commentId}")
     public ResponseEntity<?> removeComment(@PathVariable Long commentId,
             HttpServletRequest httpServletRequest) {
@@ -74,5 +77,19 @@ public class CommentController {
 
     }
 
-    
+    // 댓글 수정
+    @PatchMapping("{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
+            @RequestBody UpdateCommentRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
+        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        commentService.updateComment(commentId, userId, requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_UPDATE_COMMENT));
+
+    }
+
 }

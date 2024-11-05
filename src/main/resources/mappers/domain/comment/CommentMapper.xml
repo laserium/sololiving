@@ -30,4 +30,19 @@
         )
     </select>
 
+    <!-- 댓글 삭제 : 상태 UPDATE -->
+    <update id="deleteComment">
+        UPDATE COMMENT
+        SET content = '삭제된 댓글입니다',
+            status = 'DELETED'
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment">
+        UPDATE COMMENT
+        SET content = #{content}
+        WHERE comment_id = #{commentId}
+    </update>
+
 </mapper>

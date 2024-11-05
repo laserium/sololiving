@@ -15,4 +15,10 @@ public interface CommentMapper {
 
     // 댓글 존재 검증
     boolean checkComment(@Param("commentId") Long commentId);
+
+    // 댓글 삭제
+    void deleteComment(@Param("commentId") Long commentId);
+
+    // 댓글 수정
+    void updateComment(@Param("commentId") Long commentId, @Param("content") String content);
 }

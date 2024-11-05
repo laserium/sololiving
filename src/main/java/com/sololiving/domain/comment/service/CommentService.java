@@ -7,6 +7,7 @@ import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.comment.dto.request.AddCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.AddReCommentRequestDto;
+import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentErrorCode;
 import com.sololiving.domain.comment.mapper.CommentMapper;
 import com.sololiving.domain.comment.vo.CommentVo;
@@ -14,8 +15,10 @@ import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -65,5 +68,19 @@ public class CommentService {
         if (!commentMapper.verifyCommentWriter(commentId, writer)) {
             throw new ErrorException(GlobalErrorCode.NO_PERMISSION);
         }
+        commentMapper.deleteComment(commentId);
+    }
+
+    // 댓글 수정
+    @Transactional
+    public void updateComment(Long commentId, String writer, UpdateCommentRequestDto requestDto) {
+        if (!commentMapper.checkComment(commentId)) {
+            throw new ErrorException(CommentErrorCode.NOT_FOUND_COMMENT);
+        }
+        if (!commentMapper.verifyCommentWriter(commentId, writer)) {
+            throw new ErrorException(GlobalErrorCode.NO_PERMISSION);
+        }
+        log.info(requestDto.getContent());
+        commentMapper.updateComment(commentId, requestDto.getContent());
     }
 }
