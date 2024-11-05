@@ -9,7 +9,9 @@ import com.sololiving.domain.comment.dto.request.AddCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.AddReCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentErrorCode;
+import com.sololiving.domain.comment.mapper.CommentLikeMapper;
 import com.sololiving.domain.comment.mapper.CommentMapper;
+import com.sololiving.domain.comment.vo.CommentLikeVo;
 import com.sololiving.domain.comment.vo.CommentVo;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentService {
 
     private final CommentMapper commentMapper;
+    private final CommentLikeMapper commentLikeMapper;
     private final ArticleMapper articleMapper;
 
     // 댓글 작성
@@ -82,5 +85,28 @@ public class CommentService {
         }
         log.info(requestDto.getContent());
         commentMapper.updateComment(commentId, requestDto.getContent());
+    }
+
+    // 댓글 추천
+    @Transactional
+    public void likeComment(Long commentId, String userId) {
+        if (!commentMapper.checkComment(commentId)) {
+            throw new ErrorException(CommentErrorCode.NOT_FOUND_COMMENT);
+        }
+        // 본인이 작성한 댓글에 추천 불가
+        if (commentMapper.selectCommentWriter(commentId).equals(userId)) {
+            throw new ErrorException(CommentErrorCode.CANNOT_LIKE_MY_COMMENT);
+        }
+        // 이미 추천한 경우 다시 추천 불가
+        if (commentLikeMapper.hasUserLikedComment(commentId, userId)) {
+            throw new ErrorException(CommentErrorCode.CANNOT_LIKE_DUPLICATE);
+        }
+        CommentLikeVo commentLike = CommentLikeVo.builder()
+                .commentId(commentId)
+                .userId(userId)
+                .build();
+
+        commentLikeMapper.insertCommentLike(commentLike);
+        commentMapper.updateLikeCount(commentId);
     }
 }

@@ -45,4 +45,20 @@
         WHERE comment_id = #{commentId}
     </update>
 
+    <!-- 댓글 추천 수 업데이트 -->
+    <update id="updateLikeCount">
+        UPDATE COMMENT
+        SET like_cnt = (
+            SELECT COUNT(*) FROM COMMENT_LIKE WHERE comment_id = #{commentId}
+        )
+        WHERE comment_id = #{commentId};
+    </update>
+
+    <!-- 댓글 작성자 조회 -->
+    <select id="selectCommentWriter">
+        SELECT writer
+        FROM COMMENT
+        WHERE comment_id = #{commentId}
+    </select>
+
 </mapper>

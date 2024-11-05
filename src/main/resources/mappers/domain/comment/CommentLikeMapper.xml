@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.comment.mapper.CommentLikeMapper">
+
+    <!-- 댓글 추천 추가 -->
+    <insert id="insertCommentLike" parameterType="com.sololiving.domain.comment.vo.CommentLikeVo">
+        INSERT INTO COMMENT_LIKE (comment_id, user_id)
+        VALUES (#{commentId}, #{userId})
+    </insert>
+
+    <!-- 이미 추천한 댓글에 재추천 불가 여부 조회 -->
+    <select id="hasUserLikedComment" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM COMMENT_LIKE
+            WHERE comment_id = #{commentId} AND user_id = #{userId}
+        )
+    </select>
+</mapper>

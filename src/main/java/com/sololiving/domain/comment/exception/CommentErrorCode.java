@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CommentErrorCode implements ErrorCode {
 
-    NOT_FOUND_COMMENT("COMMENT_E001", "댓글을 찾을 수 없음");
+    NOT_FOUND_COMMENT("COMMENT_E001", "댓글을 찾을 수 없음"),
+    CANNOT_LIKE_MY_COMMENT("COMMENT_E002", "본인이 작성한 댓글에 추천 불가"),
+    CANNOT_LIKE_DUPLICATE("COMMENT_E003", "이미 추천한 댓글에 재추천 불가");
 
     private final String code;
     private final String message;

@@ -21,4 +21,10 @@ public interface CommentMapper {
 
     // 댓글 수정
     void updateComment(@Param("commentId") Long commentId, @Param("content") String content);
+
+    // 댓글 추천 수 업데이트
+    void updateLikeCount(@Param("commentId") Long commentId);
+
+    // 댓글 작성자 조회
+    String selectCommentWriter(@Param("commentId") Long commentId);
 }
