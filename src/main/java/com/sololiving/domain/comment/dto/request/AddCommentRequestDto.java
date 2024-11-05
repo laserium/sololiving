@@ -5,10 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateReCommentRequestDto {
+public class AddCommentRequestDto {
 
     private Long articleId;
-    private Long parentCommentId;
     private String content;
 
 }
