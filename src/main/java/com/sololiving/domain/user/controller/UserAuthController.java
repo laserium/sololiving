@@ -3,6 +3,7 @@ package com.sololiving.domain.user.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sololiving.domain.auth.dto.auth.request.VerifyPasswordRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.CheckSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.exception.UserErrorCode;
@@ -11,10 +12,13 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
 import com.sololiving.global.security.sms.service.SmsService;
+import com.sololiving.global.util.CookieService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -31,6 +35,8 @@ public class UserAuthController {
 
     private final UserAuthService userAuthService;
     private final SmsService smsService;
+    private final TokenProvider tokenProvider;
+    private final CookieService cookieService;
 
     // 회원가입 시 휴대폰 인증번호 전송
     @PostMapping("/contact-verification/send")
@@ -65,4 +71,15 @@ public class UserAuthController {
             throw new ErrorException(UserErrorCode.ID_ALREADY_EXISTS);
     }
 
+    // 비밀번호 검증
+    @PostMapping("/password-verification")
+    public ResponseEntity<?> verifyUserPassword(@RequestBody VerifyPasswordRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
+        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        if (userAuthService.verifyUserPassword(requestDto.getUserPwd(), userId)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseMessage.createSuccessResponse(UserSuccessCode.USER_PASSWORD_CORRECT));
+        } else
+            throw new ErrorException(UserErrorCode.USER_PASSWORD_INCORRECT);
+    }
 }
