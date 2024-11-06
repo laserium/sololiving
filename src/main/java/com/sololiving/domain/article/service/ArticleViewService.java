@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewCategoryArticlesResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleViewMapper;
@@ -88,19 +89,14 @@ public class ArticleViewService {
     // 메인 페이지 : 일주일간 인기 게시글 TOP 5 조회
     // @Cacheable(value = "popularArticles", key = "'ARTICLE_VIEW:MAIN:POPULAR'")
     public List<ViewTopArticlesResponseDto> viewPopularArticleListInMain() {
-        List<ViewTopArticlesResponseDto> articles = articleViewMapper.selectPopularArticleListInMain();
-        articles.forEach(article -> {
-            String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
-            article.setTimeAgo(timeAgo);
-        });
-        return articles;
+        return articleViewMapper.selectPopularArticleListInMain();
     }
 
     // 메인 페이지 : 대표 카테고리의 게시글 목록 조회
     // @Cacheable(value = "mainCategoryArticles", key = "'ARTICLE_VIEW:MAIN:' +
     // #categoryCode")
-    public List<ViewTopArticlesResponseDto> viewArticlesListInMain(String categoryCode) {
-        List<ViewTopArticlesResponseDto> articles = articleViewMapper.selectArticlesListInMain(categoryCode);
+    public List<ViewCategoryArticlesResponseDto> viewArticlesListInMain(String categoryCode) {
+        List<ViewCategoryArticlesResponseDto> articles = articleViewMapper.selectArticlesListInMain(categoryCode);
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
