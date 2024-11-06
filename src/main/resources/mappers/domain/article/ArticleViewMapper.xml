@@ -10,6 +10,7 @@
         SELECT 
             ROW_NUMBER() OVER (ORDER BY created_at DESC) AS displayNumber,
             article_id AS articleId,
+            writer,
             title,
             content,
             category_code AS categoryCodes,
@@ -25,6 +26,7 @@
         SELECT 
             ROW_NUMBER() OVER (ORDER BY created_at DESC) AS displayNumber,
             article_id AS articleId,
+            writer,
             title,
             content,
             like_cnt AS likeCnt,
@@ -58,6 +60,7 @@
     <select id="selectPopularArticleListInMain" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewTopArticlesResponseDto">
         SELECT
             article_id AS articleId,
+            writer,
             title,
             like_cnt AS likeCnt,
             view_cnt AS viewCnt,
@@ -72,9 +75,10 @@
 
 
     <!-- 메인 페이지 : 대표 카테고리의 게시글 목록 조회 -->
-    <select id="selectArticlesListInMain" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewTopArticlesResponseDto">
+    <select id="selectArticlesListInMain" resultType="com.sololiving.domain.article.dto.response.ViewArticleResponseICDto$ViewCategoryArticlesResponseDto">
         SELECT
             article_id AS articleId,
+            writer,
             title,
             like_cnt AS likeCnt,
             view_cnt AS viewCnt,

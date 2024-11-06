@@ -61,6 +61,7 @@ public class ViewArticleResponseICDto {
 
         private int displayNumber;
         private Long articleId;
+        private String writer;
         private String title;
         private String content;
         private int likeCnt;
@@ -89,6 +90,7 @@ public class ViewArticleResponseICDto {
 
         private int displayNumber;
         private Long articleId;
+        private String writer;
         private String title;
         private String content;
         private String categoryCode;
@@ -117,6 +119,25 @@ public class ViewArticleResponseICDto {
         private static final long serialVersionUID = 4000L;
 
         private Long articleId;
+        private String writer;
+        private String title;
+        private int likeCnt;
+        private int viewCnt;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime createdAt;
+
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ViewCategoryArticlesResponseDto implements Serializable {
+
+        private static final long serialVersionUID = 4000L;
+
+        private Long articleId;
+        private String writer;
         private String title;
         private int likeCnt;
         private int viewCnt;

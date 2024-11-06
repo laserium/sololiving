@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewCategoryArticlesResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
 
 @Mapper
@@ -28,5 +29,5 @@ public interface ArticleViewMapper {
     List<ViewTopArticlesResponseDto> selectPopularArticleListInMain();
 
     // 메인 페이지 : 대표 카테고리의 게시글 목록 조회
-    List<ViewTopArticlesResponseDto> selectArticlesListInMain(@Param("categoryCode") String categoryCode);
+    List<ViewCategoryArticlesResponseDto> selectArticlesListInMain(@Param("categoryCode") String categoryCode);
 }
