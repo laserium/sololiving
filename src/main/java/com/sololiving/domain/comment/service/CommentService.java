@@ -9,9 +9,7 @@ import com.sololiving.domain.comment.dto.request.AddCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.AddReCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentErrorCode;
-import com.sololiving.domain.comment.mapper.CommentLikeMapper;
 import com.sololiving.domain.comment.mapper.CommentMapper;
-import com.sololiving.domain.comment.vo.CommentLikeVo;
 import com.sololiving.domain.comment.vo.CommentVo;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -25,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentService {
 
     private final CommentMapper commentMapper;
-    private final CommentLikeMapper commentLikeMapper;
     private final ArticleMapper articleMapper;
 
     // 댓글 작성

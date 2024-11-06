@@ -57,13 +57,13 @@ public class UserController {
     @DeleteMapping("")
     public ResponseEntity<SuccessResponse> deleteUser(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        if (accessToken != null && tokenProvider.validToken(accessToken)) {
-            userService.deleteUserRequest(accessToken);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(ResponseMessage
-                            .createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
-        } else
+        if (accessToken == null || tokenProvider.validToken(accessToken)) {
             throw new ErrorException(TokenErrorCode.CANNOT_FIND_AT);
+        }
+        userService.deleteUserRequest(accessToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage
+                        .createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
     }
 
     // 상태변경
