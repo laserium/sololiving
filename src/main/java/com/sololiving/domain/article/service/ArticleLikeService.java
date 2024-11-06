@@ -7,8 +7,6 @@ import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleLikeMapper;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleLikeVo;
-import com.sololiving.domain.comment.exception.CommentErrorCode;
-import com.sololiving.domain.comment.vo.CommentLikeVo;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;

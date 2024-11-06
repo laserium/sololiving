@@ -162,4 +162,12 @@ public class UserAuthService {
     public UserType selectUserTypeByUserId(String userId) {
         return userAuthMapper.selectUserTypeByUserId(userId);
     }
+
+    // 비밀번호 검증
+    public boolean verifyUserPassword(String userPwd, String userId) {
+        if (bCryptPasswordEncoder.matches(userPwd, userAuthMapper.selectPasswordByUserId(userId))) {
+            return true;
+        } else
+            return false;
+    }
 }

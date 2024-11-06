@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
+import com.sololiving.domain.auth.dto.auth.request.VerifyPasswordRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
@@ -96,6 +97,7 @@ public class AuthController {
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.PASSWORD_RESET_SUCCESS));
     }
 
+    // 초기 인증
     @PostMapping("/verification")
     public ResponseEntity<SuccessResponse> postVerificationWithData(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
