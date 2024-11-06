@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleLikeService;
-import com.sololiving.domain.comment.exception.CommentSuccessCode;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
@@ -46,7 +45,7 @@ public class ArticleLikeController {
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_LIKE_ARTICLE));
     }
 
-    // 댓글 추천 취소
+    // 게시글 추천 취소
     @DeleteMapping("{articleId}/like")
     public ResponseEntity<SuccessResponse> likeArticleCancle(@PathVariable Long articleId,
             HttpServletRequest httpServletRequest) {

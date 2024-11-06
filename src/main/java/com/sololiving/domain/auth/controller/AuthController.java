@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
-import com.sololiving.domain.auth.dto.auth.request.VerifyPasswordRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
 import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
