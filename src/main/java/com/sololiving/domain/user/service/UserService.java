@@ -73,10 +73,11 @@ public class UserService {
     // 회원탈퇴
     public void deleteUserRequest(String accessToken) {
         String userId = tokenProvider.getUserId(accessToken);
-        if (userId != null && userAuthService.isUserIdAvailable(userId) == false) {
-            deleteUser(userId);
-        } else
+        if (userId == null && userAuthService.isUserIdAvailable(userId) == true) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        // 카테고리 관리자일 경우 관리자를 admin 으로 변경
+        deleteUser(userId);
     }
 
     // 회원탈퇴 - 삭제
