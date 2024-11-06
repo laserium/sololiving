@@ -9,7 +9,7 @@ import com.sololiving.domain.article.vo.ArticleVo;
 public interface ArticleMapper {
 
     // 게시글 작성
-    void insertArticle(ArticleVo article);
+    void insertArticle(ArticleVo articleVo);
 
     // 게시글의 고유 점수 스케쥴링
     void updateAllArticleScores();
@@ -23,12 +23,15 @@ public interface ArticleMapper {
     // 게시글 찾기
     ArticleVo selectByArticleId(@Param("articleId") Long articleId);
 
+    // 게시글 수정
     void updateArticle(ArticleVo articleVo);
 
     // 게시글 삭제 - 게시글 상태를 삭제로 변경 UPDATE
     void updateArticleAsDeleted(@Param("articleId") Long articleId);
 
     // 게시글 아이디로 게시글 존재 유무 확인
-    boolean checkArticleExists(Long articleId);
+    boolean checkArticleExists(@Param("articleId") Long articleId);
 
+    // 게시글 추천 수 업데이트
+    void updateArticleLikeCount(@Param("articleId") Long articleId);
 }

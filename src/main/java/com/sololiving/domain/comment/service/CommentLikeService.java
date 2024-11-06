@@ -38,7 +38,7 @@ public class CommentLikeService {
                 .build();
 
         commentLikeMapper.insertCommentLike(commentLike);
-        commentMapper.updateLikeCount(commentId);
+        commentMapper.updateCommentLikeCount(commentId);
     }
 
     // 댓글 추천 취소
@@ -52,6 +52,6 @@ public class CommentLikeService {
             throw new ErrorException(CommentErrorCode.NOT_LIKED_COMMENT);
         }
         commentLikeMapper.deleteCommentLike(commentId, userId);
-        commentMapper.updateLikeCount(commentId);
+        commentMapper.updateCommentLikeCount(commentId);
     }
 }

@@ -8,8 +8,6 @@ import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
 import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleService;
-import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
-import com.sololiving.domain.category.vo.CategoryVo;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
