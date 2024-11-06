@@ -47,7 +47,7 @@
     </update>
 
     <!-- 댓글 추천 수 업데이트 -->
-    <update id="updateLikeCount">
+    <update id="updateCommentLikeCount">
         UPDATE COMMENT
         SET like_cnt = (
             SELECT COUNT(*) FROM COMMENT_LIKE WHERE comment_id = #{commentId}
