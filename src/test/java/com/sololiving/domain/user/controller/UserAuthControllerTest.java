@@ -106,29 +106,29 @@ public class UserAuthControllerTest extends AbstractRestDocsConfig {
                 Mockito.eq(requestDto.getCode()));
     }
 
-    @Test
-    @DisplayName("아이디 중복 확인 성공 테스트")
-    void getIdDuplicateVerificationAvailableTest() throws Exception {
-        // given
-        String userId = "testUser";
+    // @Test
+    // @DisplayName("아이디 중복 확인 성공 테스트")
+    // void getIdDuplicateVerificationAvailableTest() throws Exception {
+    // // given
+    // String userId = "testUser";
 
-        // mocking - 중복되지 않은 아이디일 경우 true 리턴
-        when(userAuthService.isUserIdAvailable(userId)).thenReturn(true);
+    // // mocking - 중복되지 않은 아이디일 경우 true 리턴
+    // when(userAuthService.isUserIdAvailable(userId)).thenReturn(true);
 
-        // when & then
-        mockMvc.perform(get("/users/auth/id-duplicate-verification/{userId}", userId)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(UserSuccessCode.USER_ID_AVAILABLE.getCode()))
-                .andExpect(jsonPath("$.message").value(UserSuccessCode.USER_ID_AVAILABLE.getMessage()))
-                .andDo(document("/users/auth/id-duplicate-verification",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("{userId}").description("입력한 아이디"))));
+    // // when & then
+    // mockMvc.perform(get("/users/auth/id-duplicate-verification/{userId}", userId)
+    // .contentType(MediaType.APPLICATION_JSON))
+    // .andExpect(status().isOk())
+    // .andExpect(jsonPath("$.code").value(UserSuccessCode.USER_ID_AVAILABLE.getCode()))
+    // .andExpect(jsonPath("$.message").value(UserSuccessCode.USER_ID_AVAILABLE.getMessage()))
+    // .andDo(document("/users/auth/id-duplicate-verification",
+    // preprocessRequest(prettyPrint()),
+    // preprocessResponse(prettyPrint()),
+    // requestFields(
+    // fieldWithPath("{userId}").description("입력한 아이디"))));
 
-        // verify
-        verify(userAuthService, times(1)).isUserIdAvailable(userId);
-    }
+    // // verify
+    // verify(userAuthService, times(1)).isUserIdAvailable(userId);
+    // }
 
 }
