@@ -19,6 +19,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.config.properties.KakaoOAuthProviderProperties;
 import com.sololiving.global.config.properties.KakaoOAuthRegistrationProperties;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.enums.ClientId;
 import com.sololiving.global.security.jwt.service.TokenProvider;
@@ -85,7 +86,7 @@ public class KakaoOAuthService {
 
     private void validateTokenResponse(KakaoTokenResponseDto responseDto) {
         if (responseDto == null) {
-            throw new ErrorException(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
         oauthUtil.logKakaoTokenResponse(responseDto);
     }

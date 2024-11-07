@@ -20,6 +20,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.config.properties.GoogleOAuthProviderProperties;
 import com.sololiving.global.config.properties.GoogleOAuthRegistrationProperties;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.enums.ClientId;
 import com.sololiving.global.security.jwt.service.TokenProvider;
@@ -86,7 +87,7 @@ public class GoogleOAuthService {
 
     private void validateTokenResponse(GoogleTokenResponseDto responseDto) {
         if (responseDto == null) {
-            throw new ErrorException(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
         // oauthUtil.logGoogleTokenResponse(googleTokenResponseDto);
     }

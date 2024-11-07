@@ -17,8 +17,10 @@ import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
+import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.service.UserService;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
@@ -71,12 +73,19 @@ public class AuthController {
 
     @PostMapping("/users/id-recover")
     public ResponseEntity<SuccessResponse> recoverUserId(@RequestBody IdRecoverRequestDto requestDto) {
+        if (requestDto.getEmail() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
+        String email = requestDto.getEmail();
+        if (userAuthService.isUserEmailAvailable(email)) {
+            throw new ErrorException(AuthErrorCode.NO_EMAIL_IN_DB);
+        }
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
-                .to(requestDto.getEmail())
+                .to(email)
                 .subject("[홀로서기] 아이디 찾기 인증 메일입니다.")
                 .build();
 
-        authEmailService.sendMailIdRecover(requestDto.getEmail(), emailResponseDto, "id-recover");
+        authEmailService.sendMailIdRecover(email, emailResponseDto, "id-recover");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.ID_RECOVER_SUCCESS));
     }
@@ -84,7 +93,9 @@ public class AuthController {
     @PostMapping("/users/password-reset")
     public ResponseEntity<SuccessResponse> resetUserPassword(
             @RequestBody PasswordResetRequestDto requestDto) {
-
+        if (requestDto.getEmail() == null || requestDto.getUserId() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                 .to(userAuthService.validateUserIdAndEmail(requestDto.getUserId(),
                         requestDto.getEmail()))
