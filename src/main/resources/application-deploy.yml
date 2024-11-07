@@ -87,9 +87,9 @@ server:
 ## AWS CLOUD
 cloud:
     aws:
-        credentials:
-            access-key: "${cloud.aws.credentials.access-key}"
-            secret-key: "${cloud.aws.credentials.secret-key}"
+        # credentials:
+        #     access-key: "${cloud.aws.credentials.access-key}"
+        #     secret-key: "${cloud.aws.credentials.secret-key}"
         s3:
             bucket: "${cloud.aws.s3.bucket}"
         region:
