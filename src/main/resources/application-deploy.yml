@@ -96,3 +96,8 @@ cloud:
             static: "${cloud.aws.region.static}"
         stack:
             auto: "${cloud.aws.stack.auto}"
+
+management:
+    health:
+        mail:
+            enabled: "${management.health.mail.enabled}"
