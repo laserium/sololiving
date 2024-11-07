@@ -63,7 +63,7 @@ public class AuthControllerTest extends AbstractRestDocsConfig {
 
         // given
         SignInRequestDto requestDto = SignInRequestDto.builder()
-                .userId("user001")
+                .userId("testUser")
                 .userPwd("1234")
                 .clientId(ClientId.SOLOLIVING)
                 .build();

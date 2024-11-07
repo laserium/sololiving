@@ -63,11 +63,11 @@ public class UserControllerTest extends AbstractRestDocsConfig {
 
         // given
         SignUpRequestDto requestDto = SignUpRequestDto.builder()
-                .userId("testUser001")
+                .userId("testUser")
                 .userPwd("1234")
                 .oauth2UserId(null)
-                .contact("01088889999")
-                .email("testUser001@naver.com")
+                .contact("01012345678")
+                .email("testUser@naver.com")
                 .build();
 
         // when & then
@@ -259,7 +259,7 @@ public class UserControllerTest extends AbstractRestDocsConfig {
         String accessToken = "testAccessToken";
         UpdateUserContactRequestDto requestDto = UpdateUserContactRequestDto.builder()
                 .code("testVerificationCode")
-                .contact("01098765432")
+                .contact("01012345678")
                 .build();
 
         // mocking
@@ -296,7 +296,7 @@ public class UserControllerTest extends AbstractRestDocsConfig {
         // given
         String accessToken = "testAccessToken";
         UpdateUserEmailRequestDto requestDto = UpdateUserEmailRequestDto.builder()
-                .email("testUseremail@naver.com")
+                .email("testUser@naver.com")
                 .build();
 
         // mocking
@@ -442,7 +442,7 @@ public class UserControllerTest extends AbstractRestDocsConfig {
         // given
         String accessToken = "testAccessToken";
         UpdateUserAddressRequestDto requestDto = UpdateUserAddressRequestDto.builder()
-                .address("test's_home")
+                .address("testUser's_home")
                 .build();
 
         // mocking
