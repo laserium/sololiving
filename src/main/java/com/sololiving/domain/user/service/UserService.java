@@ -1,7 +1,6 @@
 package com.sololiving.domain.user.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,14 +11,14 @@ import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserAddressRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserBirthRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserContactRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserEmailRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserGenderRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserNicknameRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserPasswordRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.ValidateUpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserAddressRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserBirthRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserGenderRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserNicknameRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserPasswordRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.ValidateUpdateUserContactRequestDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
@@ -42,7 +41,7 @@ public class UserService {
 
     private static final String USER_NICK_NAME = "익명";
     private final UserAuthService userAuthService;
-    private final AccessTokenService tokenService;
+    private final AccessTokenService accessTokenService;
     private final TokenProvider tokenProvider;
     private final UserMapper userMapper;
     private final EmailService emailService;
@@ -66,17 +65,6 @@ public class UserService {
                 .nickname(USER_NICK_NAME)
                 .contact(requestDto.getContact())
                 .email(requestDto.getEmail())
-                .gender(Gender.DEFAULT)
-                .address(null)
-                .birth(null)
-                .status(Status.ACTIVE)
-                .followersCnt(0)
-                .followingCnt(0)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .userType(UserType.GENERAL)
-                .lastSignInAt(null)
-                .lastActivityAt(LocalDateTime.now())
                 .build();
 
         userMapper.insertUser(user);
@@ -84,11 +72,12 @@ public class UserService {
 
     // 회원탈퇴
     public void deleteUserRequest(String accessToken) {
-        if (userAuthService.validateUserIdwithAccessToken(accessToken)) {
-            String userId = tokenProvider.getUserId(accessToken);
-            deleteUser(userId);
-        } else
+        String userId = tokenProvider.getUserId(accessToken);
+        if (userId == null && userAuthService.isUserIdAvailable(userId) == true) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        // 카테고리 관리자일 경우 관리자를 admin 으로 변경
+        deleteUser(userId);
     }
 
     // 회원탈퇴 - 삭제
@@ -105,11 +94,11 @@ public class UserService {
     // 회원 상태 변경
     @Transactional
     public void updateStatus(String accessToken, Status status) {
-        tokenService.validateAccessToken(accessToken);
+        accessTokenService.checkAccessToken(accessToken);
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
         userAuthService.validateStatus(status);
-        if (userAuthService.findUserTypeByUserId(userId) == UserType.ADMIN) {
+        if (userAuthService.selectUserTypeByUserId(userId) == UserType.ADMIN) {
             userMapper.updateUserStatus(userId, status);
         } else
             throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
@@ -250,7 +239,7 @@ public class UserService {
     public void updateUserPassword(String accessToken, UpdateUserPasswordRequestDto requestDto) {
         String userId = tokenProvider.getUserId(accessToken);
         validateUserId(userId);
-        String oldPassword = userAuthService.findPasswordByUserId(userId);
+        String oldPassword = userAuthService.selectPasswordByUserId(userId);
         String password = requestDto.getPassword();
         authService.verifyPassword(oldPassword, password);
         String newPassword = requestDto.getNewPassword();

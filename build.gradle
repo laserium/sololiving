@@ -56,7 +56,7 @@ dependencies {
 
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
+    
 	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
@@ -70,6 +70,9 @@ dependencies {
     // AWS Security Manager
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.0.1'
     
+    // AWS S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
+
     // AWS ALB Health Check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 

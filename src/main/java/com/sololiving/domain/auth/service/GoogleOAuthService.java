@@ -53,7 +53,7 @@ public class GoogleOAuthService {
     }
 
     public UserVo getUserVoFromOAuthToken(String oauth2UserId) {
-        return userAuthService.findByOauth2UserId(oauth2UserId);
+        return userAuthService.selectByOauth2UserId(oauth2UserId);
     }
 
     public String getOauth2UserId(CreateOAuthTokenRequestDto requestDto) {
@@ -78,7 +78,6 @@ public class GoogleOAuthService {
     private SignInResponseDto createSignInResponseDto(Duration expiresIn, UserType userType, ClientId clientId,
             String oauth2UserId) {
         return SignInResponseDto.builder()
-                .expiresIn(expiresIn)
                 .userType(userType)
                 .clientId(clientId)
                 .oauth2UserId(oauth2UserId)

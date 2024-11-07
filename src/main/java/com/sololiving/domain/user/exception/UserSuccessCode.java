@@ -15,7 +15,9 @@ public enum UserSuccessCode implements SuccessCode {
     USER_STATUS_BLOCKED("USER_S004", "회원상태가 성공적으로 '차단'으로 변경되었습니다."),
     USER_STATUS_WITHDRAWN("USER_S005", "회원상태가 성공적으로 '탈퇴'로 변경되었습니다."),
     UPDATE_EMAIL_REQUEST_SUCCESS("USER_S006", "이메일 변경 요청 메일 전송 완료"),
-    UPDATE_USER_REQUEST_SUCCESS("USER_S007", "회원 정보 수정 완료");
+    UPDATE_USER_REQUEST_SUCCESS("USER_S007", "회원 정보 수정 완료"),
+    USER_ID_AVAILABLE("USER_S008", "회원 아이디 사용 가능"),
+    USER_PASSWORD_CORRECT("USER_S009", "비밀번호 일치 확인 완료");
 
     private final String code;
     private final String message;

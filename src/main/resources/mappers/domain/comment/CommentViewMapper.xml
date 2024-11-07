@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.comment.mapper.CommentViewMapper">
+
+    <select id="selectAllComments" resultType="com.sololiving.domain.comment.dto.response.ViewCommentsResponseDto">
+        SELECT comment_id AS commentId,
+        parent_comment_id AS parentCommentId,
+        article_id AS articleId,
+        writer,
+        content,
+        like_cnt AS likeCnt,
+        created_at AS createdAt,
+        updated_at AS updatedAt,
+        status
+        FROM COMMENT
+        WHERE article_id = #{articleId}
+        ORDER BY comment_id;
+    </select>
+</mapper>

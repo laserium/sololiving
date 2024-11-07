@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.article.mapper.ArticleLikeMapper">
+
+    <!-- 게시글 추천  -->
+    <insert id="insertArticleLike" parameterType="com.sololiving.domain.article.vo.ArticleLikeVo">
+        INSERT INTO ARTICLE_LIKE (article_id, user_id)
+        VALUES (#{articleId}, #{userId})
+    </insert>
+
+    <!-- 이미 추천한 게시글에 재추천 불가 여부 조회 -->
+    <select id="hasUserLikedArticle" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM ARTICLE_LIKE
+            WHERE article_id = #{articleId} AND user_id = #{userId}
+        )
+    </select>
+
+    <!-- 게시글 추천 취소 -->
+    <delete id="deleteArticleLike">
+        DELETE FROM ARTICLE_LIKE
+        WHERE article_id = #{articleId} AND user_id = #{userId};
+    </delete>
+
+</mapper>

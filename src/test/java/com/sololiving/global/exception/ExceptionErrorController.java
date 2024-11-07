@@ -7,6 +7,7 @@ import com.sololiving.domain.email.exception.EmailErrorCode;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.global.exception.error.ErrorResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
+import com.sololiving.global.security.sms.exception.SmsErrorCode;
 
 import java.util.List;
 import java.util.Arrays;
@@ -52,6 +53,16 @@ public class ExceptionErrorController {
     @GetMapping("/email")
     public List<ErrorResponse> getEmailErrorCode() {
         return Arrays.stream(EmailErrorCode.values())
+                .map(errorCode -> ErrorResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/sms")
+    public List<ErrorResponse> getSmsErrorCode() {
+        return Arrays.stream(SmsErrorCode.values())
                 .map(errorCode -> ErrorResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())

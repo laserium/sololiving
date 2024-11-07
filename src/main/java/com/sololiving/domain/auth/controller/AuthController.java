@@ -12,6 +12,7 @@ import com.sololiving.domain.auth.dto.auth.request.IdRecoverRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.PasswordResetRequestDto;
 import com.sololiving.domain.auth.dto.auth.request.SignInRequestDto;
 import com.sololiving.domain.auth.dto.auth.response.SignInResponseDto;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
@@ -40,7 +41,7 @@ public class AuthController {
     private final CookieService cookieService;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> postSignIn(@RequestBody SignInRequestDto requestDto) {
+    public ResponseEntity<?> signIn(@RequestBody SignInRequestDto requestDto) {
         CreateTokenResponse tokenResponse = authService.createTokenResponse(requestDto);
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
@@ -53,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<SuccessResponse> postSignOut(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<SuccessResponse> signOut(HttpServletRequest httpServletRequest) {
         String refreshTokenValue = cookieService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
@@ -69,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/users/id-recover")
-    public ResponseEntity<SuccessResponse> postUsersIdRecover(@RequestBody IdRecoverRequestDto requestDto) {
+    public ResponseEntity<SuccessResponse> recoverUserId(@RequestBody IdRecoverRequestDto requestDto) {
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                 .to(requestDto.getEmail())
                 .subject("[홀로서기] 아이디 찾기 인증 메일입니다.")
@@ -81,7 +82,7 @@ public class AuthController {
     }
 
     @PostMapping("/users/password-reset")
-    public ResponseEntity<SuccessResponse> postUsersPasswordReset(
+    public ResponseEntity<SuccessResponse> resetUserPassword(
             @RequestBody PasswordResetRequestDto requestDto) {
 
         EmailResponseDto emailResponseDto = EmailResponseDto.builder()
@@ -93,6 +94,17 @@ public class AuthController {
         authEmailService.sendMailPasswordReset(emailResponseDto, "password-reset");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.PASSWORD_RESET_SUCCESS));
+    }
+
+    // 초기 인증
+    @PostMapping("/verification")
+    public ResponseEntity<SuccessResponse> postVerificationWithData(HttpServletRequest httpServletRequest) {
+        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
+        if (userAuthService.validateUserIdwithAccessToken(accessToken)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.VERIFY_SUCCESS));
+        } else
+            throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
     }
 
 }

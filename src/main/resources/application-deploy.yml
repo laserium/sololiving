@@ -83,3 +83,16 @@ sololiving:
 
 server:
     port: 8080
+
+## AWS CLOUD
+cloud:
+    aws:
+        credentials:
+            access-key: "${cloud.aws.credentials.access-key}"
+            secret-key: "${cloud.aws.credentials.secret-key}"
+        s3:
+            bucket: "${cloud.aws.s3.bucket}"
+        region:
+            static: "${cloud.aws.region.static}"
+        stack:
+            auto: "${cloud.aws.stack.auto}"

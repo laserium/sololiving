@@ -40,7 +40,7 @@ public class AuthService {
     public CreateTokenResponse createTokenResponse(SignInRequestDto signInRequest) {
         UserVo userVo = checkIdAndPwd(signInRequest);
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
-        RefreshTokenVo refreshTokenVo = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId());
+        RefreshTokenVo refreshTokenVo = refreshTokenMapper.selectRefreshTokenByUserId(userVo.getUserId());
         String refreshToken;
         if (refreshTokenVo != null) {
             if (refreshTokenVo.getExpiresIn().isAfter(LocalDateTime.now())) {
@@ -75,13 +75,11 @@ public class AuthService {
     }
 
     public SignInResponseDto createSignInResponse(SignInRequestDto signInRequest, CreateTokenResponse tokensResponse) {
-        Duration expiresIn = tokensResponse.getExpiresIn();
-        UserVo userVo = userAuthService.findByUserId(signInRequest.getUserId());
+        UserVo userVo = userAuthService.selectByUserId(signInRequest.getUserId());
         UserType userType = userVo.getUserType();
-        ClientId clientId = refreshTokenMapper.findRefreshTokenByUserId(userVo.getUserId()).getClientId();
+        ClientId clientId = refreshTokenMapper.selectRefreshTokenByUserId(userVo.getUserId()).getClientId();
 
         return SignInResponseDto.builder()
-                .expiresIn(expiresIn)
                 .userType(userType)
                 .clientId(clientId)
                 .oauth2UserId(userVo.getOauth2UserId())
@@ -97,7 +95,7 @@ public class AuthService {
 
     // 아이디와 비밀번호 체크
     private UserVo checkIdAndPwd(SignInRequestDto signInRequestDto) {
-        UserVo userVo = userAuthService.findByUserId(signInRequestDto.getUserId());
+        UserVo userVo = userAuthService.selectByUserId(signInRequestDto.getUserId());
         verifyPassword(userVo.getUserPwd(), signInRequestDto.getUserPwd());
         return userVo;
     }

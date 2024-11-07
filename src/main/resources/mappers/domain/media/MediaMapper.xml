@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.media.mapper.MediaMapper">
+    <insert id="insertMedia" parameterType="com.sololiving.domain.media.vo.MediaVo">
+        INSERT INTO MEDIA (article_id, media_type, media_url, media_name, file_size)
+        VALUES (
+            #{articleId}, 
+            #{mediaType}, 
+            #{mediaUrl}, 
+            #{mediaName}, 
+            #{fileSize}
+        )
+    </insert>
+
+    <select id="existsByArticleId" resultType="boolean">
+        SELECT COUNT(1) &gt; 0
+        FROM MEDIA
+        WHERE article_id = #{articleId}
+    </select>
+
+    <!-- 게시글(articleId)에 대한 미디어 조회 -->
+    <select id="selectByArticleId" resultType="com.sololiving.domain.media.dto.response.ViewMediaInArticleResponseDto">
+        SELECT 
+            article_id AS articleId,
+            media_type AS mediaType,
+            media_url AS mediaUrl,
+            media_name AS mediaName,
+            file_size AS fileSize,
+            created_at AS createdAt
+        FROM MEDIA
+        WHERE article_id = #{articleId}
+    </select>
+
+    <!-- 게시글 수정 - 미디어 파일 URL 조회 -->
+    <select id="selectMediaUrlsByArticleId" resultType="String">
+        SELECT media_url
+        FROM MEDIA
+        WHERE article_id = #{articleId}
+    </select>
+
+        <!-- Article ID로 미디어 삭제 -->
+    <delete id="deleteMediaUrlsByArticleId">
+        DELETE FROM MEDIA
+        WHERE article_id = #{articleId}
+    </delete>
+
+    <!-- Media name으로 미디어 삭제 -->
+    <delete id="deleteMediaByName">
+        DELETE FROM MEDIA
+        WHERE media_name = #{mediaName}
+    </delete>
+
+</mapper>

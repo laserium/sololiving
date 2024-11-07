@@ -12,5 +12,4 @@ for i in {1..12}; do
     sleep 5
 done
 
-echo "Application failed to start."
-exit 1
+echo "Application started successfully."

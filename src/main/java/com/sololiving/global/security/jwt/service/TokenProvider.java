@@ -57,6 +57,7 @@ public class TokenProvider {
                 .compact();
     }
 
+    // 토큰 검증
     public boolean validToken(String token) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
@@ -90,7 +91,7 @@ public class TokenProvider {
     // refresh token => DB에 저장
     @Transactional
     private void saveRefreshToken(String userId, String newRefreshToken, ClientId clientId) {
-        RefreshTokenVo existingToken = refreshTokenMapper.findRefreshTokenByUserId(userId);
+        RefreshTokenVo existingToken = refreshTokenMapper.selectRefreshTokenByUserId(userId);
         if (existingToken != null) {
             RefreshTokenVo updatedToken = existingToken.update(newRefreshToken);
             refreshTokenMapper.update(updatedToken);

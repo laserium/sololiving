@@ -528,13 +528,12 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Set-Cookie: refreshToken=testRefreshToken; Path=/; Max-Age=86400; Expires=Fri, 23 Aug 2024 11:23:02 GMT; Secure; HttpOnly
-Set-Cookie: accessToken=testAccessToken; Path=/; Max-Age=1800; Expires=Thu, 22 Aug 2024 11:53:02 GMT; Secure; HttpOnly
+Set-Cookie: refreshToken=testRefreshToken; Path=/; Max-Age=86400; Expires=Fri, 13 Sep 2024 04:52:40 GMT; Secure; HttpOnly
+Set-Cookie: accessToken=testAccessToken; Path=/; Max-Age=1800; Expires=Thu, 12 Sep 2024 05:22:40 GMT; Secure; HttpOnly
 Content-Type: application/json
-Content-Length: 125
+Content-Length: 100
 
 {
-  "expiresIn" : 1800.0,
   "userType" : "GENERAL",
   "clientId" : "SOLOLIVING",
   "oauth2UserId" : "testOauth2UserId"
@@ -561,13 +560,6 @@ Content-Length: 125
 </tr>
 </thead>
 <tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">expiresIn</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">토큰 만료 시간</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">userType</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>

@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserBirthRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserAddressRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserContactRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserEmailRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserGenderRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserNicknameRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.UpdateUserPasswordRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestDto.ValidateUpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserBirthRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserAddressRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserEmailRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserGenderRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserNicknameRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserPasswordRequestDto;
+import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.ValidateUpdateUserContactRequestDto;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.exception.UserSuccessCode;
@@ -27,6 +27,7 @@ import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
 import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.CookieService;
@@ -42,6 +43,7 @@ public class UserController {
     private final UserService userService;
     private final CookieService cookieService;
     private final SmsService smsService;
+    private final TokenProvider tokenProvider;
 
     // 회원가입
     @PostMapping("/signup")
@@ -55,13 +57,13 @@ public class UserController {
     @DeleteMapping("")
     public ResponseEntity<SuccessResponse> deleteUser(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        if (accessToken != null) {
-            userService.deleteUserRequest(accessToken);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(ResponseMessage
-                            .createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
-        } else
+        if (accessToken == null || tokenProvider.validToken(accessToken)) {
             throw new ErrorException(TokenErrorCode.CANNOT_FIND_AT);
+        }
+        userService.deleteUserRequest(accessToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage
+                        .createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
     }
 
     // 상태변경

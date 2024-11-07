@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccessTokenService {
 
-    public void validateAccessToken(String accessToken) {
+    public void checkAccessToken(String accessToken) {
         if (accessToken == null || accessToken.isEmpty()) {
             throw new ErrorException(TokenErrorCode.NO_ACCESS_TOKEN);
         }

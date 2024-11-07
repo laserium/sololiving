@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum GlobalErrorCode implements ErrorCode {
-    ERROR("GLOB001", "에러");
+    ERROR("GLOB_E001", "에러"),
+    NO_PERMISSION("GLOB_E001", "권한이 없습니다.");
 
     private final String code;
     private final String message;

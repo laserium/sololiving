@@ -7,7 +7,7 @@ import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
 
 @Mapper
 public interface EmailVerificationTokenMapper {
-    EmailVerificationTokenVo findByToken(@Param("token") String token);
+    EmailVerificationTokenVo selectByToken(@Param("token") String token);
 
     void insertToken(EmailVerificationTokenVo emailVerificationTokenVo);
 
