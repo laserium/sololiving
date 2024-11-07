@@ -22,12 +22,10 @@ phases:
             - echo "Cleaning up old files..."
             - rm -rf /path/to/old/deployments/* || true
             - echo "Restoring Gradle cache..."
-            # No need to manually copy cache here, Gradle should handle it
 
     build:
         commands:
             - echo "Building the project with tests..."
-            # Adding the asciidoctor task if applicable, you can remove it if not needed
             - ./gradlew clean build asciidoctor
 
     post_build:
@@ -39,7 +37,6 @@ phases:
             - cp appspec.yml /home/ubuntu/codebuild/output/
             - cp -R scripts/ /home/ubuntu/codebuild/output/
             - echo "Saving Gradle cache..."
-            # Cache copy is removed since Gradle handles its own cache
 
 artifacts:
     files:
