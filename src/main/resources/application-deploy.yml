@@ -90,8 +90,8 @@ cloud:
         # credentials:
         #     access-key: "${cloud.aws.credentials.access-key}"
         #     secret-key: "${cloud.aws.credentials.secret-key}"
-        s3:
-            bucket: "${cloud.aws.s3.bucket}"
+        # s3:
+        # bucket: "${cloud.aws.s3.bucket}"
         region:
             static: "${cloud.aws.region.static}"
         stack:
