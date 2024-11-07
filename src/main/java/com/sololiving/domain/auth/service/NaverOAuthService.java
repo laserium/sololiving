@@ -22,6 +22,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.config.properties.NaverOAuthProviderProperties;
 import com.sololiving.global.config.properties.NaverOAuthRegistrationProperties;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessException;
 import com.sololiving.global.security.jwt.enums.ClientId;
@@ -150,7 +151,7 @@ public class NaverOAuthService {
 
     private void validateTokenResponse(NaverTokenResponseDto responseDto) {
         if (responseDto == null || "invalid_request".equals(responseDto.getError())) {
-            throw new ErrorException(AuthErrorCode.WRONG_PARAMETER_OR_REQUEST);
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
         // oauthUtil.logNaverTokenResponse(responseDto);
     }

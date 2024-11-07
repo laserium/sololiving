@@ -35,4 +35,5 @@ public interface UserAuthMapper {
     void updatePassword(@Param("userPwd") String userPwd, @Param("userId") String userId);
 
     UserType selectUserTypeByUserId(@Param("userId") String userId);
+
 }
