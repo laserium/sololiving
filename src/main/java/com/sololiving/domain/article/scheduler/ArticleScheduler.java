@@ -61,7 +61,8 @@ public class ArticleScheduler {
         redisTemplate.execute((RedisCallback<Void>) connection -> {
             RedisKeyCommands keyCommands = connection.keyCommands();
 
-            KeyScanOptions options = (KeyScanOptions) KeyScanOptions.scanOptions()
+            // ScanOptions 사용
+            ScanOptions options = ScanOptions.scanOptions()
                     .match(pattern)
                     .count(100)
                     .build();
