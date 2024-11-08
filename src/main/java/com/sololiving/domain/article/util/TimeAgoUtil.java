@@ -2,12 +2,15 @@ package com.sololiving.domain.article.util;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class TimeAgoUtil {
 
     public static String getTimeAgo(LocalDateTime createdAt) {
-        LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(createdAt, now);
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+        ZonedDateTime createdAtZoned = createdAt.atZone(ZoneId.of("Asia/Seoul"));
+        Duration duration = Duration.between(createdAtZoned, now);
 
         long seconds = duration.getSeconds();
         long minutes = seconds / 60;

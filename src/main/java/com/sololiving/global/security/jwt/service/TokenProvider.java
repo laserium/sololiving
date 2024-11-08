@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class TokenProvider {
 
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(1);
+    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(3);
     public static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
     private final JwtProperties jwtProperties;
     private final RefreshTokenMapper refreshTokenMapper;
