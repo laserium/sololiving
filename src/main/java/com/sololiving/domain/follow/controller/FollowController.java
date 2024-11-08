@@ -5,6 +5,7 @@ import com.sololiving.domain.follow.dto.request.UnfollowRequestDto;
 import com.sololiving.domain.follow.exception.FollowSuccessCode;
 import com.sololiving.domain.follow.service.FollowService;
 import com.sololiving.global.exception.ResponseMessage;
+import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.util.CookieService;
 
@@ -26,7 +27,7 @@ public class FollowController {
 
     // 팔로우 하기
     @PostMapping("")
-    public ResponseEntity<?> follow(@RequestBody FollowRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> follow(@RequestBody FollowRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
         followService.follow(userId, requestDto);
@@ -36,7 +37,7 @@ public class FollowController {
 
     // 팔로우 끊기
     @DeleteMapping("")
-    public ResponseEntity<?> unfollow(@RequestBody UnfollowRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> unfollow(@RequestBody UnfollowRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
         followService.unfollow(userId, requestDto);
