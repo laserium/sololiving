@@ -5,37 +5,26 @@
 
 <mapper namespace="com.sololiving.domain.follow.mapper.FollowMapper">
 
-    <!-- 팔로우 추가 -->
-    <insert id="insertFollow">
-        INSERT INTO follow (follower, following, created_at)
-        VALUES (#{follower}, #{following}, #{createdAt})
-    </insert>
-
-    <!-- 팔로우 삭제 -->
-    <delete id="deleteFollow">
-        DELETE FROM follow
-        WHERE follower = #{follower} AND following = #{following}
-    </delete>
-
-    <!-- 팔로우 상태 확인 -->
-    <select id="isAlreadyFollowing">
-        SELECT follower, following
-        FROM follow
-        WHERE follower = #{follower} AND following = #{following}
-    </select>
-
-    <!-- 팔로잉 목록 조회 -->
-    <select id="getFollowingList" resultType="string">
-        SELECT following
-        FROM follow
-        WHERE follower = #{userId}
-    </select>
-
-    <!-- 팔로워 목록 조회 -->
-    <select id="getFollowerList" resultType="string">
-        SELECT follower
-        FROM follow
-        WHERE following = #{userId}
+    <!-- 팔로우 상태 검증 -->
+    <select id="existsFollowing" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM FOLLOW
+            WHERE follower = #{userId} AND following = #{followTargetId}
+        )
     </select>
     
+    <!-- 팔로우 하기 -->
+    <insert id="insertFollow">
+        INSERT INTO FOLLOW (follower, following)
+        VALUES (#{userId}, #{followTargetId})
+    </insert>
+
+    <!-- 팔로우 끊기 -->
+    <delete id="deleteFollow">
+        DELETE FROM FOLLOW
+        WHERE follower = #{userId}
+          AND following = #{unfollowTargetId}
+    </delete>
+
 </mapper>

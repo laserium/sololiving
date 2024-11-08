@@ -1,20 +1,17 @@
 package com.sololiving.domain.follow.mapper;
 
-import com.sololiving.domain.follow.vo.FollowVo;
-
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface FollowMapper {
-    void insertFollow(FollowVo followVo);
+    // 팔로우 상태 검증
+    boolean existsFollowing(@Param("userId") String userId, @Param("followTargetId") String followTargetId);
 
-    void deleteFollow(FollowVo followVo);
+    // 팔로우 추가
+    void insertFollow(@Param("userId") String userId, @Param("followTargetId") String followTargetId);
 
-    String isAlreadyFollowing(String follower, String following);
+    // 팔로우 끊기
+    void deleteFollow(@Param("userId") String userId, @Param("unfollowTargetId") String unfollowTargetId);
 
-    List<String> getFollowingList(String userId);
-
-    List<String> getFollowerList(String userId);
 }
