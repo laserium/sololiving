@@ -1,8 +1,15 @@
 package com.sololiving.domain.article.scheduler;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.data.redis.connection.RedisKeyCommands;
+import org.springframework.data.redis.connection.lettuce.LettuceConnection;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.KeyScanOptions;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ArticleScheduler {
     private final RedisTemplate<String, String> redisTemplate;
-
     private final ArticleMapper articleMapper;
 
     // 게시글의 고유 점수 스케쥴링 : 3시간 마다
@@ -37,15 +43,38 @@ public class ArticleScheduler {
         log.info("[SCHEDULED] : 게시글 조회 수 업데이트 스케쥴링 => START");
 
         // Redis에서 조회수 관련 키 가져오기
-        Set<String> keys = redisTemplate.keys("ARTICLE:*:view_cnt");
+        List<String> keys = scanKeys("ARTICLE:*:view_cnt");
 
-        if (keys == null || keys.isEmpty()) {
+        if (keys.isEmpty()) {
             log.info("[SCHEDULED] : 조회할 키가 없습니다.");
             return;
         }
 
         // 각 키에 대한 처리
-        keys.forEach(key -> processViewCountKey(key));
+        keys.forEach(this::processViewCountKey);
+    }
+
+    // SCAN 명령을 사용하여 키를 검색하는 메서드
+    public List<String> scanKeys(String pattern) {
+        List<String> keys = new ArrayList<>();
+
+        redisTemplate.execute((RedisCallback<Void>) connection -> {
+            RedisKeyCommands keyCommands = connection.keyCommands();
+
+            KeyScanOptions options = (KeyScanOptions) KeyScanOptions.scanOptions()
+                    .match(pattern)
+                    .count(100)
+                    .build();
+
+            try (var cursor = keyCommands.scan(options)) {
+                cursor.forEachRemaining(key -> keys.add(new String(key)));
+            } catch (Exception e) {
+                log.error("[SCHEDULED] : Redis에서 키 검색 중 오류 발생", e);
+            }
+            return null;
+        });
+
+        return keys;
     }
 
     private void processViewCountKey(String key) {
@@ -87,5 +116,4 @@ public class ArticleScheduler {
             return null;
         }
     }
-
 }
