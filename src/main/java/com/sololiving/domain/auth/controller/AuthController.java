@@ -26,6 +26,7 @@ import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
+import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.util.CookieService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ public class AuthController {
     private final UserService userService;
     private final EmailService authEmailService;
     private final CookieService cookieService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequestDto requestDto) {
@@ -111,11 +113,14 @@ public class AuthController {
     @PostMapping("/verification")
     public ResponseEntity<SuccessResponse> postVerificationWithData(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        if (userAuthService.validateUserIdwithAccessToken(accessToken)) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.VERIFY_SUCCESS));
-        } else
+        if (!userAuthService.validateUserIdwithAccessToken(accessToken)) {
             throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
+        }
+        if (!tokenProvider.validToken(accessToken)) {
+            throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.VERIFY_SUCCESS));
     }
 
 }
