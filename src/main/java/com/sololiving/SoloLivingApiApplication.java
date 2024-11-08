@@ -11,7 +11,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class SoloLivingApiApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(SoloLivingApiApplication.class)
-                .profiles("deploy")
+                .profiles("develop")
                 .run(args);
     }
 
