@@ -115,15 +115,12 @@ public class AuthController {
     @PostMapping("/verification")
     public ResponseEntity<SuccessResponse> postVerificationWithData(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        if (!userAuthService.validateUserIdwithAccessToken(accessToken)) {
-            throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
-        }
-        if (!tokenProvider.validToken(accessToken)) {
-            throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
-        }
         String userId = tokenProvider.getUserId(accessToken);
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        if (!tokenProvider.validToken(accessToken)) {
+            throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
         }
         String newAccessToken = tokenProvider.generateTokenVer2(userId, userAuthService.selectEmailByUserId(userId),
                 TokenProvider.ACCESS_TOKEN_DURATION);

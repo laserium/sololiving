@@ -45,7 +45,7 @@ public class TokenProvider {
         return makeToken(new Date(now.getTime() + expiresIn.toMillis()), userVo.getEmail(), userVo.getUserId());
     }
 
-    public String generateTokenVer2(String email, String userId, Duration expiresIn) {
+    public String generateTokenVer2(String userId, String email, Duration expiresIn) {
         Date now = new Date();
         return makeToken(new Date(now.getTime() + expiresIn.toMillis()), email, userId);
     }
