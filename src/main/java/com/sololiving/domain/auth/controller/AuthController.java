@@ -31,10 +31,12 @@ import com.sololiving.global.util.CookieService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -109,7 +111,7 @@ public class AuthController {
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.PASSWORD_RESET_SUCCESS));
     }
 
-    // 초기 인증
+    // useEffect 인증 => 인증 성공 시 토큰 재발급, 인증 실패 시 자동 로그아웃
     @PostMapping("/verification")
     public ResponseEntity<SuccessResponse> postVerificationWithData(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
@@ -119,7 +121,15 @@ public class AuthController {
         if (!tokenProvider.validToken(accessToken)) {
             throw new ErrorException(AuthErrorCode.VERIFY_FAILED);
         }
+        String userId = tokenProvider.getUserId(accessToken);
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        String newAccessToken = tokenProvider.generateTokenVer2(userId, userAuthService.selectEmailByUserId(userId),
+                TokenProvider.ACCESS_TOKEN_DURATION);
+        ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(newAccessToken);
         return ResponseEntity.status(HttpStatus.OK)
+                .header("Set-Cookie", accessTokenCookie.toString())
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.VERIFY_SUCCESS));
     }
 

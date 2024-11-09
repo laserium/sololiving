@@ -27,9 +27,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class TokenProvider {
 
     public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(3);
@@ -40,10 +42,15 @@ public class TokenProvider {
     // 토큰 생성
     public String generateToken(UserVo userVo, Duration expiresIn) {
         Date now = new Date();
-        return makeToken(new Date(now.getTime() + expiresIn.toMillis()), userVo);
+        return makeToken(new Date(now.getTime() + expiresIn.toMillis()), userVo.getEmail(), userVo.getUserId());
     }
 
-    private String makeToken(Date expiry, UserVo userVo) {
+    public String generateTokenVer2(String email, String userId, Duration expiresIn) {
+        Date now = new Date();
+        return makeToken(new Date(now.getTime() + expiresIn.toMillis()), email, userId);
+    }
+
+    private String makeToken(Date expiry, String email, String userId) {
         Date now = new Date();
         SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 
@@ -51,8 +58,8 @@ public class TokenProvider {
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiration(expiry)
-                .subject(userVo.getEmail())
-                .claim("id", userVo.getUserId())
+                .subject(email)
+                .claim("id", userId)
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
@@ -62,7 +69,7 @@ public class TokenProvider {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
             Jwts.parser()
-                    .decryptWith(key)
+                    .verifyWith(key)
                     .build()
                     .parse(token);
             return true;

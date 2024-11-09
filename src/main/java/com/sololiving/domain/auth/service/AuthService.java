@@ -40,22 +40,32 @@ public class AuthService {
     public CreateTokenResponse createTokenResponse(SignInRequestDto signInRequest) {
         UserVo userVo = checkIdAndPwd(signInRequest);
         Duration expiresIn = TokenProvider.ACCESS_TOKEN_DURATION;
-        RefreshTokenVo refreshTokenVo = refreshTokenMapper.selectRefreshTokenByUserId(userVo.getUserId());
-        String refreshToken;
-        if (refreshTokenVo != null) {
-            if (refreshTokenVo.getExpiresIn().isAfter(LocalDateTime.now())) {
-                refreshToken = refreshTokenVo.getRefreshToken();
-            } else
-                refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
-        } else {
-            refreshToken = tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
-        }
+
+        // RefreshToken 존재 여부와 유효성 체크
+        String refreshToken = getOrCreateRefreshToken(userVo, signInRequest);
+
+        // AccessToken 생성
         String accessToken = tokenProvider.generateToken(userVo, expiresIn);
+
+        // Response 생성 후 반환
         return CreateTokenResponse.builder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
                 .expiresIn(expiresIn)
                 .build();
+    }
+
+    // RefreshToken 가져오거나 새로 생성
+    private String getOrCreateRefreshToken(UserVo userVo, SignInRequestDto signInRequest) {
+        RefreshTokenVo refreshTokenVo = refreshTokenMapper.selectRefreshTokenByUserId(userVo.getUserId());
+
+        // 기존 RefreshToken이 있고 유효하면 그대로 사용
+        if (refreshTokenVo != null && refreshTokenVo.getExpiresIn().isAfter(LocalDateTime.now())) {
+            return refreshTokenVo.getRefreshToken();
+        }
+
+        // 유효하지 않거나 없으면 새로 생성
+        return tokenProvider.makeRefreshToken(userVo, signInRequest.getClientId());
     }
 
     // 로그아웃
