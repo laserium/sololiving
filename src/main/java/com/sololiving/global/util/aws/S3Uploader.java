@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.sololiving.domain.media.exception.MediaErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -61,10 +62,17 @@ public class S3Uploader {
         return uploadImageUrl;
     }
 
-    // S3로 업로드
+    // S3에 파일 업로드
     public String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
-        return amazonS3Client.getUrl(bucket, fileName).toString();
+        try (FileOutputStream fos = new FileOutputStream(uploadFile)) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(uploadFile.length());
+
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withMetadata(metadata));
+            return amazonS3Client.getUrl(bucket, fileName).toString();
+        } catch (IOException e) {
+            throw new RuntimeException("putS3 FAILED : S3에 파일 업로드 실패", e);
+        }
     }
 
     // S3에 있는 파일 삭제 (영어 파일만 삭제 가능)
@@ -95,25 +103,26 @@ public class S3Uploader {
 
     // 로컬에 파일 업로드 및 변환
     private Optional<File> convert(MultipartFile file) throws IOException {
-        // 로컬에서 저장할 파일 경로 : user.dir => 현재 디렉토리 기준
-        String dirPath = System.getProperty("user.dir") + "/tmp/" + file.getOriginalFilename();
-        File convertFile = new File(dirPath);
+        String tmpDir = System.getProperty("java.io.tmpdir");
+        File convFile = new File(tmpDir, file.getOriginalFilename());
 
-        if (convertFile.createNewFile()) {
-            // FileOutputStream 데이터를 파일에 바이트 스트림으로 저장
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-                fos.write(file.getBytes());
-            }
-            return Optional.of(convertFile);
+        // 디렉토리가 없는 경우 생성
+        if (!convFile.getParentFile().exists()) {
+            convFile.getParentFile().mkdirs();
         }
 
+        // 파일 생성
+        if (convFile.createNewFile()) {
+            try (FileOutputStream fos = new FileOutputStream(convFile)) {
+                fos.write(file.getBytes());
+            }
+            return Optional.of(convFile);
+        }
         return Optional.empty();
     }
 
     // S3에서 임시 파일을 article 경로로 이동
     public void moveS3File(String sourceKey, String destinationKey) {
-        log.info(sourceKey);
-        log.info(destinationKey);
         // 1. 파일 복사
         amazonS3Client.copyObject(bucket, sourceKey, bucket, destinationKey);
 
