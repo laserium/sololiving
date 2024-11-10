@@ -6,12 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sololiving.domain.block.dto.request.BlockRequestDto;
 import com.sololiving.domain.block.exception.BlockSuccessCode;
 import com.sololiving.domain.block.service.BlockService;
-import com.sololiving.domain.follow.dto.request.FollowRequestDto;
-import com.sololiving.domain.follow.exception.FollowSuccessCode;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.success.SuccessResponse;
-import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +25,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class BlockController {
 
     private final BlockService blockService;
-    private final TokenProvider tokenProvider;
-    private final CookieService cookieService;
 
     // 차단 하기
     @PostMapping("")
     public ResponseEntity<SuccessResponse> block(@RequestBody BlockRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         blockService.block(userId, requestDto.getTargetId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(BlockSuccessCode.BLOCK_SUCCESS));
@@ -45,7 +40,7 @@ public class BlockController {
     @DeleteMapping("")
     public ResponseEntity<SuccessResponse> unblock(@RequestBody BlockRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         blockService.unBlock(userId, requestDto.getTargetId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(BlockSuccessCode.UNBLOCK_SUCCESS));

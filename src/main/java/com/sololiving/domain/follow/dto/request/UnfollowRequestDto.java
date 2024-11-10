@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class UnfollowRequestDto {
-    private String unfollowTargetId;
+    private String targetId;
 }

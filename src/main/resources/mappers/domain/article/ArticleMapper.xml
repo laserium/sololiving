@@ -49,7 +49,7 @@
     <!-- 게시글 전체 SELECT -->
     <select id="selectByArticleId" resultType="com.sololiving.domain.article.vo.ArticleVo">
         SELECT *
-        FROM article
+        FROM ARTICLE
         WHERE article_id = #{articleId}
     </select>
 
