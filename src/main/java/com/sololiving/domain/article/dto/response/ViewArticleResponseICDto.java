@@ -134,7 +134,7 @@ public class ViewArticleResponseICDto {
     @NoArgsConstructor
     public static class ViewCategoryArticlesResponseDto implements Serializable {
 
-        private static final long serialVersionUID = 4000L;
+        private static final long serialVersionUID = 5000L;
 
         private Long articleId;
         private String writer;

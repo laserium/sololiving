@@ -12,8 +12,7 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,15 +31,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class CommentController {
 
     private final CommentService commentService;
-    private final CookieService cookieService;
-    private final TokenProvider tokenProvider;
     private final UserAuthService userAuthService;
 
     // 댓글 작성
     @PostMapping
     public ResponseEntity<?> addComment(@RequestBody AddCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
@@ -53,7 +50,7 @@ public class CommentController {
     @PostMapping("/re")
     public ResponseEntity<?> addReComment(@RequestBody AddReCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
@@ -67,7 +64,7 @@ public class CommentController {
     @DeleteMapping("{commentId}")
     public ResponseEntity<?> removeComment(@PathVariable Long commentId,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
@@ -82,7 +79,7 @@ public class CommentController {
     public ResponseEntity<?> updateComment(@PathVariable Long commentId,
             @RequestBody UpdateCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }

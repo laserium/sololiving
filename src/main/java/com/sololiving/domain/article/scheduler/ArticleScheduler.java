@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.redis.connection.RedisKeyCommands;
-import org.springframework.data.redis.connection.lettuce.LettuceConnection;
-import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.KeyScanOptions;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;

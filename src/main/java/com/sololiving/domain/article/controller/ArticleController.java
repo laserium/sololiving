@@ -12,8 +12,7 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +32,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/article")
 public class ArticleController {
 
-    private final TokenProvider tokenProvider;
-    private final CookieService cookieService;
     private final UserAuthService userAuthService;
     private final ArticleService articleService;
 
@@ -43,7 +40,7 @@ public class ArticleController {
     public ResponseEntity<CreateArticleResponseDto> addArticle(@RequestBody CreateArticleRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         // 회원 유무 검증
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
@@ -59,7 +56,7 @@ public class ArticleController {
     public ResponseEntity<?> modifyArticle(@PathVariable Long articleId,
             @RequestBody UpdateArticleRequestDto requestDto, HttpServletRequest httpServletRequest) {
         // 작성자(회원) 검증
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         articleService.validateWriter(articleId, userId);
 
         // 수정
@@ -72,7 +69,7 @@ public class ArticleController {
     @DeleteMapping("/{articleId}")
     public ResponseEntity<?> removeArticle(@PathVariable Long articleId, HttpServletRequest httpServletRequest) {
         // 작성자(회원) 검증
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         articleService.validateWriter(articleId, userId);
         articleService.removeArticle(articleId);
         return ResponseEntity.status(HttpStatus.OK)

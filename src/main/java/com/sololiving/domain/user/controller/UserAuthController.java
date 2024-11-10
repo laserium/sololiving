@@ -12,11 +12,10 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
-import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
 import com.sololiving.global.security.sms.service.SmsService;
-import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +34,6 @@ public class UserAuthController {
 
     private final UserAuthService userAuthService;
     private final SmsService smsService;
-    private final TokenProvider tokenProvider;
-    private final CookieService cookieService;
 
     // 회원가입 시 휴대폰 인증번호 전송
     @PostMapping("/contact-verification/send")
@@ -75,7 +72,7 @@ public class UserAuthController {
     @PostMapping("/password-verification")
     public ResponseEntity<?> verifyUserPassword(@RequestBody VerifyPasswordRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.verifyUserPassword(requestDto.getUserPwd(), userId)) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseMessage.createSuccessResponse(UserSuccessCode.USER_PASSWORD_CORRECT));

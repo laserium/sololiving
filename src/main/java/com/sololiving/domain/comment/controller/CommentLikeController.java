@@ -15,8 +15,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
-import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/comment")
 public class CommentLikeController {
 
-    private final TokenProvider tokenProvider;
-    private final CookieService cookieService;
     private final UserAuthService userAuthService;
     private final CommentLikeService commentLikeService;
 
@@ -35,7 +32,7 @@ public class CommentLikeController {
     @PostMapping("/{commentId}/like")
     public ResponseEntity<SuccessResponse> likeComment(@PathVariable Long commentId,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
@@ -48,7 +45,7 @@ public class CommentLikeController {
     @DeleteMapping("{commentId}/like")
     public ResponseEntity<SuccessResponse> likeCommentCancle(@PathVariable Long commentId,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
