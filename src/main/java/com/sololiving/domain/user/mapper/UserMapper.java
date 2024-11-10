@@ -15,7 +15,10 @@ public interface UserMapper {
     void insertUser(UserVo userVo);
 
     // 회원탈퇴
-    void deleteByUserId(@Param("userId") String userId);
+    void updateToDeletedUser(@Param("userId") String userId,
+            @Param("password") String password,
+            @Param("contact") String contact,
+            @Param("email") String email);
 
     // 회원 마지막 로그인 시간 변경
     void updateUserLastSignInAt(@Param("userId") String userId);
