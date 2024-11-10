@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
-import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewCategoryArticlesResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
@@ -27,15 +27,12 @@ public class ArticleViewService {
     private final MediaMapper mediaMapper;
 
     // 전체 게시글 조회
-    public List<ViewAllArticlesListResponseDto> viewAllArticlesList() {
-        List<ViewAllArticlesListResponseDto> articles = articleViewMapper.selectAllArticlesList();
+    public List<ViewAllArticlesListResponseDto> viewAllArticlesList(String userId, String sort) {
+        List<ViewAllArticlesListResponseDto> articles = articleViewMapper.selectAllArticlesList(userId, sort);
 
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
-
-            boolean hasMedia = checkIfArticleHasMedia(article.getArticleId());
-            article.setHasMedia(hasMedia);
         });
 
         return articles;
@@ -44,16 +41,15 @@ public class ArticleViewService {
     // 게시글 목록 조회
     // @Cacheable(value = "articleList", key = "'ARTICLE_VIEW:LIST:' + #categoryCode
     // + ':' + #page")
-    public List<ViewArticlesListResponseDto> viewArticlesList(String categoryCode, int page) {
+    public List<ViewArticlesListResponseDto> viewArticlesList(String categoryCode, int page, String userId,
+            String sort) {
 
-        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectArticlesByCategoryId(categoryCode, page);
+        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectArticlesByCategoryId(categoryCode, page,
+                userId, sort);
 
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
-
-            boolean hasMedia = checkIfArticleHasMedia(article.getArticleId());
-            article.setHasMedia(hasMedia);
         });
 
         return articles;
@@ -104,7 +100,7 @@ public class ArticleViewService {
         return articles;
     }
 
-    private boolean checkIfArticleHasMedia(Long articleId) {
+    public boolean checkIfArticleHasMedia(Long articleId) {
         // 미디어 테이블에서 articleId로 미디어가 있는지 확인하는 로직
         return mediaMapper.existsByArticleId(articleId); // 예: 미디어가 존재하면 true 반환
     }

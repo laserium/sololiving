@@ -35,18 +35,17 @@ public class ArticleService {
     @Transactional
     public CreateArticleResponseDto addArticle(CreateArticleRequestDto requestDto, String userId,
             List<String> tempMediaUrls) {
-        // 게시글 저장
         ArticleVo articleVo = buildArticle(requestDto, userId);
         articleMapper.insertArticle(articleVo);
 
-        // 게시글이 작성된 후 mediaList가 있으면 파일 이동 및 DB 저장
+        // 미디어 파일 처리 및 mediaTypeBitmask 결정
         if (tempMediaUrls != null && !tempMediaUrls.isEmpty()) {
-            mediaUploadService.attachFilesToArticle(articleVo.getArticleId(), tempMediaUrls);
+            int mediaTypeBitmask = mediaUploadService.attachFilesToArticle(articleVo.getArticleId(), tempMediaUrls);
+            articleMapper.updateMediaType(articleVo.getArticleId(), mediaTypeBitmask);
         }
         return CreateArticleResponseDto.builder().articleId(articleVo.getArticleId()).build();
     }
 
-    // ArticleVo 빌더 로직을 메서드로 분리
     private ArticleVo buildArticle(CreateArticleRequestDto requestDto, String userId) {
         return ArticleVo.builder()
                 .writer(userId)

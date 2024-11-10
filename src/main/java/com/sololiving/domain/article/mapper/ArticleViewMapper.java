@@ -5,9 +5,9 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
-import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewCategoryArticlesResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
 
@@ -15,12 +15,16 @@ import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewT
 public interface ArticleViewMapper {
 
     // 게시글 전체 목록 조회
-    List<ViewAllArticlesListResponseDto> selectAllArticlesList();
+    List<ViewAllArticlesListResponseDto> selectAllArticlesList(
+            @Param("userId") String userId,
+            @Param("sort") String sort);
 
     // 게시글 목록 조회
     List<ViewArticlesListResponseDto> selectArticlesByCategoryId(
             @Param("categoryCode") String categoryCode,
-            @Param("page") int page);
+            @Param("page") int page,
+            @Param("userId") String userId,
+            @Param("sort") String sort);
 
     // 게시글 상세 조회
     ViewArticleDetailsResponseDto selectByArticleId(Long articleId);

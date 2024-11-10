@@ -3,7 +3,7 @@ package com.sololiving.domain.media.dto.response;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sololiving.domain.media.enums.MediaType;
+import com.sololiving.domain.article.enums.MediaType;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -31,15 +31,17 @@ public class CommentService {
         if (!articleMapper.checkArticleExists(requestDto.getArticleId())) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
+        Long articleId = requestDto.getArticleId();
 
         CommentVo commentVo = CommentVo.builder()
-                .articleId(requestDto.getArticleId())
+                .articleId(articleId)
                 .parentCommentId(null)
                 .writer(writer)
                 .content(requestDto.getContent())
                 .build();
 
         commentMapper.insertComment(commentVo);
+        articleMapper.incrementCommentCount(articleId);
     }
 
     // 대댓글 작성
@@ -48,27 +50,37 @@ public class CommentService {
         if (!articleMapper.checkArticleExists(requestDto.getArticleId())) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
-
+        Long articleId = requestDto.getArticleId();
         CommentVo commentVo = CommentVo.builder()
-                .articleId(requestDto.getArticleId())
+                .articleId(articleId)
                 .parentCommentId(requestDto.getParentCommentId())
                 .writer(writer)
                 .content(requestDto.getContent())
                 .build();
 
         commentMapper.insertComment(commentVo);
+        articleMapper.incrementCommentCount(articleId);
     }
 
     // 댓글 삭제
-    @Transactional
-    public void removeComment(Long commentId, String writer) {
+    public void removeComment(Long articleId, Long commentId, String writer) {
+        validateRemoveComment(articleId, commentId, writer);
+        deleteComment(articleId, commentId, writer);
+    }
+
+    private void validateRemoveComment(Long articleId, Long commentId, String writer) {
         if (!commentMapper.checkComment(commentId)) {
             throw new ErrorException(CommentErrorCode.NOT_FOUND_COMMENT);
         }
         if (!commentMapper.verifyCommentWriter(commentId, writer)) {
             throw new ErrorException(GlobalErrorCode.NO_PERMISSION);
         }
+    }
+
+    @Transactional
+    private void deleteComment(Long articleId, Long commentId, String writer) {
         commentMapper.deleteComment(commentId);
+        articleMapper.decrementCommentCount(articleId);
     }
 
     // 댓글 수정

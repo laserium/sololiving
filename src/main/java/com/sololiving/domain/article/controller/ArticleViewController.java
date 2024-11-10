@@ -10,13 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewAllArticlesListResponseDto;
+import com.sololiving.domain.article.dto.response.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticleDetailsResponseDto;
-import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewCategoryArticlesResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleResponseICDto.ViewTopArticlesResponseDto;
+import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.service.ArticleViewService;
+import com.sololiving.global.util.SecurityUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,16 +30,21 @@ public class ArticleViewController {
 
     // 전체 게시글 목록 조회
     @GetMapping("/all")
-    public ResponseEntity<List<ViewAllArticlesListResponseDto>> getMethodName() {
-        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewAllArticlesList());
+    public ResponseEntity<List<ViewAllArticlesListResponseDto>> viewAllArticles(HttpServletRequest httpServletRequest,
+            @RequestParam(defaultValue = "recent") String sort) {
+        String userId = SecurityUtil.getCurrentUserId();
+        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewAllArticlesList(userId, sort));
     }
 
     // 게시글 목록 조회
     @GetMapping("/list/{categoryCode}")
     public ResponseEntity<List<ViewArticlesListResponseDto>> viewArticlesList(
             @PathVariable("categoryCode") String categoryCode,
-            @RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticlesList(categoryCode, page));
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "recent") String sort) {
+        String userId = SecurityUtil.getCurrentUserId();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(articleViewService.viewArticlesList(categoryCode, page, userId, sort));
     }
 
     // 게시글 상세 조회
