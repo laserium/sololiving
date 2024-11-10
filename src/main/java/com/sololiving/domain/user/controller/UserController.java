@@ -44,9 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
     private final UserService userService;
-    private final CookieService cookieService;
     private final SmsService smsService;
-    private final TokenProvider tokenProvider;
 
     // 회원가입
     @PostMapping("/signup")
@@ -59,11 +57,8 @@ public class UserController {
     // 회원탈퇴
     @DeleteMapping("")
     public ResponseEntity<SuccessResponse> deleteUser(HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        if (accessToken == null || tokenProvider.validToken(accessToken)) {
-            throw new ErrorException(TokenErrorCode.CANNOT_FIND_AT);
-        }
-        userService.deleteUserRequest(accessToken);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.withdraw(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
@@ -99,8 +94,8 @@ public class UserController {
     public ResponseEntity<SuccessResponse> updateUserEmail(
             @RequestBody UpdateUserEmailRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.sendUpdateNewEmailRequest(accessToken, requestDto);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.sendUpdateNewEmailRequest(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_EMAIL_REQUEST_SUCCESS));
@@ -122,8 +117,8 @@ public class UserController {
     @PatchMapping("/contact")
     public ResponseEntity<?> updateUserContact(@RequestBody UpdateUserContactRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserContact(accessToken, requestDto);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.updateUserContact(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -134,8 +129,8 @@ public class UserController {
     public ResponseEntity<SuccessResponse> updateUserPassword(
             @RequestBody UpdateUserPasswordRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserPassword(accessToken, requestDto);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.updateUserPassword(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -146,8 +141,8 @@ public class UserController {
     public ResponseEntity<SuccessResponse> updateUserNickname(
             @RequestBody UpdateUserNicknameRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserNickname(accessToken, requestDto);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.updateUserNickname(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -158,8 +153,8 @@ public class UserController {
     public ResponseEntity<SuccessResponse> updateUserGender(
             @RequestBody UpdateUserGenderRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserGender(accessToken, requestDto);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.updateUserGender(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -170,8 +165,8 @@ public class UserController {
     public ResponseEntity<SuccessResponse> updateUserAddress(
             @RequestBody UpdateUserAddressRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserAddress(accessToken, requestDto);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.updateUserAddress(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
@@ -182,8 +177,8 @@ public class UserController {
     public ResponseEntity<SuccessResponse> updateUserBirth(
             @RequestBody UpdateUserBirthRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateUserBirth(accessToken, requestDto);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.updateUserBirth(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(UserSuccessCode.UPDATE_USER_REQUEST_SUCCESS));
