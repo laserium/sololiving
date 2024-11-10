@@ -25,6 +25,7 @@ import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.vo.UserVo;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.jwt.service.AccessTokenService;
@@ -93,9 +94,7 @@ public class UserService {
 
     // 회원 상태 변경
     @Transactional
-    public void updateStatus(String accessToken, Status status) {
-        accessTokenService.checkAccessToken(accessToken);
-        String userId = tokenProvider.getUserId(accessToken);
+    public void updateStatus(String userId, Status status) {
         validateUserId(userId);
         userAuthService.validateStatus(status);
         if (userAuthService.selectUserTypeByUserId(userId) == UserType.ADMIN) {
@@ -138,14 +137,19 @@ public class UserService {
     }
 
     // 회원 연락처 변경 전 인증 메일 전송
-    public String validateUpdateUserContact(String accessToken,
+    public String validateUpdateUserContact(String userId,
             ValidateUpdateUserContactRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
-        String contact = requestDto.getContact();
-        validateUserId(userId);
-        if (contact == null) {
-            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        if (requestDto.getContact() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        String contact = requestDto.getContact();
+        if (contact.length() != 11) {
+            throw new ErrorException(UserErrorCode.CONTACT_LENGTH_FAILED);
+        }
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        log.info(contact);
         return contact;
     }
 
@@ -182,7 +186,7 @@ public class UserService {
     }
 
     private void validateUserId(String userId) {
-        if (userAuthService.isUserIdAvailable(userId)) {
+        if (!userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
     }

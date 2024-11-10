@@ -20,7 +20,8 @@ public enum UserErrorCode implements ErrorCode {
     NO_USER_ID_REQUEST("USER_E010", "유저아이디 값이 정확하게 요청되지 않았습니다."),
     NO_USER_STATUS_REQUEST("USER_E011", "유저 상태 값이 정확하게 요청되지 않았습니다."),
     UPDATE_USER_REQUEST_DATA_IS_NULL("USER_E012", "유저 정보 수정 요청 데이터 값이 없습니다(NULL)"),
-    USER_PASSWORD_INCORRECT("USER_E013", "비밀번호가 일치하지 않습니다");
+    USER_PASSWORD_INCORRECT("USER_E013", "비밀번호가 일치하지 않습니다"),
+    CONTACT_LENGTH_FAILED("USER_E014", "연락처가 11자리가 아닙니다");
 
     private final String code;
     private final String message;

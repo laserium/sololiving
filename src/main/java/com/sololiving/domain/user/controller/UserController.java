@@ -31,10 +31,13 @@ import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
 import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -70,8 +73,8 @@ public class UserController {
     @PatchMapping("/status/{status}")
     public ResponseEntity<?> updateUserStatus(@PathVariable Status status,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        userService.updateStatus(accessToken, status);
+        String userId = SecurityUtil.getCurrentUserId();
+        userService.updateStatus(userId, status);
         if (status == Status.ACTIVE) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseMessage
@@ -103,13 +106,13 @@ public class UserController {
                         .createSuccessResponse(UserSuccessCode.UPDATE_EMAIL_REQUEST_SUCCESS));
     }
 
-    // 회원 연락처 변경 전 인증 메일 전송
+    // 회원 연락처 변경 전 인증 문자 전송
     @PostMapping("/contact/sms-verification")
     public ResponseEntity<?> validateUpdateUserContact(
             @RequestBody ValidateUpdateUserContactRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        smsService.sendSms(userService.validateUpdateUserContact(accessToken, requestDto));
+        String userId = SecurityUtil.getCurrentUserId();
+        smsService.sendSms(userService.validateUpdateUserContact(userId, requestDto));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage
                         .createSuccessResponse(SmsSuccessCode.SUCCESS_TO_SEND));
