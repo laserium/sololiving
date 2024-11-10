@@ -10,8 +10,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
-import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/article")
 public class ArticleLikeController {
 
-    private final TokenProvider tokenProvider;
-    private final CookieService cookieService;
     private final UserAuthService userAuthService;
     private final ArticleLikeService articleLikeService;
 
@@ -36,7 +33,7 @@ public class ArticleLikeController {
     @PostMapping("/{articleId}/like")
     public ResponseEntity<SuccessResponse> likeArticle(@PathVariable Long articleId,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
@@ -49,7 +46,7 @@ public class ArticleLikeController {
     @DeleteMapping("{articleId}/like")
     public ResponseEntity<SuccessResponse> likeArticleCancle(@PathVariable Long articleId,
             HttpServletRequest httpServletRequest) {
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }

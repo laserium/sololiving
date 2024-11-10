@@ -34,4 +34,7 @@ public interface ArticleMapper {
 
     // 게시글 추천 수 업데이트
     void updateArticleLikeCount(@Param("articleId") Long articleId);
+
+    // 게시글 작성자 조회
+    String selectWriterByArticleId(@Param("articleId") Long articleId);
 }

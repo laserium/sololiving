@@ -10,8 +10,7 @@ import com.sololiving.domain.media.service.MediaUploadService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 import com.sololiving.global.util.aws.S3Uploader;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,8 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/media")
 public class MediaController {
 
-    private final TokenProvider tokenProvider;
-    private final CookieService cookieService;
     private final UserAuthService userAuthService;
     private final MediaUploadService mediaUploadService;
     private final S3Uploader s3Uploader;
@@ -41,7 +38,7 @@ public class MediaController {
             @RequestParam("multipartFiles") List<MultipartFile> multipartFiles) {
 
         // 회원 유무 검증
-        String userId = tokenProvider.getUserId(cookieService.extractAccessTokenFromCookie(httpServletRequest));
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }

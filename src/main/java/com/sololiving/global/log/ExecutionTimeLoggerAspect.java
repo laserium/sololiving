@@ -20,7 +20,7 @@ public class ExecutionTimeLoggerAspect {
     private static final String START_TIME_ATTR = "requestStartTime";
     private static final String CONTROLLER_EXECUTED_ATTR = "controllerExecuted";
 
-    @Pointcut("execution(* com.sololiving..*(..))")
+    @Pointcut("execution(* com.sololiving.domain..*(..))")
     public void applicationPackagePointcut() {
     }
 
@@ -49,19 +49,23 @@ public class ExecutionTimeLoggerAspect {
         if (requestAttributes != null) {
             requestAttributes.setAttribute(START_TIME_ATTR, System.currentTimeMillis(),
                     RequestAttributes.SCOPE_REQUEST);
-            requestAttributes.setAttribute(CONTROLLER_EXECUTED_ATTR, true, RequestAttributes.SCOPE_REQUEST);
+            requestAttributes.setAttribute(CONTROLLER_EXECUTED_ATTR, true,
+                    RequestAttributes.SCOPE_REQUEST);
         }
 
         Object proceed = joinPoint.proceed();
 
         if (requestAttributes != null) {
-            Long startTime = (Long) requestAttributes.getAttribute(START_TIME_ATTR, RequestAttributes.SCOPE_REQUEST);
+            Long startTime = (Long) requestAttributes.getAttribute(START_TIME_ATTR,
+                    RequestAttributes.SCOPE_REQUEST);
             Boolean controllerExecuted = (Boolean) requestAttributes.getAttribute(CONTROLLER_EXECUTED_ATTR,
                     RequestAttributes.SCOPE_REQUEST);
             if (startTime != null && controllerExecuted != null && controllerExecuted) {
                 long totalExecutionTime = System.currentTimeMillis() - startTime;
-                logTotalExecutionTimeAsync(joinPoint.getSignature().toString(), totalExecutionTime);
-                requestAttributes.removeAttribute(CONTROLLER_EXECUTED_ATTR, RequestAttributes.SCOPE_REQUEST);
+                logTotalExecutionTimeAsync(joinPoint.getSignature().toString(),
+                        totalExecutionTime);
+                requestAttributes.removeAttribute(CONTROLLER_EXECUTED_ATTR,
+                        RequestAttributes.SCOPE_REQUEST);
             }
         }
 

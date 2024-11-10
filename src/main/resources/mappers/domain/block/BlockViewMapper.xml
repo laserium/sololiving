@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.block.mapper.BlockViewMapper">
+
+    <!-- 차단 리스트 조회 -->
+    <select id="selectBlockListByUserId" resultType="com.sololiving.domain.block.dto.response.ViewBlockListResponseDto">
+        SELECT u.user_id AS targetId,
+               u.nickname AS targetNickname,
+               u.profile_image AS targetProfileImage
+        FROM BLOCK b
+        JOIN USER u ON b.blocking_id = u.user_id
+        WHERE b.blocker_id = #{userId}
+    </select>
+    
+
+</mapper>

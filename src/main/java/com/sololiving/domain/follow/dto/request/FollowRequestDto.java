@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class FollowRequestDto {
-    private String followTargetId;
+    private String targetId;
 }

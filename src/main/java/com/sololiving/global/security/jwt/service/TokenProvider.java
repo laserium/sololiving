@@ -80,11 +80,10 @@ public class TokenProvider {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         Claims claims = getClaims(token);
+        String userId = claims.get("id", String.class);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-        return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token,
-                authorities);
+        return new UsernamePasswordAuthenticationToken(userId, token, authorities);
     }
 
     // refresh token 생성
@@ -145,7 +144,7 @@ public class TokenProvider {
         return Jwts.parser()
                 .verifyWith(key)
                 .build()
-                .parseEncryptedClaims(token)
+                .parseSignedClaims(token)
                 .getPayload();
     }
 
