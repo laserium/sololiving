@@ -3,7 +3,6 @@ package com.sololiving.global.util.aws;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.sololiving.domain.media.exception.MediaErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
