@@ -3,10 +3,10 @@ package com.sololiving.global.util.aws;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class S3Uploader {
 
-    @Autowired
-    private AmazonS3 amazonS3Client;
+    private final AmazonS3 amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -45,7 +44,7 @@ public class S3Uploader {
                 extension = originalFileName.substring(originalFileName.lastIndexOf("."));
             }
 
-            // MultipartFile을 File로 변환
+            // 로컬에 파일 업로드 MultipartFile을 File로 변환
             uploadFile = convert(multipartFile)
                     .orElseThrow(() -> new ErrorException(MediaErrorCode.FAIL_TO_CONVERT_MULTIPARTFILE_TO_FILE));
         } catch (IOException e) {
@@ -64,13 +63,10 @@ public class S3Uploader {
 
     // S3에 파일 업로드
     public String putS3(File uploadFile, String fileName) {
-        try (FileOutputStream fos = new FileOutputStream(uploadFile)) {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(uploadFile.length());
-
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withMetadata(metadata));
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
             return amazonS3Client.getUrl(bucket, fileName).toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("putS3 FAILED : S3에 파일 업로드 실패", e);
         }
     }

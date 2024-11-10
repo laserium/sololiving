@@ -7,9 +7,11 @@ import org.springframework.stereotype.Component;
 import com.sololiving.domain.block.exception.BlockErrorCode;
 import com.sololiving.domain.block.mapper.BlockMapper;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
+
+// 유저 차단 기능 AOP
+// 적용 메소드 : 팔로우 기능
 
 @Aspect
 @Component
@@ -18,16 +20,10 @@ public class BlockCheckAspect {
 
     private final BlockMapper blockMapper;
 
-    @Before("@annotation(com.sololiving.global.aop.CheckBlockedUser) && args(targetId, ..)")
-    public void checkBlockedUser(String targetId) {
-        String userId = getCurrentUserId(); // 로그인된 사용자 ID 가져오기
-        // 차단 여부 확인
+    @Before("@annotation(com.sololiving.global.aop.CheckBlockedUser) && args(userId, targetId, ..)")
+    public void checkBlockedUser(String userId, String targetId) {
         if (blockMapper.existsBlock(userId, targetId)) {
             throw new ErrorException(BlockErrorCode.ALREADY_BLOCKED);
         }
-    }
-
-    private String getCurrentUserId() {
-        return SecurityUtil.getCurrentUserId();
     }
 }

@@ -7,7 +7,9 @@ import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleLikeMapper;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleLikeVo;
-import com.sololiving.global.aop.CheckBlockedUser;
+import com.sololiving.domain.block.exception.BlockErrorCode;
+import com.sololiving.domain.block.mapper.BlockMapper;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
@@ -18,17 +20,26 @@ public class ArticleLikeService {
 
     private final ArticleLikeMapper articleLikeMapper;
     private final ArticleMapper articleMapper;
+    private final BlockMapper blockMapper;
 
     // 게시글 추천
-    @CheckBlockedUser
     public void likeArticle(Long articleId, String userId) {
         validateLikeArticle(articleId, userId);
         insertLikeArticle(articleId, userId);
     }
 
     private void validateLikeArticle(Long articleId, String userId) {
+        // 입력값 NULL 검증
+        if (articleId == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
+        // 게시글 존재 유무 확인
         if (!articleMapper.checkArticleExists(articleId)) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
+        }
+        // 차단 유무 확인
+        if (blockMapper.existsBlock(userId, articleMapper.selectWriterByArticleId(articleId))) {
+            throw new ErrorException(BlockErrorCode.ALREADY_BLOCKED);
         }
         // 본인이 작성한 게시글에 추천 불가
         if (articleMapper.verifyArticleWriter(articleId, userId)) {
@@ -51,7 +62,6 @@ public class ArticleLikeService {
     }
 
     // 게시글 추천 취소
-    @CheckBlockedUser
     public void likeArticleCancle(Long articleId, String userId) {
         validateLikeArticleCancle(articleId, userId);
         insertLikeArticleCancle(articleId, userId);

@@ -84,4 +84,12 @@
         WHERE article_id = #{articleId};
     </update>
 
+    <!-- 게시글 작성자 조회 -->
+    <select id="selectWriterByArticleId">
+        SELECT writer
+        FROM ARTICLE
+        WHERE article_id = #{articleId}
+    </select>
+
+
 </mapper>

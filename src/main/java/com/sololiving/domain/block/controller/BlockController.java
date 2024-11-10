@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.block.dto.request.BlockRequestDto;
+import com.sololiving.domain.block.dto.request.UnblockRequestDto;
 import com.sololiving.domain.block.exception.BlockSuccessCode;
 import com.sololiving.domain.block.service.BlockService;
 import com.sololiving.global.exception.ResponseMessage;
@@ -38,7 +39,7 @@ public class BlockController {
 
     // 차단 해제 하기
     @DeleteMapping("")
-    public ResponseEntity<SuccessResponse> unblock(@RequestBody BlockRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> unblock(@RequestBody UnblockRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         blockService.unBlock(userId, requestDto.getTargetId());
