@@ -2,6 +2,7 @@ package com.sololiving.domain.article.service;
 
 import java.util.List;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ArticleService {
 
+    private final RedisTemplate<String, String> redisTemplate;
     private final ArticleMapper articleMapper;
     private final MediaMapper mediaMapper;
     private final MediaUploadService mediaUploadService;
@@ -103,6 +105,11 @@ public class ArticleService {
         if (!articleMapper.verifyArticleWriter(articleId, userId)) {
             throw new ErrorException(ArticleErrorCode.VERIFY_WRITER_FAILED);
         }
+    }
+
+    // 게시글 조회수 증가
+    public void incrementArticleViewCount(Long articleId) {
+        redisTemplate.opsForValue().increment("ARTICLE:" + articleId + ":view_cnt");
     }
 
 }

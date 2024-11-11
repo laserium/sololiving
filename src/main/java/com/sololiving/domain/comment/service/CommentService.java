@@ -63,12 +63,16 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void removeComment(Long articleId, Long commentId, String writer) {
-        validateRemoveComment(articleId, commentId, writer);
+    public void removeComment(Long commentId, String writer) {
+        Long articleId = commentMapper.selectArticleIdByCommentId(commentId);
+        if (articleId == null) {
+            throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
+        }
+        validateRemoveComment(commentId, writer);
         deleteComment(articleId, commentId, writer);
     }
 
-    private void validateRemoveComment(Long articleId, Long commentId, String writer) {
+    private void validateRemoveComment(Long commentId, String writer) {
         if (!commentMapper.checkComment(commentId)) {
             throw new ErrorException(CommentErrorCode.NOT_FOUND_COMMENT);
         }

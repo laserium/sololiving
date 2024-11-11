@@ -27,4 +27,7 @@ public interface CommentMapper {
 
     // 댓글 작성자 조회
     String selectCommentWriter(@Param("commentId") Long commentId);
+
+    // 댓글 작성된 게시글 id 조회
+    Long selectArticleIdByCommentId(@Param("commentId") Long commentId);
 }

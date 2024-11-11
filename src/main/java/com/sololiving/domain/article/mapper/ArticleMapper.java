@@ -2,8 +2,6 @@ package com.sololiving.domain.article.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import com.sololiving.domain.article.enums.MediaType;
 import com.sololiving.domain.article.vo.ArticleVo;
 
 @Mapper

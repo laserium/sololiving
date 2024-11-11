@@ -69,7 +69,7 @@ public class CommentController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentService.removeComment(requestDto.getArticleId(), requestDto.getCommentId(), userId);
+        commentService.removeComment(requestDto.getCommentId(), userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_DELETE_COMMENT));
 

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ViewArticlesListResponseDto {
+public class ViewTopArticlesResponseDto {
 
     private int displayNumber;
     private Long articleId;
