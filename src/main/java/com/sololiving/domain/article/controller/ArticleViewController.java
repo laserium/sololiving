@@ -1,7 +1,5 @@
 package com.sololiving.domain.article.controller;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;

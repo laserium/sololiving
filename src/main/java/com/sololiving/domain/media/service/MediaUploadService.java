@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sololiving.domain.article.enums.MediaType;
-import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.media.exception.MediaErrorCode;
 import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.media.vo.MediaVo;
