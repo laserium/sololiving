@@ -19,7 +19,6 @@ public class ViewArticlesListResponseDto {
     private String content;
     private int likeCnt;
     private int viewCnt;
-    private int score;
     private int commentCount;
     private int mediaType;
     private String timeAgo;
