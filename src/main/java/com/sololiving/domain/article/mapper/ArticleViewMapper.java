@@ -24,18 +24,14 @@ public interface ArticleViewMapper {
             ArticleSearchRequestDto requestDto);
 
     // 게시글 상세 조회
-    ViewArticleDetailsResponseDto selectByArticleId(@Param("articleId") Long articleId);
+    ViewArticleDetailsResponseDto selectByArticleId(@Param("articleId") Long articleId, @Param("userId") String userId);
 
     // 메인페이지 인기 게시글 TOP 10
     List<ViewTopArticlesResponseDto> selectPopularArticles();
 
     // 사용자가 작성한 게시글 목록 조회
-    List<ViewArticlesListResponseDto> selectUserArticles(
-            @Param("writer") String writer,
-            ArticleSearchRequestDto requestDto);
+    List<ViewArticlesListResponseDto> selectUserArticles(ArticleSearchRequestDto requestDto);
 
     // 사용자가 추천한 게시글 목록 조회
-    List<ViewArticlesListResponseDto> selectUserLikeArticles(
-            @Param("writer") String writer,
-            ArticleSearchRequestDto requestDto);
+    List<ViewArticlesListResponseDto> selectUserLikeArticles(ArticleSearchRequestDto requestDto);
 }

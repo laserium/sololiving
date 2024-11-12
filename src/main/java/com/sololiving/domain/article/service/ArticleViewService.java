@@ -58,9 +58,9 @@ public class ArticleViewService {
     }
 
     // 게시글 상세 조회 API
-    public ViewArticleDetailsResponseDto viewArticleDetails(Long articleId) {
+    public ViewArticleDetailsResponseDto viewArticleDetails(Long articleId, String userId) {
         // 1. 캐시된 게시글 정보 가져오기
-        ViewArticleDetailsResponseDto responseDto = setArticleDetails(articleId);
+        ViewArticleDetailsResponseDto responseDto = setArticleDetails(articleId, userId);
         // 2. 조회수 증가
         articleService.incrementArticleViewCount(articleId);
         return responseDto;
@@ -69,8 +69,8 @@ public class ArticleViewService {
     // 게시글 상세 조회
     // @Cacheable(value = "articleDetails", key = "'ARTICLE_VIEW:DETAIL:' +
     // #articleId")
-    private ViewArticleDetailsResponseDto setArticleDetails(Long articleId) {
-        ViewArticleDetailsResponseDto responseDto = articleViewMapper.selectByArticleId(articleId);
+    private ViewArticleDetailsResponseDto setArticleDetails(Long articleId, String userId) {
+        ViewArticleDetailsResponseDto responseDto = articleViewMapper.selectByArticleId(articleId, userId);
         if (responseDto == null) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
@@ -94,10 +94,9 @@ public class ArticleViewService {
     }
 
     // 사용자가 작성한 게시글 목록 조회
-    public List<ViewArticlesListResponseDto> viewUserArticlesList(String writer, ArticleSearchRequestDto requestDto) {
-        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectUserArticles(writer,
-                requestDto);
+    public List<ViewArticlesListResponseDto> viewUserArticlesList(ArticleSearchRequestDto requestDto) {
         decodeSearchParameters(requestDto);
+        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectUserArticles(requestDto);
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
@@ -107,11 +106,10 @@ public class ArticleViewService {
     }
 
     // 사용자가 추천한 게시글 목록 조회
-    public List<ViewArticlesListResponseDto> viewUserLikeArticlesList(String writer,
+    public List<ViewArticlesListResponseDto> viewUserLikeArticlesList(
             ArticleSearchRequestDto requestDto) {
-        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectUserLikeArticles(
-                writer, requestDto);
         decodeSearchParameters(requestDto);
+        List<ViewArticlesListResponseDto> articles = articleViewMapper.selectUserLikeArticles(requestDto);
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
             article.setTimeAgo(timeAgo);
@@ -121,14 +119,15 @@ public class ArticleViewService {
     }
 
     private void decodeSearchParameters(ArticleSearchRequestDto requestDto) {
-        if (requestDto.getSearchTitle() != null) {
-            requestDto.setSearchTitle(URLDecoder.decode(requestDto.getSearchTitle(), StandardCharsets.UTF_8));
-        }
-        if (requestDto.getSearchContents() != null) {
-            requestDto.setSearchContents(URLDecoder.decode(requestDto.getSearchContents(), StandardCharsets.UTF_8));
-        }
-        if (requestDto.getSearchWriter() != null) {
-            requestDto.setSearchWriter(URLDecoder.decode(requestDto.getSearchWriter(), StandardCharsets.UTF_8));
+        decodeSearchParameter(requestDto.getCategoryCode());
+        decodeSearchParameter(requestDto.getSearchContents());
+        decodeSearchParameter(requestDto.getSearchTitle());
+        decodeSearchParameter(requestDto.getSearchWriter());
+    }
+
+    private void decodeSearchParameter(String inputData) {
+        if (inputData != null) {
+            inputData = URLDecoder.decode(inputData, StandardCharsets.UTF_8);
         }
     }
 

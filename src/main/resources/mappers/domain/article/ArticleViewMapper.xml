@@ -53,7 +53,7 @@
         GROUP BY article_id
     </sql>
 
-        <!-- 검색 조건 필터 -->
+        <!-- 검색 조건 필터 --> 
     <sql id="articleSearchFilter">
         <if test="(searchTitle != null and searchTitle != '') 
                 or (searchContents != null and searchContents != '') 
@@ -147,7 +147,15 @@
                 SELECT COUNT(*)
                 FROM COMMENT c
                 WHERE c.article_id = a.article_id
-                <include refid="commentStatusFilter" />
+                AND c.status = 'NORMAL' 
+                <if test="userId != null">
+                    AND NOT EXISTS (
+                        SELECT 1 
+                        FROM BLOCK b 
+                        WHERE b.blocker_id = #{userId}
+                        AND b.blocking_id = c.writer
+                    )
+                </if>
             ), 0) AS commentCount,
             a.status,
             a.created_at AS createdAt,

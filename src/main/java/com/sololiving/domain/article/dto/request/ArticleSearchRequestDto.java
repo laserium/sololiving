@@ -11,6 +11,7 @@ public class ArticleSearchRequestDto {
     private String categoryCode;
     private int page = 0;
     private String userId; // 조회하는 주체
+    private String writer; // 조회되는 작성자
     private String sort = "recent";
     private String searchTitle;
     private String searchContents;
