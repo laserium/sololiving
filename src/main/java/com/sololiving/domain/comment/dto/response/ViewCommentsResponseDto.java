@@ -3,7 +3,6 @@ package com.sololiving.domain.comment.dto.response;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sololiving.domain.comment.enums.Status;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +21,6 @@ public class ViewCommentsResponseDto {
     private String writer;
     private String content;
     private int likeCnt;
-    private Status status;
     private String timeAgo;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

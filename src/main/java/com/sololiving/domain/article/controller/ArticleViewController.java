@@ -17,6 +17,8 @@ import com.sololiving.domain.article.dto.response.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.service.ArticleViewService;
 import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewTopArticlesResponseDto;
+import com.sololiving.global.exception.GlobalErrorCode;
+import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +42,8 @@ public class ArticleViewController {
     // 게시글 목록 조회
     @GetMapping("/list")
     public ResponseEntity<List<ViewArticlesListResponseDto>> viewArticlesList(
-            @ModelAttribute ArticleSearchRequestDto requestDto) {
+            @ModelAttribute ArticleSearchRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         requestDto.setUserId(userId);
         return ResponseEntity.status(HttpStatus.OK)
@@ -49,8 +52,10 @@ public class ArticleViewController {
 
     // 게시글 상세 조회
     @GetMapping("/{articleId}")
-    public ResponseEntity<ViewArticleDetailsResponseDto> viewArticleDetails(@PathVariable Long articleId) {
-        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId));
+    public ResponseEntity<ViewArticleDetailsResponseDto> viewArticleDetails(@PathVariable Long articleId,
+            HttpServletRequest httpServletRequest) {
+        String userId = SecurityUtil.getCurrentUserId();
+        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId, userId));
     }
 
     // 메인 페이지 : 하루 기준 인기 게시글 TOP 10 조회
@@ -60,27 +65,34 @@ public class ArticleViewController {
     }
 
     // 사용자가 작성한 게시글 목록 조회
-    @GetMapping("/{writer}")
+    @GetMapping("/{writer}/articles")
     public ResponseEntity<List<ViewArticlesListResponseDto>> viewUserArticlesList(@PathVariable String writer,
-            @ModelAttribute ArticleSearchRequestDto requestDto, HttpServletRequest httpServletRequest) {
-
+            @ModelAttribute ArticleSearchRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
+        if (writer == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
         String userId = SecurityUtil.getCurrentUserId();
         requestDto.setUserId(userId);
-
+        requestDto.setWriter(writer);
         // USER_SETTING 에 article_sharing_enabled 조건 추가
         return ResponseEntity.status(HttpStatus.OK)
-                .body(articleViewService.viewUserArticlesList(writer, requestDto));
+                .body(articleViewService.viewUserArticlesList(requestDto));
     }
 
     // 사용자가 추천한 게시글 목록 조회
-    @GetMapping("/{writer}/like")
+    @GetMapping("/{writer}/articles/like")
     public ResponseEntity<List<ViewArticlesListResponseDto>> viewUserLikeArticlesList(@PathVariable String writer,
             @ModelAttribute ArticleSearchRequestDto requestDto) {
+        if (writer == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
         String userId = SecurityUtil.getCurrentUserId();
         requestDto.setUserId(userId);
+        requestDto.setWriter(writer);
         // USER_SETTING 에 liked_sharing_enabled 조건 추가
         return ResponseEntity.status(HttpStatus.OK)
-                .body(articleViewService.viewUserLikeArticlesList(writer, requestDto));
+                .body(articleViewService.viewUserLikeArticlesList(requestDto));
     }
 
 }

@@ -5,18 +5,83 @@
 
 <mapper namespace="com.sololiving.domain.comment.mapper.CommentViewMapper">
 
+    <!-- 댓글 상태 필터 -->
+    <sql id="commentStatusFilter">
+        WHERE c.status = 'NORMAL' 
+        <if test="userId != null">
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM BLOCK b 
+                WHERE b.blocker_id = #{userId}
+                AND b.blocking_id = c.writer
+            )
+        </if>
+    </sql>
+
+    <!-- 게시글 상태 필터 -->   
+    <sql id="articleStatusFilter">
+        AND a.status = 'NORMAL'
+    </sql>
+
+    <!-- 댓글 본문 검색 필터 -->
+    <sql id="commentSearchFilter">
+        <if test="searchContent != null and searchContent != ''">
+            AND c.content LIKE CONCAT('%', #{searchContent}, '%')
+        </if>
+    </sql>
+
+    <!-- 게시물의 댓글 조회 (대댓글 고려) -->
     <select id="selectAllComments" resultType="com.sololiving.domain.comment.dto.response.ViewCommentsResponseDto">
-        SELECT comment_id AS commentId,
-        parent_comment_id AS parentCommentId,
-        article_id AS articleId,
-        writer,
-        content,
-        like_cnt AS likeCnt,
-        created_at AS createdAt,
-        updated_at AS updatedAt,
-        status
-        FROM COMMENT
-        WHERE article_id = #{articleId}
-        ORDER BY comment_id;
+        SELECT 
+            c.comment_id AS commentId,
+            c.parent_comment_id AS parentCommentId,
+            c.article_id AS articleId,
+            c.writer,
+            c.content,
+            c.like_cnt AS likeCnt,
+            c.created_at AS createdAt,
+            c.updated_at AS updatedAt,
+            c.status
+        FROM COMMENT c
+        <where>
+            c.article_id = #{articleId}
+                AND c.status = 'NORMAL'
+            <if test="userId != null">
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM BLOCK b
+                    WHERE b.blocker_id = #{userId}
+                    AND b.blocking_id = c.writer
+                )
+            </if>
+        </where>
+        ORDER BY 
+            CASE 
+                WHEN c.parent_comment_id IS NULL THEN c.comment_id 
+                ELSE c.parent_comment_id 
+            END, 
+            c.comment_id;
     </select>
+
+
+
+    <!-- 사용자가 작성한 댓글 조회 -->
+    <select id="selectUserComments" resultType="com.sololiving.domain.comment.dto.response.ViewUsersCommentsResponseDto">
+        SELECT 
+            c.comment_id AS commentId,
+            c.article_id AS articleId,
+            c.content AS content,
+            c.created_at AS createdAt
+        FROM COMMENT c
+        JOIN ARTICLE a ON c.article_id = a.article_id
+        <include refid="commentStatusFilter" />
+        <include refid="articleStatusFilter" />
+        <include refid="commentSearchFilter" />
+        AND c.writer = #{writer}
+        ORDER BY c.created_at DESC
+    </select>
+
+
+
+
 </mapper>
