@@ -9,6 +9,8 @@ import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleLikeVo;
 import com.sololiving.domain.block.exception.BlockErrorCode;
 import com.sololiving.domain.block.mapper.BlockMapper;
+import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.mapper.UserViewMapper;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 
@@ -20,6 +22,7 @@ public class ArticleLikeService {
 
     private final ArticleLikeMapper articleLikeMapper;
     private final ArticleMapper articleMapper;
+    private final UserViewMapper userViewMapper;
     private final BlockMapper blockMapper;
 
     // 게시글 추천
@@ -40,6 +43,10 @@ public class ArticleLikeService {
         // 차단 유무 확인
         if (blockMapper.existsBlock(userId, articleMapper.selectWriterByArticleId(articleId))) {
             throw new ErrorException(BlockErrorCode.ALREADY_BLOCKED);
+        }
+        // 탈퇴한 회원의 게시글인지 확인
+        if (userViewMapper.isUserDeleted(userId)) {
+            throw new ErrorException(UserErrorCode.IS_DELETED_USER);
         }
         // 본인이 작성한 게시글에 추천 불가
         if (articleMapper.verifyArticleWriter(articleId, userId)) {

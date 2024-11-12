@@ -19,5 +19,11 @@
         FROM USER
     </select>
 
+    <select id="isUserDeleted" resultType="boolean" parameterType="string">
+        SELECT CASE WHEN status = 'WITHDRAW' THEN TRUE ELSE FALSE END
+        FROM USER
+        WHERE user_id = #{userId}
+    </select>
+
 
 </mapper>

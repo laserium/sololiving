@@ -44,7 +44,6 @@ public interface ArticleMapper {
     void decrementCommentCount(@Param("articleId") Long articleId);
 
     // 미디어 타입 업데이트
-
     void updateMediaType(@Param("articleId") Long articleId, @Param("mediaType") int mediaType);
 
 }

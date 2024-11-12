@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sololiving.domain.comment.dto.response.ViewCommentsResponseDto;
 import com.sololiving.domain.comment.dto.response.ViewUsersCommentsResponseDto;
 import com.sololiving.domain.comment.service.CommentViewService;
-import com.sololiving.domain.user.service.UserAuthService;
-import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;

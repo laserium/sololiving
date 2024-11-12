@@ -29,7 +29,6 @@ public class UserVo implements UserDetails {
     private Status status;
     private int followersCnt;
     private int followingCnt;
-    private String profileImage;
     private String profileBio;
     private int points;
     private LocalDateTime createdAt;
