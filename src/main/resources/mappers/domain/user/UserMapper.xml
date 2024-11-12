@@ -13,11 +13,23 @@
 
 
     <!-- 회원탈퇴 -->
-    <delete id="deleteByUserId" parameterType="string">
-        DELETE
-        FROM USER
+    <update id="updateToDeletedUser" parameterType="string">
+        UPDATE USER
+        SET user_id = #{email},  
+            user_pwd = #{password},
+            oauth2_user_id = NULL,
+            nickname = '탈주닌자',
+            contact = #{contact},
+            email = #{email}, 
+            gender = NULL,
+            address = NULL,
+            birth = NULL,
+            profile_image = NULL,
+            profile_bio = NULL,
+            status = 'WITHDRAW',
+            points = 0
         WHERE user_id = #{userId}
-    </delete>
+    </update>
 
     <update id="updateUserLastSignInAt" parameterType="string">
         UPDATE USER

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.comment.dto.request.AddCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.AddReCommentRequestDto;
+import com.sololiving.domain.comment.dto.request.DeleteCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentSuccessCode;
 import com.sololiving.domain.comment.service.CommentService;
@@ -61,14 +62,14 @@ public class CommentController {
     }
 
     // 댓글 삭제
-    @DeleteMapping("{commentId}")
-    public ResponseEntity<?> removeComment(@PathVariable Long commentId,
+    @DeleteMapping("")
+    public ResponseEntity<?> removeComment(@RequestBody DeleteCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentService.removeComment(commentId, userId);
+        commentService.removeComment(requestDto.getCommentId(), userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_DELETE_COMMENT));
 

@@ -6,12 +6,12 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface FollowMapper {
     // 팔로우 상태 검증
-    boolean existsFollowing(@Param("userId") String userId, @Param("followTargetId") String followTargetId);
+    boolean existsFollowing(@Param("userId") String userId, @Param("targetId") String targetId);
 
     // 팔로우 추가
-    void insertFollow(@Param("userId") String userId, @Param("followTargetId") String followTargetId);
+    void insertFollow(@Param("userId") String userId, @Param("targetId") String targetId);
 
     // 팔로우 끊기
-    void deleteFollow(@Param("userId") String userId, @Param("unfollowTargetId") String unfollowTargetId);
+    void deleteFollow(@Param("userId") String userId, @Param("targetId") String targetId);
 
 }

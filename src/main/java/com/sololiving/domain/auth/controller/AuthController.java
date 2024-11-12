@@ -28,6 +28,7 @@ import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -115,7 +116,7 @@ public class AuthController {
     @PostMapping("/verification")
     public ResponseEntity<SuccessResponse> postVerificationWithData(HttpServletRequest httpServletRequest) {
         String accessToken = cookieService.extractAccessTokenFromCookie(httpServletRequest);
-        String userId = tokenProvider.getUserId(accessToken);
+        String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }

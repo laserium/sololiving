@@ -2,7 +2,7 @@ package com.sololiving.domain.media.vo;
 
 import java.time.LocalDateTime;
 
-import com.sololiving.domain.media.enums.MediaType;
+import com.sololiving.domain.article.enums.MediaType;
 
 import lombok.Builder;
 import lombok.Getter;

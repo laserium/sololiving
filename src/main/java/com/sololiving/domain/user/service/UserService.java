@@ -25,11 +25,11 @@ import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.vo.UserVo;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.security.jwt.service.TokenProvider;
-import com.sololiving.global.security.jwt.service.AccessTokenService;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
 import com.sololiving.global.security.sms.service.SmsService;
+import com.sololiving.global.util.RandomGenerator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +41,6 @@ public class UserService {
 
     private static final String USER_NICK_NAME = "익명";
     private final UserAuthService userAuthService;
-    private final AccessTokenService accessTokenService;
-    private final TokenProvider tokenProvider;
     private final UserMapper userMapper;
     private final EmailService emailService;
     private final SmsService smsService;
@@ -71,19 +69,20 @@ public class UserService {
     }
 
     // 회원탈퇴
-    public void deleteUserRequest(String accessToken) {
-        String userId = tokenProvider.getUserId(accessToken);
-        if (userId == null && userAuthService.isUserIdAvailable(userId) == true) {
-            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
-        }
-        // 카테고리 관리자일 경우 관리자를 admin 으로 변경
-        deleteUser(userId);
+    public void withdraw(String userId) {
+        validateUserId(userId);
+        updateToDeletedUser(userId);
     }
 
-    // 회원탈퇴 - 삭제
+    // 회원탈퇴- 논리적 삭제
     @Transactional
-    private void deleteUser(String userId) {
-        userMapper.deleteByUserId(userId);
+    private void updateToDeletedUser(String userId) {
+        String randomId = RandomGenerator.generateRandomId();
+        String randomPassword = bCryptPasswordEncoder.encode(RandomGenerator.generateRandomPassword());
+        String randomContact = RandomGenerator.generateRandomContact();
+        String randomEmail = randomId;
+
+        userMapper.updateToDeletedUser(userId, randomPassword, randomContact, randomEmail);
     }
 
     // 로그인 시 최근 로그인 시간 변경
@@ -93,9 +92,7 @@ public class UserService {
 
     // 회원 상태 변경
     @Transactional
-    public void updateStatus(String accessToken, Status status) {
-        accessTokenService.checkAccessToken(accessToken);
-        String userId = tokenProvider.getUserId(accessToken);
+    public void updateStatus(String userId, Status status) {
         validateUserId(userId);
         userAuthService.validateStatus(status);
         if (userAuthService.selectUserTypeByUserId(userId) == UserType.ADMIN) {
@@ -105,9 +102,11 @@ public class UserService {
     }
 
     // 유저 이메일 변경
-    public void sendUpdateNewEmailRequest(String accessToken, UpdateUserEmailRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
+    public void sendUpdateNewEmailRequest(String userId, UpdateUserEmailRequestDto requestDto) {
         validateUserId(userId);
+        if (requestDto.getEmail() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
         String email = requestDto.getEmail();
         if (userAuthService.isUserEmailAvailable(email)) {
             EmailResponseDto emailResponseDto = EmailResponseDto.builder()
@@ -138,20 +137,27 @@ public class UserService {
     }
 
     // 회원 연락처 변경 전 인증 메일 전송
-    public String validateUpdateUserContact(String accessToken,
+    public String validateUpdateUserContact(String userId,
             ValidateUpdateUserContactRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
-        String contact = requestDto.getContact();
-        validateUserId(userId);
-        if (contact == null) {
-            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        if (requestDto.getContact() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        String contact = requestDto.getContact();
+        if (contact.length() != 11) {
+            throw new ErrorException(UserErrorCode.CONTACT_LENGTH_FAILED);
+        }
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        log.info(contact);
         return contact;
     }
 
-    public void updateUserContact(String accessToken, UpdateUserContactRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
+    public void updateUserContact(String userId, UpdateUserContactRequestDto requestDto) {
         validateUserId(userId);
+        if (requestDto.getContact() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
         String contact = requestDto.getContact();
         boolean isCorrect = smsService.checkSms(contact, requestDto.getCode());
         if (isCorrect) {
@@ -160,19 +166,19 @@ public class UserService {
             throw new ErrorException(SmsErrorCode.CERTIFICATION_NUMBER_INCORRECT);
     }
 
+    @Transactional
     private void updateUserContactInDb(String userId, String contact) {
         userMapper.updateUserContact(userId, contact);
     }
 
     // 유저 닉네임 변경
-    public void updateUserNickname(String accessToken,
+    public void updateUserNickname(String userId,
             UpdateUserNicknameRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
-        String nickname = requestDto.getNickname();
         validateUserId(userId);
-        if (nickname == null) {
-            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        if (requestDto.getNickname() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        String nickname = requestDto.getNickname();
         updateUserNicknameInDb(userId, nickname);
     }
 
@@ -181,20 +187,13 @@ public class UserService {
         userMapper.updateUserNickname(userId, nickname);
     }
 
-    private void validateUserId(String userId) {
-        if (userAuthService.isUserIdAvailable(userId)) {
-            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
-        }
-    }
-
     // 회원 성별 변경
-    public void updateUserGender(String accessToken, UpdateUserGenderRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
-        Gender gender = requestDto.getGender();
+    public void updateUserGender(String userId, UpdateUserGenderRequestDto requestDto) {
         validateUserId(userId);
-        if (gender == null) {
-            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        if (requestDto.getGender() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        Gender gender = requestDto.getGender();
         updateUserGenderInDb(userId, gender);
     }
 
@@ -204,13 +203,12 @@ public class UserService {
     }
 
     // 회원 주소 변경
-    public void updateUserAddress(String accessToken, UpdateUserAddressRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
-        String address = requestDto.getAddress();
+    public void updateUserAddress(String userId, UpdateUserAddressRequestDto requestDto) {
         validateUserId(userId);
-        if (address == null) {
-            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        if (requestDto.getAddress() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        String address = requestDto.getAddress();
         updateUserAddressInDb(userId, address);
     }
 
@@ -220,13 +218,12 @@ public class UserService {
     }
 
     // 회원 생일 변경
-    public void updateUserBirth(String accessToken, UpdateUserBirthRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
-        LocalDate birth = requestDto.getBirth();
+    public void updateUserBirth(String userId, UpdateUserBirthRequestDto requestDto) {
         validateUserId(userId);
-        if (birth == null) {
-            throw new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        if (requestDto.getBirth() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        LocalDate birth = requestDto.getBirth();
         updateUserBirthInDb(userId, birth);
     }
 
@@ -236,16 +233,15 @@ public class UserService {
     }
 
     // 회원 비밀번호 변경
-    public void updateUserPassword(String accessToken, UpdateUserPasswordRequestDto requestDto) {
-        String userId = tokenProvider.getUserId(accessToken);
+    public void updateUserPassword(String userId, UpdateUserPasswordRequestDto requestDto) {
         validateUserId(userId);
-        String oldPassword = userAuthService.selectPasswordByUserId(userId);
-        String password = requestDto.getPassword();
-        authService.verifyPassword(oldPassword, password);
-        String newPassword = requestDto.getNewPassword();
-        if (newPassword == null) {
-            new ErrorException(UserErrorCode.UPDATE_USER_REQUEST_DATA_IS_NULL);
+        if (requestDto.getNewPassword() == null || requestDto.getPassword() == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        String password = requestDto.getPassword();
+        String newPassword = requestDto.getNewPassword();
+        String oldPassword = userAuthService.selectPasswordByUserId(userId);
+        authService.verifyPassword(oldPassword, password);
         updateUserPasswordInDb(userId, bCryptPasswordEncoder.encode(newPassword));
     }
 
@@ -254,4 +250,9 @@ public class UserService {
         userMapper.updateUserPassword(userId, password);
     }
 
+    private void validateUserId(String userId) {
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+    }
 }

@@ -17,55 +17,55 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = "com.sololiving.**.**.mapper")
 public class MybatisConfig {
 
-    @Bean
-    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
-        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
-        sqlSessionFactoryBean.setDataSource(dataSource);
+        @Bean
+        public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
+                SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+                sqlSessionFactoryBean.setDataSource(dataSource);
 
-        // 설정 파일의 내용을 Java 설정으로 변환
-        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
-        configuration.setCacheEnabled(true);
-        configuration.setLazyLoadingEnabled(true);
+                // 설정 파일의 내용을 Java 설정으로 변환
+                org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+                configuration.setCacheEnabled(true);
+                configuration.setLazyLoadingEnabled(true);
 
-        // Underscore To CamelCase
-        configuration.setMapUnderscoreToCamelCase(true);
+                // Underscore To CamelCase
+                configuration.setMapUnderscoreToCamelCase(true);
 
-        // TypeHandlers 설정
-        configuration.getTypeHandlerRegistry().register(
-                com.sololiving.global.security.jwt.enums.TokenStatus.class,
-                MybatisEnumHandler.class);
-        configuration.getTypeHandlerRegistry().register(com.sololiving.global.security.jwt.enums.ClientId.class,
-                MybatisEnumHandler.class);
-        configuration.getTypeHandlerRegistry().register(com.sololiving.domain.user.enums.Status.class,
-                MybatisEnumHandler.class);
-        configuration.getTypeHandlerRegistry().register(com.sololiving.domain.user.enums.UserType.class,
-                MybatisEnumHandler.class);
-        configuration.getTypeHandlerRegistry().register(com.sololiving.domain.user.enums.Gender.class,
-                MybatisEnumHandler.class);
-        configuration.getTypeHandlerRegistry().register(com.sololiving.domain.media.enums.MediaType.class,
-                MybatisEnumHandler.class);
-        configuration.getTypeHandlerRegistry().register(com.sololiving.domain.article.enums.Status.class,
-                MybatisEnumHandler.class);
+                // TypeHandlers 설정
+                configuration.getTypeHandlerRegistry().register(
+                                com.sololiving.global.security.jwt.enums.TokenStatus.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.global.security.jwt.enums.ClientId.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.user.enums.Status.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.user.enums.UserType.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.user.enums.Gender.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.article.enums.Status.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.article.enums.MediaType.class,
+                                MybatisEnumHandler.class);
 
-        sqlSessionFactoryBean.setConfiguration(configuration);
+                sqlSessionFactoryBean.setConfiguration(configuration);
 
-        // TypeAliases 설정
-        sqlSessionFactoryBean.setTypeAliasesPackage("com.sololiving.domain.vo");
+                // TypeAliases 설정
+                sqlSessionFactoryBean.setTypeAliasesPackage("com.sololiving.domain.vo");
 
-        // 매퍼 파일 설정
-        sqlSessionFactoryBean.setMapperLocations(
-                new PathMatchingResourcePatternResolver().getResources("classpath:mappers/**/*.xml"));
+                // 매퍼 파일 설정
+                sqlSessionFactoryBean.setMapperLocations(
+                                new PathMatchingResourcePatternResolver().getResources("classpath:mappers/**/*.xml"));
 
-        return sqlSessionFactoryBean.getObject();
-    }
+                return sqlSessionFactoryBean.getObject();
+        }
 
-    @Bean
-    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
-        return new SqlSessionTemplate(sqlSessionFactory);
-    }
+        @Bean
+        public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
+                return new SqlSessionTemplate(sqlSessionFactory);
+        }
 
-    @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
+        @Bean
+        public PlatformTransactionManager transactionManager(DataSource dataSource) {
+                return new DataSourceTransactionManager(dataSource);
+        }
 }
