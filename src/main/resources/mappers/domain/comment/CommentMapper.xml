@@ -62,4 +62,11 @@
         WHERE comment_id = #{commentId}
     </select>
 
+    <!-- 댓글 작성된 게시글id 조회 -->
+    <select id="selectArticleIdByCommentId">
+        SELECT article_id
+        FROM COMMENT
+        WHERE comment_id = #{commentId}
+    </select>
+
 </mapper>

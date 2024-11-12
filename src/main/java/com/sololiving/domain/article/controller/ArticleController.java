@@ -39,14 +39,11 @@ public class ArticleController {
     @PostMapping("/posting")
     public ResponseEntity<CreateArticleResponseDto> addArticle(@RequestBody CreateArticleRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        // 회원 유무 검증
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        // 미디어 파일 처리: 클라이언트로부터 임시로 업로드된 파일 URL 리스트를 받는다고 가정
-        List<String> tempMediaUrls = requestDto.getTempMediaUrls(); // 임시 미디어 파일 URL들
-        // ArticleService에서 게시글 생성 및 미디어 파일 처리
+        List<String> tempMediaUrls = requestDto.getTempMediaUrls();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(articleService.addArticle(requestDto, userId, tempMediaUrls));
     }

@@ -2,7 +2,6 @@ package com.sololiving.domain.article.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import com.sololiving.domain.article.vo.ArticleVo;
 
 @Mapper
@@ -37,4 +36,15 @@ public interface ArticleMapper {
 
     // 게시글 작성자 조회
     String selectWriterByArticleId(@Param("articleId") Long articleId);
+
+    // 댓글 수 증가 업데이트
+    void incrementCommentCount(@Param("articleId") Long articleId);
+
+    // 댓글 수 증가 업데이트
+    void decrementCommentCount(@Param("articleId") Long articleId);
+
+    // 미디어 타입 업데이트
+
+    void updateMediaType(@Param("articleId") Long articleId, @Param("mediaType") int mediaType);
+
 }

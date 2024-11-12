@@ -24,13 +24,9 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserService;
 import com.sololiving.global.exception.ResponseMessage;
-import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
-import com.sololiving.global.security.jwt.exception.TokenErrorCode;
-import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
 import com.sololiving.global.security.sms.service.SmsService;
-import com.sololiving.global.util.CookieService;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;

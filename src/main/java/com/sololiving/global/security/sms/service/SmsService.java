@@ -43,6 +43,7 @@ public class SmsService {
         return randomNum;
     }
 
+    @Async("smsTaskExecutor")
     public CompletableFuture<SingleMessageSentResponse> sendSms(String phone) {
         CompletableFuture<SingleMessageSentResponse> future = new CompletableFuture<>();
         try {

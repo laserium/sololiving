@@ -27,12 +27,10 @@ import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
 import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.RandomGenerator;
 
-import ch.qos.logback.core.testUtil.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

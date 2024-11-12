@@ -1,7 +1,5 @@
 package com.sololiving.domain.follow.service;
 
-import com.sololiving.domain.follow.dto.request.FollowRequestDto;
-import com.sololiving.domain.follow.dto.request.UnfollowRequestDto;
 import com.sololiving.domain.follow.exception.FollowErrorCode;
 import com.sololiving.domain.follow.mapper.FollowMapper;
 import com.sololiving.domain.user.exception.UserErrorCode;

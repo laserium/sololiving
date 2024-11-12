@@ -91,5 +91,26 @@
         WHERE article_id = #{articleId}
     </select>
 
+    <!-- 댓글 수 증가 업데이트 -->
+    <update id="incrementCommentCount" parameterType="long">
+        UPDATE ARTICLE
+        SET comment_count = comment_count + 1
+        WHERE article_id = #{articleId}
+    </update>
+    
+    <!-- 댓글 수 감소 업데이트 -->
+    <update id="decrementCommentCount" parameterType="long">
+        UPDATE ARTICLE
+        SET comment_count = CASE WHEN comment_count &gt; 0 THEN comment_count - 1 ELSE 0 END
+        WHERE article_id = #{articleId}
+    </update>
+
+    <!-- 미디어 타입 업데이트 -->
+    <update id="updateMediaType" parameterType="map">
+        UPDATE ARTICLE
+        SET media_type = #{mediaType}
+        WHERE article_id = #{articleId}
+    </update>
+
 
 </mapper>
