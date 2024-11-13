@@ -24,6 +24,7 @@ import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
+import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -42,6 +43,7 @@ public class UserService {
     private static final String USER_NICK_NAME = "익명";
     private final UserAuthService userAuthService;
     private final UserMapper userMapper;
+    private final UserSettingMapper userSettingMapper;
     private final EmailService emailService;
     private final SmsService smsService;
     private final AuthService authService;
@@ -66,6 +68,7 @@ public class UserService {
                 .build();
 
         userMapper.insertUser(user);
+        userSettingMapper.insertUserSetting(requestDto.getUserId());
     }
 
     // 회원탈퇴
@@ -83,6 +86,7 @@ public class UserService {
         String randomEmail = randomId;
 
         userMapper.updateToDeletedUser(userId, randomPassword, randomContact, randomEmail);
+        userSettingMapper.updateToDeletedUser(userId, randomEmail);
     }
 
     // 로그인 시 최근 로그인 시간 변경

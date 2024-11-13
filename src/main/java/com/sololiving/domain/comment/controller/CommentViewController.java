@@ -40,6 +40,7 @@ public class CommentViewController {
             @PathVariable String writer,
             @RequestParam(required = false) String searchContent,
             HttpServletRequest httpServletRequest) {
+
         String userId = SecurityUtil.getCurrentUserId();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(commentViewService.viewUserComments(writer, userId, searchContent));

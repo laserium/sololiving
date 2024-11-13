@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.user.mapper.UserSettingMapper">
+
+    <!-- CREATE -->
+    <insert id="insertUserSetting">
+        INSERT INTO USER_SETTING (user_id)
+        VALUES (#{userId})
+    </insert>
+
+        <!-- 회원탈퇴 -->
+    <update id="updateToDeletedUser">
+        UPDATE USER_SETTING
+        SET user_id = #{email}
+        WHERE user_id = #{userId}
+    </update>
+    
+    <!-- 설정 ON/OFF 통합 메소드 -->
+    <update id="updateSetting">
+        UPDATE USER_SETTING
+        <choose>
+            <when test="settingType == 'push-notification'">
+                SET push_notification_enabled = #{status}
+            </when>
+            <when test="settingType == 'profile-sharing'">
+                SET profile_sharing_enabled = #{status}
+            </when>
+            <when test="settingType == 'article-sharing'">
+                SET article_sharing_enabled = #{status}
+            </when>
+            <when test="settingType == 'comment-sharing'">
+                SET comment_sharing_enabled = #{status}
+            </when>
+            <when test="settingType == 'liked-sharing'">
+                SET liked_sharing_enabled = #{status}
+            </when>
+            <otherwise>
+                <!-- 오류 발생 처리 -->
+                SET push_notification_enabled = push_notification_enabled
+            </otherwise>
+        </choose>
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="selectUserSetting" resultType="com.sololiving.domain.user.dto.response.ViewUserSettingResponseDto">
+        SELECT push_notification_enabled AS pushNotificationEnabled,
+        profile_sharing_enabled AS profileSharingEnabled,
+        article_sharing_enabled AS articleSharingEnabled,
+        comment_sharing_enabled AS commentSharingEnabled,
+        liked_sharing_enabled AS likedSharingEnabled
+        FROM USER_SETTING
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 작성한 게시글 공유 여부 조회 -->
+    <select id="isArticleSharingEnabled" parameterType="string" resultType="boolean">
+        SELECT article_sharing_enabled
+        FROM USER_SETTING
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 작성한 댓글 공유 여부 조회 -->
+    <select id="isCommentSharingEnabled" parameterType="string" resultType="boolean">
+        SELECT comment_sharing_enabled
+        FROM USER_SETTING
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 추천한 게시글 공유 여부 조회 -->
+    <select id="isLikedSharingEnabled" parameterType="string" resultType="boolean">
+        SELECT liked_sharing_enabled
+        FROM USER_SETTING
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>

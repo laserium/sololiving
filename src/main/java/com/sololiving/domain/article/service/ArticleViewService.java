@@ -15,6 +15,8 @@ import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleViewMapper;
 import com.sololiving.domain.article.util.TimeAgoUtil;
 import com.sololiving.domain.media.mapper.MediaMapper;
+import com.sololiving.domain.user.exception.UserSettingErrorCode;
+import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class ArticleViewService {
     private final ArticleService articleService;
     private final ArticleViewMapper articleViewMapper;
     private final MediaMapper mediaMapper;
+    private final UserSettingMapper userSettingMapper;
 
     // 전체 게시글 조회
     public List<ViewAllArticlesListResponseDto> viewAllArticlesList(String userId, String sort) {
@@ -96,6 +99,13 @@ public class ArticleViewService {
     // 사용자가 작성한 게시글 목록 조회
     public List<ViewArticlesListResponseDto> viewUserArticlesList(ArticleSearchRequestDto requestDto) {
         decodeSearchParameters(requestDto);
+
+        // 사용자 설정 필터
+        if (!requestDto.getUserId().equals(requestDto.getWriter())
+                && !userSettingMapper.isArticleSharingEnabled(requestDto.getWriter())) {
+            throw new ErrorException(UserSettingErrorCode.ARTICLE_SHARING_DISABLED);
+        }
+
         List<ViewArticlesListResponseDto> articles = articleViewMapper.selectUserArticles(requestDto);
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
@@ -109,6 +119,13 @@ public class ArticleViewService {
     public List<ViewArticlesListResponseDto> viewUserLikeArticlesList(
             ArticleSearchRequestDto requestDto) {
         decodeSearchParameters(requestDto);
+
+        // 사용자 설정 필터
+        if (!requestDto.getUserId().equals(requestDto.getWriter())
+                && !userSettingMapper.isLikedSharingEnabled(requestDto.getWriter())) {
+            throw new ErrorException(UserSettingErrorCode.LIKED_SHARING_DISABLED);
+        }
+
         List<ViewArticlesListResponseDto> articles = articleViewMapper.selectUserLikeArticles(requestDto);
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
