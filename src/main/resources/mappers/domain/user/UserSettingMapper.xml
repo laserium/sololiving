@@ -55,6 +55,13 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!-- 푸쉬 알림 ON/OFF 여부 조회 -->
+    <select id="isPushNotificationSharingEnabled" parameterType="string" resultType="boolean">
+        SELECT push_notification_enabled
+        FROM USER_SETTING
+        WHERE user_id = #{userId}
+    </select>
+
     <!-- 작성한 게시글 공유 여부 조회 -->
     <select id="isArticleSharingEnabled" parameterType="string" resultType="boolean">
         SELECT article_sharing_enabled

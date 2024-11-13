@@ -13,6 +13,7 @@ import com.sololiving.domain.comment.exception.CommentErrorCode;
 import com.sololiving.domain.comment.mapper.CommentMapper;
 import com.sololiving.domain.comment.vo.CommentVo;
 import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.mapper.UserViewMapper;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -29,6 +30,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final ArticleMapper articleMapper;
     private final UserViewMapper userViewMapper;
+    private final UserSettingMapper userSettingMapper;
 
     // 댓글 작성
     public void addComment(AddCommentRequestDto requestDto, String writer) {
@@ -40,7 +42,9 @@ public class CommentService {
         Long commentId = insertComment(articleId, null, writer, requestDto.getContent());
 
         // 알람 생성
-        alarmService.addCommentAlarm(articleWriter, writer, articleId, commentId);
+        if (userSettingMapper.isPushNotificationSharingEnabled(articleWriter)) {
+            alarmService.addCommentAlarm(articleWriter, writer, articleId, commentId);
+        }
     }
 
     private String validateCommentRequest(Long articleId) {
@@ -73,12 +77,13 @@ public class CommentService {
     }
 
     // 대댓글 작성
-    public void addReComment(AddReCommentRequestDto requestDto, String writer) {
+    public void addReComment(AddReCommentRequestDto requestDto, String reCommentWriter) {
         // 검증
         validateReCommentRequest(requestDto.getArticleId());
 
         Long parentCommentId = requestDto.getParentCommentId();
         Long articleId = requestDto.getArticleId();
+        String commentWriter = commentMapper.selectCommentWriter(parentCommentId);
 
         // 탈퇴한 회원의 댓글인지 확인
         if (commentMapper.selectWriterStatusByCommentId(parentCommentId).equals("WITHDRAW")) {
@@ -86,9 +91,11 @@ public class CommentService {
         }
 
         // 대댓글 저장
-        Long commentId = insertComment(articleId, parentCommentId, writer, requestDto.getContent());
+        Long commentId = insertComment(articleId, parentCommentId, reCommentWriter, requestDto.getContent());
+        if (userSettingMapper.isPushNotificationSharingEnabled(commentWriter)) {
+            alarmService.addReCommentAlarm(commentWriter, reCommentWriter, articleId, commentId);
+        }
 
-        alarmService.addReCommentAlarm(writer, writer, articleId, commentId);
     }
 
     private void validateReCommentRequest(Long articleId) {

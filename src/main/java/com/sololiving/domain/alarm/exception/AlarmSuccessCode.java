@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum AlarmSuccessCode implements SuccessCode {
 
-    SUCCESS_TO_POST_ARTICLE("ALARM_S001", "게시글 작성 성공");
+    SUCCESS_TO_READ_ALARM("ALARM_S001", "알림 읽음 처리 성공"),
+    SUCCESS_TO_DELETE_ALARM("ALARM_S002", "알림 삭제 성공");
 
     private final String code;
     private final String message;
