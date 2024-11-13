@@ -76,6 +76,7 @@ public class ArticleViewController {
         requestDto.setUserId(userId);
         requestDto.setWriter(writer);
         // USER_SETTING 에 article_sharing_enabled 조건 추가
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(articleViewService.viewUserArticlesList(requestDto));
     }

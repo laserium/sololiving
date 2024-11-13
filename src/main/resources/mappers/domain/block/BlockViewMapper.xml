@@ -8,12 +8,13 @@
     <!-- 차단 리스트 조회 -->
     <select id="selectBlockListByUserId" resultType="com.sololiving.domain.block.dto.response.ViewBlockListResponseDto">
         SELECT u.user_id AS targetId,
-               u.nickname AS targetNickname,
-               u.profile_image AS targetProfileImage
+            u.nickname AS targetNickname,
+            upi.image_url AS targetProfileImage
         FROM BLOCK b
         JOIN USER u ON b.blocking_id = u.user_id
+        LEFT JOIN USER_PROFILE_IMAGE upi ON u.user_id = upi.user_id
         WHERE b.blocker_id = #{userId}
     </select>
-    
+        
 
 </mapper>

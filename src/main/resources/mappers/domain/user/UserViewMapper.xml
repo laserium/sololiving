@@ -15,8 +15,13 @@
             created_at AS createdAt,
             updated_at AS updatedAt,
             last_sign_in_at AS lastSignInAt,
-            last_activity_at AS lastActivityAt
         FROM USER
+    </select>
+
+    <select id="isUserDeleted" resultType="boolean" parameterType="string">
+        SELECT CASE WHEN status = 'WITHDRAW' THEN TRUE ELSE FALSE END
+        FROM USER
+        WHERE user_id = #{userId}
     </select>
 
 

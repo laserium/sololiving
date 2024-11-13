@@ -69,4 +69,13 @@
         WHERE comment_id = #{commentId}
     </select>
 
+    <!-- 댓글 아이디로 게시글 상태 조회 -->
+    <select id="selectWriterStatusByCommentId">
+        SELECT u.status
+        FROM COMMENT c
+        JOIN ARTICLE a ON c.article_id = a.article_id
+        JOIN USER u ON a.writer = u.user_id
+        WHERE c.comment_id = #{commentId}
+    </select>
+
 </mapper>

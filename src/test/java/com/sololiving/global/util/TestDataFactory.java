@@ -28,7 +28,6 @@ public class TestDataFactory {
                 .updatedAt(LocalDateTime.now())
                 .userType(UserType.GENERAL)
                 .lastSignInAt(LocalDateTime.now())
-                .lastActivityAt(LocalDateTime.now())
                 .build();
 
     }

@@ -9,6 +9,7 @@ import com.sololiving.domain.comment.exception.CommentErrorCode;
 import com.sololiving.domain.comment.mapper.CommentLikeMapper;
 import com.sololiving.domain.comment.mapper.CommentMapper;
 import com.sololiving.domain.comment.vo.CommentLikeVo;
+import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 
@@ -41,6 +42,10 @@ public class CommentLikeService {
         if (blockMapper.existsBlock(userId, commentMapper.selectCommentWriter(commentId))) {
             throw new ErrorException(BlockErrorCode.ALREADY_BLOCKED);
         }
+        // 탈퇴한 회원의 댓글인지 확인
+        if (commentMapper.selectWriterStatusByCommentId(commentId).equals("WITHDRAW")) {
+            throw new ErrorException(UserErrorCode.IS_DELETED_USER);
+        }
         // 본인이 작성한 댓글에 추천 불가
         if (commentMapper.selectCommentWriter(commentId).equals(userId)) {
             throw new ErrorException(CommentErrorCode.CANNOT_LIKE_MY_COMMENT);
@@ -66,6 +71,10 @@ public class CommentLikeService {
     public void likeCommentCancle(Long commentId, String userId) {
         if (!commentMapper.checkComment(commentId)) {
             throw new ErrorException(CommentErrorCode.NOT_FOUND_COMMENT);
+        }
+        // 탈퇴한 회원의 댓글인지 확인
+        if (commentMapper.selectWriterStatusByCommentId(commentId).equals("WITHDRAW")) {
+            throw new ErrorException(UserErrorCode.IS_DELETED_USER);
         }
         // 추천하지 않았는데 추천 취소할 경우
         if (!commentLikeMapper.hasUserLikedComment(commentId, userId)) {

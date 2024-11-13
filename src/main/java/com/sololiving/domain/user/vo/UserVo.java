@@ -29,14 +29,12 @@ public class UserVo implements UserDetails {
     private Status status;
     private int followersCnt;
     private int followingCnt;
-    private String profileImage;
     private String profileBio;
     private int points;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserType userType;
     private LocalDateTime lastSignInAt;
-    private LocalDateTime lastActivityAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

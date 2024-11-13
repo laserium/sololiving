@@ -84,7 +84,7 @@ public class CommentController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentService.updateComment(commentId, userId, requestDto);
+        commentService.modifyComment(commentId, userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_UPDATE_COMMENT));
 
