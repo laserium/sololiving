@@ -1,4 +1,4 @@
-package com.sololiving.domain.user.exception;
+package com.sololiving.domain.user.exception.user_setting;
 
 import com.sololiving.global.exception.error.ErrorCode;
 

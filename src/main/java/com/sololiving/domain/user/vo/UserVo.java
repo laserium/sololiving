@@ -35,7 +35,6 @@ public class UserVo implements UserDetails {
     private LocalDateTime updatedAt;
     private UserType userType;
     private LocalDateTime lastSignInAt;
-    private LocalDateTime lastActivityAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
