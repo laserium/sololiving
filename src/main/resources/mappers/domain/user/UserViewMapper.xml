@@ -15,7 +15,6 @@
             created_at AS createdAt,
             updated_at AS updatedAt,
             last_sign_in_at AS lastSignInAt,
-            last_activity_at AS lastActivityAt
         FROM USER
     </select>
 

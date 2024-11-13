@@ -24,7 +24,6 @@
             gender = NULL,
             address = NULL,
             birth = NULL,
-            profile_image = NULL,
             profile_bio = NULL,
             status = 'WITHDRAW',
             points = 0

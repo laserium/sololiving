@@ -19,11 +19,13 @@ import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserG
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserNicknameRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserPasswordRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.ValidateUpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.response.UserProfileImageResponseDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
+import com.sololiving.domain.user.mapper.UserProfileMapper;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.GlobalErrorCode;
@@ -41,9 +43,14 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
     private static final String USER_NICK_NAME = "익명";
+    private static final String USER_DEFAULT_PROFILE_IAMGE_URL = "https://sololiving-media-bucket.s3.ap-northeast-2.amazonaws.com/media/profile-image/default/profile_default.jpg";
+    private static final String USER_DEFAULT_PROFILE_IAMGE_NAME = "프로필_이미지";
+    private static final long USER_DEFAULT_PROFILE_IAMGE_SIZE = 2867;
+
     private final UserAuthService userAuthService;
     private final UserMapper userMapper;
     private final UserSettingMapper userSettingMapper;
+    private final UserProfileMapper userProfileMapper;
     private final EmailService emailService;
     private final SmsService smsService;
     private final AuthService authService;
@@ -52,13 +59,16 @@ public class UserService {
     // 회원가입
     public void signUp(SignUpRequestDto requestDto) {
         userAuthService.validateSignUpRequest(requestDto);
-        saveUser(requestDto);
+
+        // 빌더 생성
+        UserVo userVo = createUser(requestDto);
+        UserProfileImageResponseDto userProfileImageResponseDto = createUserProfileImage(requestDto.getUserId());
+        // 저장
+        saveUser(userVo, userProfileImageResponseDto);
     }
 
-    // 회원가입 - 저장
-    @Transactional
-    private void saveUser(SignUpRequestDto requestDto) {
-        UserVo user = UserVo.builder()
+    private UserVo createUser(SignUpRequestDto requestDto) {
+        return UserVo.builder()
                 .userId(requestDto.getUserId())
                 .userPwd(bCryptPasswordEncoder.encode(requestDto.getUserPwd()))
                 .oauth2UserId(requestDto.getOauth2UserId())
@@ -66,9 +76,23 @@ public class UserService {
                 .contact(requestDto.getContact())
                 .email(requestDto.getEmail())
                 .build();
+    }
 
-        userMapper.insertUser(user);
-        userSettingMapper.insertUserSetting(requestDto.getUserId());
+    public UserProfileImageResponseDto createUserProfileImage(String userId) {
+        return UserProfileImageResponseDto.builder()
+                .userId(userId)
+                .imageUrl(USER_DEFAULT_PROFILE_IAMGE_URL)
+                .fileName(USER_DEFAULT_PROFILE_IAMGE_NAME)
+                .fileSize(USER_DEFAULT_PROFILE_IAMGE_SIZE)
+                .build();
+    }
+
+    // 회원가입 - 저장
+    @Transactional
+    private void saveUser(UserVo userVo, UserProfileImageResponseDto userProfileImageResponseDto) {
+        userMapper.insertUser(userVo);
+        userSettingMapper.insertUserSetting(userVo.getUserId());
+        userProfileMapper.insertUserProfileImage(userProfileImageResponseDto);
     }
 
     // 회원탈퇴

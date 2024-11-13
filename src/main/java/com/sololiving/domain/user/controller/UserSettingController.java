@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.user.dto.response.ViewUserSettingResponseDto;
 import com.sololiving.domain.user.exception.UserErrorCode;
-import com.sololiving.domain.user.exception.UserSettingSuccessCode;
+import com.sololiving.domain.user.exception.user_setting.UserSettingSuccessCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.service.UserSettingService;
 import com.sololiving.global.exception.ResponseMessage;

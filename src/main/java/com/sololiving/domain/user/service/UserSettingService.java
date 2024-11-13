@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.user.dto.response.ViewUserSettingResponseDto;
-import com.sololiving.domain.user.exception.UserSettingErrorCode;
-import com.sololiving.domain.user.exception.UserSettingSuccessCode;
+import com.sololiving.domain.user.exception.user_setting.UserSettingErrorCode;
+import com.sololiving.domain.user.exception.user_setting.UserSettingSuccessCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.global.exception.error.ErrorException;
 

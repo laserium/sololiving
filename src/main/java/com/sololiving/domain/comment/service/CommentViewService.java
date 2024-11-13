@@ -9,7 +9,7 @@ import com.sololiving.domain.comment.dto.response.ViewCommentsResponseDto;
 import com.sololiving.domain.comment.dto.response.ViewUsersCommentsResponseDto;
 import com.sololiving.domain.comment.mapper.CommentViewMapper;
 import com.sololiving.domain.user.exception.UserErrorCode;
-import com.sololiving.domain.user.exception.UserSettingErrorCode;
+import com.sololiving.domain.user.exception.user_setting.UserSettingErrorCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.error.ErrorException;
