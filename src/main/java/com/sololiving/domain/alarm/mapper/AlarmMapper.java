@@ -32,4 +32,7 @@ public interface AlarmMapper {
 
     // 알림 삭제(DELETE)
     void deleteAlarmById(@Param("alarmId") Long alarmId);
+
+    // 새로운 알림 개수 조회
+    int countUnreadAlarms(@Param("userId") String userId);
 }

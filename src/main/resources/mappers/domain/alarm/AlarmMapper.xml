@@ -81,4 +81,11 @@
         WHERE alarm_id = #{alarmId}
     </delete>
 
+    <!-- 새로운 알림 개수 조회 -->
+    <select id="countUnreadAlarms" resultType="int">
+        SELECT COUNT(*)
+        FROM ALARM
+        WHERE user_id = #{userId} AND is_read = false
+    </select>
+
 </mapper>

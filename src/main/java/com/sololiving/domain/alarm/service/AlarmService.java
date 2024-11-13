@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sololiving.domain.alarm.dto.request.CommentAlarmRequestDto;
 import com.sololiving.domain.alarm.dto.request.ReCommentAlarmRequestDto;
 import com.sololiving.domain.alarm.dto.response.ViewAlarmListResponseDto;
+import com.sololiving.domain.alarm.dto.response.ViewNewAlarmCountResponseDto;
 import com.sololiving.domain.alarm.exception.AlarmErrorCode;
 import com.sololiving.domain.alarm.mapper.AlarmMapper;
 import com.sololiving.global.exception.error.ErrorException;
@@ -80,6 +81,12 @@ public class AlarmService {
             throw new ErrorException(AlarmErrorCode.NO_PERMISSION_TO_VIEW_ALARM);
         }
         alarmMapper.deleteAlarmById(alarmId);
+    }
+
+    // 새로운 알림 개수 조회
+    public ViewNewAlarmCountResponseDto getAlarmCount(String userId) {
+        return ViewNewAlarmCountResponseDto.builder()
+                .alarmCount(alarmMapper.countUnreadAlarms(userId)).build();
     }
 
 }

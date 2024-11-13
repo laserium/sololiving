@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.alarm.dto.response.ViewAlarmListResponseDto;
+import com.sololiving.domain.alarm.dto.response.ViewNewAlarmCountResponseDto;
 import com.sololiving.domain.alarm.exception.AlarmSuccessCode;
 import com.sololiving.domain.alarm.service.AlarmService;
 import com.sololiving.domain.user.exception.UserErrorCode;
@@ -65,6 +66,17 @@ public class AlarmController {
         alarmService.removeAlarm(alarmId, userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(AlarmSuccessCode.SUCCESS_TO_DELETE_ALARM));
+    }
+
+    // 새로운 알림 개수 조회
+    @GetMapping("/count")
+    public ResponseEntity<ViewNewAlarmCountResponseDto> getAlarmCount(HttpServletRequest httpServletRequest) {
+        String userId = SecurityUtil.getCurrentUserId();
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(alarmService.getAlarmCount(userId));
     }
 
 }
