@@ -1,5 +1,7 @@
 package com.sololiving.domain.user.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,12 +23,11 @@ public class UserProfileService {
 
         if (file == null) {
             userProfileMapper.updateUserProfileImage(userService.createUserProfileImage(userId));
-
         } else {
-            // S3 경로 설정
             String filePath = "media/profile-image/" + userId;
 
-            // S3에 이미지 파일 업로드
+            deleteExistingProfileImage(userId);
+
             String imageUrl;
             try {
                 imageUrl = s3Uploader.uploadFileToS3(file, filePath);
@@ -34,7 +35,6 @@ public class UserProfileService {
                 throw new RuntimeException("UPLOAD PROFILE IMAGE TO S3 : FAILED", e);
             }
 
-            // 이미지 메타데이터 생성
             UserProfileImageResponseDto profileImageDto = UserProfileImageResponseDto.builder()
                     .userId(userId)
                     .imageUrl(imageUrl)
@@ -42,10 +42,20 @@ public class UserProfileService {
                     .fileSize(file.getSize())
                     .build();
 
-            // DB에 프로필 이미지 정보 저장
             userProfileMapper.updateUserProfileImage(profileImageDto);
         }
+    }
 
+    private void deleteExistingProfileImage(String userId) {
+        String filePath = "media/profile-image/" + userId + "/";
+        try {
+            List<String> fileKeys = s3Uploader.listFilesInDirectory(filePath);
+            for (String key : fileKeys) {
+                s3Uploader.deleteProfileImageS3(key);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete existing profile image from S3", e);
+        }
     }
 
     @Transactional

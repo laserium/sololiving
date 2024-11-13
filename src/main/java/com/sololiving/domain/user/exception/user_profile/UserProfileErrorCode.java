@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum UserProfileErrorCode implements ErrorCode {
-    INVALID_SETTING_TYPE("USPR_E001", "설정 명칭이 유효하지 않습니다.");
+    INVALID_SETTING_TYPE("USER_PROFILE_E001", "설정 명칭이 유효하지 않습니다.");
 
     private final String code;
     private final String message;
