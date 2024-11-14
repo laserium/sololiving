@@ -8,7 +8,6 @@ import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
 import com.sololiving.domain.user.enums.Status;
-import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserAuthMapper;
 import com.sololiving.domain.user.vo.UserVo;

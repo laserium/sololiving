@@ -22,7 +22,6 @@ import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
 import com.sololiving.domain.user.dto.response.ViewUserProfileImageResponseDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
-import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.mapper.UserProfileMapper;

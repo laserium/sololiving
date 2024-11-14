@@ -1,7 +1,5 @@
 package com.sololiving.domain.article.service;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.stereotype.Service;

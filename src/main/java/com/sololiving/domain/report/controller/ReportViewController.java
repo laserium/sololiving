@@ -5,14 +5,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.report.dto.request.ViewReportRequestDto;
 import com.sololiving.domain.report.dto.response.ViewReportListResponseDto;
-import com.sololiving.domain.report.service.ReportService;
 import com.sololiving.domain.report.service.ReportViewService;
 import com.sololiving.global.aop.admin.AdminOnly;
-import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
