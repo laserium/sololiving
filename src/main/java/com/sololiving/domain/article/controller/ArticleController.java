@@ -8,7 +8,6 @@ import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
 import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleService;
-import com.sololiving.domain.comment.service.CommentService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
@@ -35,7 +34,6 @@ public class ArticleController {
 
     private final UserAuthService userAuthService;
     private final ArticleService articleService;
-    private final CommentService commentService;
 
     // 게시글 작성
     @PostMapping("/posting")
