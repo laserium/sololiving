@@ -39,6 +39,15 @@
             c.writer,
             c.content,
             c.like_cnt AS likeCnt,
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM COMMENT_LIKE cl
+                    WHERE cl.comment_id = c.comment_id
+                    AND cl.user_id = #{userId}
+                ) THEN TRUE
+                ELSE FALSE
+            END AS isLiked  <!-- 댓글 추천 여부 확인 -->
             c.created_at AS createdAt,
             c.updated_at AS updatedAt,
             c.status

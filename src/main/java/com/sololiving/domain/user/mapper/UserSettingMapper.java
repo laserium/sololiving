@@ -27,7 +27,7 @@ public interface UserSettingMapper {
     boolean isProfileSharingEnabled(@Param("userId") String userId);
 
     // 작성한 게시글 공유 여부 조회
-    boolean isArticleSharingEnabled(@Param("userId") String userId);
+    Boolean isArticleSharingEnabled(@Param("userId") String userId);
 
     // 작성한 댓글 공유 여부 조회
     boolean isCommentSharingEnabled(@Param("userId") String userId);

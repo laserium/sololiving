@@ -15,6 +15,7 @@ import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleViewMapper;
 import com.sololiving.domain.article.util.TimeAgoUtil;
 import com.sololiving.domain.media.mapper.MediaMapper;
+import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.exception.user_setting.UserSettingErrorCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.global.exception.error.ErrorException;

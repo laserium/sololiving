@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
 import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
 import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
+import com.sololiving.domain.article.event.ArticleCreatedEvent;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleVo;
@@ -48,21 +51,35 @@ public class ArticleService {
     private final MediaService mediaService;
     private final S3Uploader s3Uploader;
     private final CommentMapper commentMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public CreateArticleResponseDto createArticle(CreateArticleRequestDto requestDto, String userId,
             List<String> tempMediaUrls) {
-        if (requestDto == null) {
-            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        ArticleVo articleVo = buildArticle(requestDto, userId);
+        articleMapper.insertArticle(articleVo);
+
+        // 미디어 파일 처리 및 mediaTypeBitmask 결정
+        if (tempMediaUrls != null && !tempMediaUrls.isEmpty()) {
+            int mediaTypeBitmask = mediaUploadService.attachFilesToArticle(articleVo.getArticleId(), tempMediaUrls);
+            articleMapper.updateMediaType(articleVo.getArticleId(), mediaTypeBitmask);
         }
-        CreateArticleResponseDto responseDto = addArticle(requestDto, userId, tempMediaUrls);
+
+        // AI 카테고리일 경우 이벤트 발행 (댓글 생성을 위해)
         if (requestDto.getCategoryCode().equals(AI_CATEGORY_NAME)) {
-            generateAIComment(requestDto.getContent(), responseDto.getArticleId());
+            eventPublisher
+                    .publishEvent(new ArticleCreatedEvent(this, articleVo.getArticleId(), requestDto.getContent()));
         }
-        return responseDto;
+
+        return CreateArticleResponseDto.builder().articleId(articleVo.getArticleId()).build();
     }
 
-    // CHAT GPT 자동 답변
-    @Async("AiCommentTaskExecutor")
+    @EventListener
+    @Async("AiCommentTaskExecutor") // 비동기 실행
+    public void handleArticleCreatedEvent(ArticleCreatedEvent event) {
+        generateAIComment(event.getContent(), event.getArticleId());
+    }
+
     private void generateAIComment(String content, Long articleId) {
         String aiComment = callAiApi(content);
         insertAIComment(aiComment, articleId);
@@ -78,16 +95,15 @@ public class ArticleService {
                 .build();
 
         commentMapper.insertComment(aiCommentVo);
+        articleMapper.incrementCommentCount(articleId);
     }
 
     private String callAiApi(String prompt) {
         String url = "https://api.openai.com/v1/chat/completions";
 
-        // requestBody 설정
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "ft:gpt-4o-mini-2024-07-18:personal::ASKjlLbb");
 
-        // 'messages' 필드에 사용자의 메시지를 넣기 위해 List 생성
         List<Map<String, String>> messages = new ArrayList<>();
         Map<String, String> userMessage = new HashMap<>();
         userMessage.put("role", "user");

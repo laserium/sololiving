@@ -8,10 +8,8 @@ import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
 import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleService;
-import com.sololiving.domain.comment.service.CommentService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
-import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.SecurityUtil;
@@ -45,7 +43,6 @@ public class ArticleController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-
         List<String> tempMediaUrls = requestDto.getTempMediaUrls();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(articleService.createArticle(requestDto, userId, tempMediaUrls));

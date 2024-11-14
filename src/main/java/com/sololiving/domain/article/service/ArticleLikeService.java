@@ -83,7 +83,7 @@ public class ArticleLikeService {
             throw new ErrorException(ArticleErrorCode.CANNOT_LIKE_MY_ARTICLE);
         }
         // 이미 추천한 경우 다시 추천 불가
-        if (articleLikeMapper.hasUserLikedArticle(articleId, userId)) {
+        if (!articleLikeMapper.hasUserLikedArticle(articleId, userId)) {
             throw new ErrorException(ArticleErrorCode.CANNOT_LIKE_DUPLICATE);
         }
     }

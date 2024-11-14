@@ -76,6 +76,10 @@ public class CommentLikeService {
         if (commentMapper.selectWriterStatusByCommentId(commentId).equals("WITHDRAW")) {
             throw new ErrorException(UserErrorCode.IS_DELETED_USER);
         }
+        // 본인이 작성한 댓글에 추천 불가
+        if (commentMapper.selectCommentWriter(commentId).equals(userId)) {
+            throw new ErrorException(CommentErrorCode.CANNOT_DISLIKE_MY_COMMENT);
+        }
         // 추천하지 않았는데 추천 취소할 경우
         if (!commentLikeMapper.hasUserLikedComment(commentId, userId)) {
             throw new ErrorException(CommentErrorCode.NOT_LIKED_COMMENT);
