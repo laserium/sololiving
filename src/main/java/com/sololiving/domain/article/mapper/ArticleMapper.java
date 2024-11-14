@@ -40,7 +40,7 @@ public interface ArticleMapper {
     // 댓글 수 증가 업데이트
     void incrementCommentCount(@Param("articleId") Long articleId);
 
-    // 댓글 수 증가 업데이트
+    // 댓글 수 감소 업데이트
     void decrementCommentCount(@Param("articleId") Long articleId);
 
     // 미디어 타입 업데이트

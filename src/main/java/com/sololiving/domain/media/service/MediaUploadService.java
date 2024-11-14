@@ -42,7 +42,7 @@ public class MediaUploadService {
             MediaVo mediaVo = MediaVo.builder()
                     .articleId(articleId)
                     .mediaUrl(newFilePath)
-                    .mediaType(mediaType)
+                    .mediaType(mediaType.getBitValue())
                     .mediaName(extractFileName(newS3FileKey))
                     .fileSize(getFileSize(newS3FileKey))
                     .build();

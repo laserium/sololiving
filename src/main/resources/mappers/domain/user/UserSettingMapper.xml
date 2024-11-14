@@ -55,39 +55,54 @@
         WHERE user_id = #{userId}
     </select>
 
-    <!-- 푸쉬 알림 ON/OFF 여부 조회 -->
-    <select id="isPushNotificationSharingEnabled" parameterType="string" resultType="boolean">
-        SELECT push_notification_enabled
-        FROM USER_SETTING
-        WHERE user_id = #{userId}
-    </select>
+<!-- 푸쉬 알림 ON/OFF 여부 조회 -->
+<select id="isPushNotificationSharingEnabled" parameterType="string" resultType="boolean">
+    SELECT COALESCE(
+        (SELECT push_notification_enabled
+         FROM USER_SETTING
+         WHERE user_id = #{userId}), 
+        FALSE
+    ) AS pushNotificationEnabled
+</select>
 
-    <!-- 프로필 공유 여부 조회 -->
-    <select id="isProfileSharingEnabled" parameterType="string" resultType="boolean">
-        SELECT profile_sharing_enabled
-        FROM USER_SETTING
-        WHERE user_id = #{userId}
-    </select>
+<!-- 프로필 공유 여부 조회 -->
+<select id="isProfileSharingEnabled" parameterType="string" resultType="boolean">
+    SELECT COALESCE(
+        (SELECT profile_sharing_enabled
+         FROM USER_SETTING
+         WHERE user_id = #{userId}), 
+        FALSE
+    ) AS profileSharingEnabled
+</select>
 
-    <!-- 작성한 게시글 공유 여부 조회 -->
-    <select id="isArticleSharingEnabled" parameterType="string" resultType="boolean">
-        SELECT article_sharing_enabled
-        FROM USER_SETTING
-        WHERE user_id = #{userId}
-    </select>
+<!-- 작성한 게시글 공유 여부 조회 -->
+<select id="isArticleSharingEnabled" parameterType="string" resultType="boolean">
+    SELECT COALESCE(
+        (SELECT article_sharing_enabled
+         FROM USER_SETTING
+         WHERE user_id = #{userId}), 
+        FALSE
+    ) AS articleSharingEnabled
+</select>
 
-    <!-- 작성한 댓글 공유 여부 조회 -->
-    <select id="isCommentSharingEnabled" parameterType="string" resultType="boolean">
-        SELECT comment_sharing_enabled
-        FROM USER_SETTING
-        WHERE user_id = #{userId}
-    </select>
+<!-- 작성한 댓글 공유 여부 조회 -->
+<select id="isCommentSharingEnabled" parameterType="string" resultType="boolean">
+    SELECT COALESCE(
+        (SELECT comment_sharing_enabled
+         FROM USER_SETTING
+         WHERE user_id = #{userId}), 
+        FALSE
+    ) AS commentSharingEnabled
+</select>
 
-    <!-- 추천한 게시글 공유 여부 조회 -->
-    <select id="isLikedSharingEnabled" parameterType="string" resultType="boolean">
-        SELECT liked_sharing_enabled
-        FROM USER_SETTING
-        WHERE user_id = #{userId}
-    </select>
+<!-- 추천한 게시글 공유 여부 조회 -->
+<select id="isLikedSharingEnabled" parameterType="string" resultType="boolean">
+    SELECT COALESCE(
+        (SELECT liked_sharing_enabled
+         FROM USER_SETTING
+         WHERE user_id = #{userId}), 
+        FALSE
+    ) AS likedSharingEnabled
+</select>
 
 </mapper>

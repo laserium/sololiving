@@ -1,20 +1,32 @@
 package com.sololiving.domain.article.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
 import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
 import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
+import com.sololiving.domain.article.event.ArticleCreatedEvent;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleVo;
+import com.sololiving.domain.comment.mapper.CommentMapper;
+import com.sololiving.domain.comment.vo.CommentVo;
 import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.media.service.MediaService;
 import com.sololiving.domain.media.service.MediaUploadService;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.aws.S3Uploader;
 
@@ -26,16 +38,101 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ArticleService {
 
+    private final WebClient.Builder webClientBuilder;
+    private static final String AI_CATEGORY_NAME = "ai";
+
+    @Value("${chatgpt.api.key}")
+    private String chatGptApiKey;
+
     private final RedisTemplate<String, String> redisTemplate;
     private final ArticleMapper articleMapper;
     private final MediaMapper mediaMapper;
     private final MediaUploadService mediaUploadService;
     private final MediaService mediaService;
     private final S3Uploader s3Uploader;
+    private final CommentMapper commentMapper;
+    private final ApplicationEventPublisher eventPublisher;
+
+    @Transactional
+    public CreateArticleResponseDto createArticle(CreateArticleRequestDto requestDto, String userId,
+            List<String> tempMediaUrls) {
+        ArticleVo articleVo = buildArticle(requestDto, userId);
+        articleMapper.insertArticle(articleVo);
+
+        // 미디어 파일 처리 및 mediaTypeBitmask 결정
+        if (tempMediaUrls != null && !tempMediaUrls.isEmpty()) {
+            int mediaTypeBitmask = mediaUploadService.attachFilesToArticle(articleVo.getArticleId(), tempMediaUrls);
+            articleMapper.updateMediaType(articleVo.getArticleId(), mediaTypeBitmask);
+        }
+
+        // AI 카테고리일 경우 이벤트 발행 (댓글 생성을 위해)
+        if (requestDto.getCategoryCode().equals(AI_CATEGORY_NAME)) {
+            eventPublisher
+                    .publishEvent(new ArticleCreatedEvent(this, articleVo.getArticleId(), requestDto.getContent()));
+        }
+
+        return CreateArticleResponseDto.builder().articleId(articleVo.getArticleId()).build();
+    }
+
+    @EventListener
+    @Async("AiCommentTaskExecutor") // 비동기 실행
+    public void handleArticleCreatedEvent(ArticleCreatedEvent event) {
+        generateAIComment(event.getContent(), event.getArticleId());
+    }
+
+    private void generateAIComment(String content, Long articleId) {
+        String aiComment = callAiApi(content);
+        insertAIComment(aiComment, articleId);
+    }
+
+    @Transactional
+    private void insertAIComment(String aiComment, Long articleId) {
+        CommentVo aiCommentVo = CommentVo.builder()
+                .articleId(articleId)
+                .parentCommentId(null)
+                .writer("Smart_AI_Bot")
+                .content(aiComment)
+                .build();
+
+        commentMapper.insertComment(aiCommentVo);
+        articleMapper.incrementCommentCount(articleId);
+    }
+
+    private String callAiApi(String prompt) {
+        String url = "https://api.openai.com/v1/chat/completions";
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", "ft:gpt-4o-mini-2024-07-18:personal::ASKjlLbb");
+
+        List<Map<String, String>> messages = new ArrayList<>();
+        Map<String, String> userMessage = new HashMap<>();
+        userMessage.put("role", "user");
+        userMessage.put("content", prompt);
+        messages.add(userMessage);
+
+        requestBody.put("messages", messages);
+        requestBody.put("max_tokens", 500);
+        requestBody.put("temperature", 0.7);
+
+        return webClientBuilder.build()
+                .post()
+                .uri(url)
+                .header("Authorization", "Bearer " + chatGptApiKey)
+                .header("Content-Type", "application/json")
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .map(responseBody -> {
+                    List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
+                    Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+                    return (String) message.get("content");
+                })
+                .block();
+    }
 
     // 게시글 작성
     @Transactional
-    public CreateArticleResponseDto addArticle(CreateArticleRequestDto requestDto, String userId,
+    private CreateArticleResponseDto addArticle(CreateArticleRequestDto requestDto, String userId,
             List<String> tempMediaUrls) {
         ArticleVo articleVo = buildArticle(requestDto, userId);
         articleMapper.insertArticle(articleVo);

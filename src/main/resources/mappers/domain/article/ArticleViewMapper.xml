@@ -52,6 +52,19 @@
         <include refid="commentStatusFilter" />
         GROUP BY article_id
     </sql>
+    
+    <!-- 추천 여부 확인 -->
+    <sql id="isLikedCondition">
+        CASE 
+            WHEN EXISTS (
+                SELECT 1
+                FROM ARTICLE_LIKE al
+                WHERE al.article_id = a.article_id
+                AND al.user_id = #{userId}
+            ) THEN TRUE
+            ELSE FALSE
+        END
+    </sql>
 
         <!-- 검색 조건 필터 --> 
     <sql id="articleSearchFilter">
@@ -140,6 +153,7 @@
             a.content,
             a.category_code AS categoryCode,
             a.like_cnt AS likeCnt,
+            <include refid="isLikedCondition" /> AS isLiked,
             a.view_cnt AS viewCnt,
             a.score,
             a.media_type AS mediaType,

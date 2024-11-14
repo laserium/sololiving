@@ -20,6 +20,7 @@ public class ViewArticleDetailsResponseDto {
     private String content;
     private String categoryCode;
     private int likeCnt;
+    private boolean isLiked;
     private int viewCnt;
     private int score;
     private int commentCount;
