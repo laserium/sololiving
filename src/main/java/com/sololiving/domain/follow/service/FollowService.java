@@ -6,7 +6,7 @@ import com.sololiving.domain.follow.mapper.FollowMapper;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.service.UserAuthService;
-import com.sololiving.global.aop.CheckBlockedUser;
+import com.sololiving.global.aop.block.CheckBlockedUser;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import lombok.RequiredArgsConstructor;

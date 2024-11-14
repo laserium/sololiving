@@ -167,11 +167,6 @@ public class UserAuthService {
         userAuthMapper.updatePassword(bCryptPasswordEncoder.encode(tempPassword), userVo.getUserId());
     }
 
-    // userId 로 userType 확인
-    public UserType selectUserTypeByUserId(String userId) {
-        return userAuthMapper.selectUserTypeByUserId(userId);
-    }
-
     // 비밀번호 검증
     public boolean verifyUserPassword(String userPwd, String userId) {
         if (bCryptPasswordEncoder.matches(userPwd, userAuthMapper.selectPasswordByUserId(userId))) {
