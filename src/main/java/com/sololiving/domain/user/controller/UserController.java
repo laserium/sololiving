@@ -28,8 +28,6 @@ import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
-import com.sololiving.global.security.sms.service.SmsRedisService;
-import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,8 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
     private final UserService userService;
-    private final SmsRedisService smsRedisService;
-    private final SmsService smsService;
 
     // 회원가입
     @PostMapping("/signup")
