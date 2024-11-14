@@ -26,7 +26,6 @@ import com.sololiving.domain.comment.vo.CommentVo;
 import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.media.service.MediaService;
 import com.sololiving.domain.media.service.MediaUploadService;
-import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.aws.S3Uploader;
 

@@ -7,8 +7,9 @@ import lombok.Getter;
 @Getter
 public enum UserType {
     ADMIN("관리자"),
+    MANAGER("매니저"),
     GENERAL("일반");
 
     private final String description;
 
-}   
+}
