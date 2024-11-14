@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserProfileImageResponseDto {
+public class ViewUserProfileImageResponseDto {
     private String userId;
     private String imageUrl;
     private String fileName;

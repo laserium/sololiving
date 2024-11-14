@@ -3,6 +3,8 @@ package com.sololiving.global.util.aws;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,7 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.sololiving.domain.media.exception.MediaErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 
@@ -73,7 +78,6 @@ public class S3Uploader {
     public void deleteS3(String filePath) throws Exception {
         try {
             String key = filePath.substring(filePath.indexOf("/", 8) + 1); // 폴더/파일.확장자
-            log.info(key);
             try {
                 amazonS3Client.deleteObject(bucket, key);
             } catch (AmazonServiceException e) {
@@ -84,6 +88,17 @@ public class S3Uploader {
             log.info(exception.getMessage());
         }
         log.info("[S3Uploader] : S3에 있는 파일 삭제");
+    }
+
+    // Delete a specific file from S3
+    public void deleteProfileImageS3(String fileKey) throws Exception {
+        try {
+            amazonS3Client.deleteObject(bucket, fileKey);
+            log.info("[S3Uploader] : Deleted file from S3 - {}", fileKey);
+        } catch (AmazonServiceException e) {
+            log.error("Failed to delete file from S3 - {}", fileKey, e);
+            throw new RuntimeException("Failed to delete file from S3", e);
+        }
     }
 
     // 로컬에 저장된 파일 삭제
@@ -133,6 +148,26 @@ public class S3Uploader {
     // S3에서 파일 크기를 반환하는 메소드 (옵션)
     public long getFileSize(String fileKey) {
         return amazonS3Client.getObjectMetadata(bucket, fileKey).getContentLength();
+    }
+
+    public List<String> listFilesInDirectory(String directoryPath) {
+        List<String> fileKeys = new ArrayList<>();
+        try {
+            ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucket).withPrefix(directoryPath);
+            ListObjectsV2Result result;
+
+            do {
+                result = amazonS3Client.listObjectsV2(req);
+                for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
+                    fileKeys.add(objectSummary.getKey());
+                }
+                req.setContinuationToken(result.getNextContinuationToken());
+            } while (result.isTruncated());
+
+        } catch (AmazonServiceException e) {
+            throw new RuntimeException("Failed to list files in directory: " + directoryPath, e);
+        }
+        return fileKeys;
     }
 
 }

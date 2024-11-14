@@ -18,8 +18,8 @@ import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserE
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserGenderRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserNicknameRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserPasswordRequestDto;
-import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.ValidateUpdateUserContactRequestDto;
-import com.sololiving.domain.user.dto.response.UserProfileImageResponseDto;
+import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
+import com.sololiving.domain.user.dto.response.ViewUserProfileImageResponseDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.enums.UserType;
@@ -31,6 +31,7 @@ import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
+import com.sololiving.global.security.sms.service.SmsRedisService;
 import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.RandomGenerator;
 
@@ -53,6 +54,7 @@ public class UserService {
     private final UserProfileMapper userProfileMapper;
     private final EmailService emailService;
     private final SmsService smsService;
+    private final SmsRedisService smsRedisService;
     private final AuthService authService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -62,7 +64,7 @@ public class UserService {
 
         // 빌더 생성
         UserVo userVo = createUser(requestDto);
-        UserProfileImageResponseDto userProfileImageResponseDto = createUserProfileImage(requestDto.getUserId());
+        ViewUserProfileImageResponseDto userProfileImageResponseDto = createUserProfileImage(requestDto.getUserId());
         // 저장
         saveUser(userVo, userProfileImageResponseDto);
     }
@@ -78,8 +80,8 @@ public class UserService {
                 .build();
     }
 
-    public UserProfileImageResponseDto createUserProfileImage(String userId) {
-        return UserProfileImageResponseDto.builder()
+    public ViewUserProfileImageResponseDto createUserProfileImage(String userId) {
+        return ViewUserProfileImageResponseDto.builder()
                 .userId(userId)
                 .imageUrl(USER_DEFAULT_PROFILE_IAMGE_URL)
                 .fileName(USER_DEFAULT_PROFILE_IAMGE_NAME)
@@ -89,7 +91,7 @@ public class UserService {
 
     // 회원가입 - 저장
     @Transactional
-    private void saveUser(UserVo userVo, UserProfileImageResponseDto userProfileImageResponseDto) {
+    private void saveUser(UserVo userVo, ViewUserProfileImageResponseDto userProfileImageResponseDto) {
         userMapper.insertUser(userVo);
         userSettingMapper.insertUserSetting(userVo.getUserId());
         userProfileMapper.insertUserProfileImage(userProfileImageResponseDto);
@@ -165,20 +167,23 @@ public class UserService {
     }
 
     // 회원 연락처 변경 전 인증 메일 전송
-    public String validateUpdateUserContact(String userId,
-            ValidateUpdateUserContactRequestDto requestDto) {
-        if (requestDto.getContact() == null) {
-            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
-        }
-        String contact = requestDto.getContact();
+    public ValidateUserContactResponseDto checkUpdateUserContact(String userId, String contact) {
+        validateUpdateUserContact(userId, contact);
+        smsService.sendSms(contact);
+        return ValidateUserContactResponseDto.builder()
+                .code(smsRedisService.getSmsCertification(contact))
+                .build();
+
+    }
+
+    private void validateUpdateUserContact(String userId,
+            String contact) {
         if (contact.length() != 11) {
             throw new ErrorException(UserErrorCode.CONTACT_LENGTH_FAILED);
         }
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        log.info(contact);
-        return contact;
     }
 
     public void updateUserContact(String userId, UpdateUserContactRequestDto requestDto) {

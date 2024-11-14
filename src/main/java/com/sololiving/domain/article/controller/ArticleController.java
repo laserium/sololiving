@@ -72,4 +72,22 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_DELETE_ARTICLE));
     }
+
+    // AI 댓글 포함 게시글 작성
+    @PostMapping("/posting/ai")
+    public ResponseEntity<CreateArticleResponseDto> addArticleWithAI(@RequestBody CreateArticleRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
+        // 회원 유무 검증
+        String userId = SecurityUtil.getCurrentUserId();
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
+        List<String> tempMediaUrls = requestDto.getTempMediaUrls();
+
+        CreateArticleResponseDto responseDto = articleService.addArticle(requestDto, userId, tempMediaUrls);
+
+        // commentService.generateAIComment(responseDto.getArticleId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 }

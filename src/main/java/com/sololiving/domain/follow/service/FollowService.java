@@ -1,8 +1,10 @@
 package com.sololiving.domain.follow.service;
 
+import com.sololiving.domain.alarm.service.AlarmService;
 import com.sololiving.domain.follow.exception.FollowErrorCode;
 import com.sololiving.domain.follow.mapper.FollowMapper;
 import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.aop.CheckBlockedUser;
 import com.sololiving.global.exception.GlobalErrorCode;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class FollowService {
 
     private final UserAuthService userAuthService;
+    private final UserSettingMapper userSettingMapper;
+    private final AlarmService alarmService;
     private final FollowMapper followMapper;
 
     // 팔로우 하기
@@ -24,6 +28,7 @@ public class FollowService {
     public void follow(String userId, String targetId) {
         validateFollowRequest(userId, targetId);
         insertFollow(userId, targetId);
+
     }
 
     private void validateFollowRequest(String userId, String targetId) {
@@ -48,6 +53,11 @@ public class FollowService {
     @Transactional
     private void insertFollow(String userId, String targetId) {
         followMapper.insertFollow(userId, targetId);
+
+        if (userSettingMapper.isPushNotificationSharingEnabled(targetId)) {
+            alarmService.addFollowAlarm(targetId, userId);
+        }
+
     }
 
     // 팔로우 끊기
