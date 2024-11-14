@@ -113,7 +113,7 @@ public class UserController {
 
     // 회원 연락처 변경
     @PatchMapping("/contact")
-    public ResponseEntity<?> updateUserContact(@RequestBody UpdateUserContactRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> updateUserContact(@RequestBody UpdateUserContactRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         userService.updateUserContact(userId, requestDto);

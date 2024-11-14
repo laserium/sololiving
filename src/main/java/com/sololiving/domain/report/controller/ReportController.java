@@ -1,10 +1,11 @@
-package com.sololiving.domain.article.controller;
+package com.sololiving.domain.report.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sololiving.domain.article.exception.ArticleSuccessCode;
-import com.sololiving.domain.article.service.ArticleLikeService;
+import com.sololiving.domain.report.dto.request.ReportRequestDto;
+import com.sololiving.domain.report.exception.ReportSuccessCode;
+import com.sololiving.domain.report.service.ReportService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
@@ -20,39 +21,40 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/article")
-public class ArticleLikeController {
+@RequestMapping("/report")
+public class ReportController {
 
+    private final ReportService reportService;
     private final UserAuthService userAuthService;
-    private final ArticleLikeService articleLikeService;
 
-    // 게시글 추천
-    @PostMapping("/{articleId}/like")
-    public ResponseEntity<SuccessResponse> likeArticle(@PathVariable Long articleId,
+    // 신고 하기
+    @PostMapping("")
+    public ResponseEntity<SuccessResponse> createReport(@RequestBody ReportRequestDto reportRequestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        articleLikeService.likeArticle(articleId, userId);
+        reportService.addReport(reportRequestDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_LIKE_ARTICLE));
+                .body(ResponseMessage.createSuccessResponse(ReportSuccessCode.REPORT_SUCCESS));
     }
 
-    // 게시글 추천 취소
-    @DeleteMapping("{articleId}/like")
-    public ResponseEntity<SuccessResponse> likeArticleCancle(@PathVariable Long articleId,
+    // 신고 기록 삭제
+    @DeleteMapping("/{reportId}")
+    public ResponseEntity<SuccessResponse> removeReport(@PathVariable Long reportId,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        articleLikeService.likeArticleCancle(articleId, userId);
+        reportService.removeReport(userId, reportId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_CANCLE_LIKE_ARTICLE));
+                .body(ResponseMessage.createSuccessResponse(ReportSuccessCode.SUCCESS_TO_DELETE_REPORT));
     }
 
 }

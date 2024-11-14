@@ -169,7 +169,9 @@ public class UserService {
     // 회원 연락처 변경 전 인증 메일 전송
     public ValidateUserContactResponseDto checkUpdateUserContact(String userId, String contact) {
         validateUpdateUserContact(userId, contact);
-        smsService.sendSms(contact);
+        String randomNum = RandomGenerator.makeRandomNumber();
+        smsRedisService.createSmsCertification(contact, randomNum);
+        smsService.sendSms(contact, randomNum);
         return ValidateUserContactResponseDto.builder()
                 .code(smsRedisService.getSmsCertification(contact))
                 .build();

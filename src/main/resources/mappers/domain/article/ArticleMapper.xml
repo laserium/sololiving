@@ -81,7 +81,7 @@
         SET like_cnt = (
             SELECT COUNT(*) FROM ARTICLE_LIKE WHERE article_id = #{articleId}
         )
-        WHERE article_id = #{articleId};
+        WHERE article_id = #{articleId}
     </update>
 
     <!-- 게시글 작성자 조회 -->
@@ -112,5 +112,10 @@
         WHERE article_id = #{articleId}
     </update>
 
+    <update id="updateArticleStatusToBlind">
+        UPDATE ARTICLE
+        SET status = 'BLIND'
+        WHERE article_id = #{articleId}
+    </update>
 
 </mapper>

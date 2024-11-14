@@ -33,4 +33,6 @@ public interface CommentMapper {
 
     // 댓글 아이디로 작성자 상태 조회
     String selectWriterStatusByCommentId(@Param("commentId") Long commentId);
+
+    void updateCommentStatusToBlind(@Param("commentId") Long commentId);
 }

@@ -23,7 +23,7 @@
     <!-- 댓글 추천 취소 -->
     <delete id="deleteCommentLike">
         DELETE FROM COMMENT_LIKE
-        WHERE comment_id = #{commentId} AND user_id = #{userId};
+        WHERE comment_id = #{commentId} AND user_id = #{userId}
     </delete>
     
 </mapper>
