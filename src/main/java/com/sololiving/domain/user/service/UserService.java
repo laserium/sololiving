@@ -19,6 +19,7 @@ import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserG
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserNicknameRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserPasswordRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.ValidateUpdateUserContactRequestDto;
+import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
 import com.sololiving.domain.user.dto.response.ViewUserProfileImageResponseDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
@@ -31,6 +32,7 @@ import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
+import com.sololiving.global.security.sms.service.SmsRedisService;
 import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.RandomGenerator;
 
@@ -53,6 +55,7 @@ public class UserService {
     private final UserProfileMapper userProfileMapper;
     private final EmailService emailService;
     private final SmsService smsService;
+    private final SmsRedisService smsRedisService;
     private final AuthService authService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -165,12 +168,17 @@ public class UserService {
     }
 
     // 회원 연락처 변경 전 인증 메일 전송
-    public void validateUpdateUserContact(String userId,
-            ValidateUpdateUserContactRequestDto requestDto) {
-        if (requestDto.getContact() == null) {
-            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
-        }
-        String contact = requestDto.getContact();
+    public ValidateUserContactResponseDto checkUpdateUserContact(String userId, String contact) {
+        validateUpdateUserContact(userId, contact);
+        smsService.sendSms(contact);
+        return ValidateUserContactResponseDto.builder()
+                .code(smsRedisService.getSmsCertification(contact))
+                .build();
+
+    }
+
+    private void validateUpdateUserContact(String userId,
+            String contact) {
         if (contact.length() != 11) {
             throw new ErrorException(UserErrorCode.CONTACT_LENGTH_FAILED);
         }
