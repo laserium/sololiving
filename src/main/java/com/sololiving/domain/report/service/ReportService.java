@@ -11,10 +11,9 @@ import com.sololiving.domain.report.dto.request.ReportRequestDto;
 import com.sololiving.domain.report.enums.ReportStatus;
 import com.sololiving.domain.report.enums.ReportType;
 import com.sololiving.domain.report.enums.SubjectType;
+import com.sololiving.domain.report.exception.ReportErrorCode;
 import com.sololiving.domain.report.mapper.ReportMapper;
 import com.sololiving.domain.report.vo.ReportVo;
-import com.sololiving.domain.user.enums.UserType;
-import com.sololiving.domain.user.mapper.UserAuthMapper;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 public class ReportService {
 
     private final ReportMapper reportMapper;
-    private final UserAuthMapper userAuthMapper;
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
 
@@ -97,19 +95,39 @@ public class ReportService {
 
     // 신고 기록 삭제
     public void removeReport(String userId, Long reportId) {
-        validateRemoveReport(userId);
-        removeReport(userId, reportId);
+        if (!reportMapper.existsReport(reportId)) {
+            throw new ErrorException(ReportErrorCode.REPORT_NOT_FOUND);
+        }
+        deleteReport(reportId);
     }
 
-    private void validateRemoveReport(String userId) {
-        if (userAuthMapper.selectUserTypeByUserId(userId) != UserType.ADMIN) {
-            throw new ErrorException(GlobalErrorCode.NO_PERMISSION);
+    @Transactional
+    private void deleteReport(Long reportId) {
+        reportMapper.deleteReport(reportId);
+    }
+
+    // 신고 상태 수정
+    public void modifyReportStatus(Long reportId, ReportStatus reportStatus) {
+        validateModifyReportStatus(reportId, reportStatus);
+        updateReportStatus(reportId, reportStatus);
+    }
+
+    private void validateModifyReportStatus(Long reportId, ReportStatus reportStatus) {
+        if (!reportMapper.existsReport(reportId)) {
+            throw new ErrorException(ReportErrorCode.REPORT_NOT_FOUND);
+        }
+        if (reportStatus != ReportStatus.PENDING && reportStatus != ReportStatus.REJECTED
+                && reportStatus != ReportStatus.RESOLVED) {
+            throw new ErrorException(ReportErrorCode.REPORT_INPUT_INVALID);
+        }
+        if (reportMapper.selectReportStatusByReportId(reportId) != ReportStatus.PENDING) {
+            throw new ErrorException(ReportErrorCode.REPORT_ALREADY_UPDATED);
         }
     }
 
     @Transactional
-    private void removeReport(Long reportId) {
-        reportMapper.deleteReport(reportId);
-    }
+    private void updateReportStatus(Long reportId, ReportStatus reportStatus) {
+        reportMapper.updateReportStatus(reportId, reportStatus);
 
+    }
 }

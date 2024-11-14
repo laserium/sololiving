@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 import com.sololiving.domain.report.dto.request.ViewReportRequestDto;
 import com.sololiving.domain.report.dto.response.ViewReportListResponseDto;
 import com.sololiving.domain.report.mapper.ReportViewMapper;
-import com.sololiving.domain.user.mapper.UserAuthMapper;
-import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.util.DecodeParameterUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +18,7 @@ public class ReportViewService {
     private final ReportViewMapper reportViewMapper;
 
     public List<ViewReportListResponseDto> viewReportList(ViewReportRequestDto requestDto) {
+        DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchUserId());
         return reportViewMapper.selectReportList(requestDto);
     }
 

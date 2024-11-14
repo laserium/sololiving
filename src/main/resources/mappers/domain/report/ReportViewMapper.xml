@@ -5,16 +5,15 @@
 
 <mapper namespace="com.sololiving.domain.report.mapper.ReportViewMapper">
 
-
     <!-- 신고된 대상 작성자 (reportedUserId) 조회 로직 -->
     <sql id="reportedUserIdCase">
         CASE 
-            WHEN r.subject_type = 'ARTICLE' THEN a.writer_id
-            WHEN r.subject_type = 'COMMENT' THEN c.writer_id
+            WHEN r.subject_type = 'ARTICLE' THEN a.writer
+            WHEN r.subject_type = 'COMMENT' THEN c.writer
         END
     </sql>
 
-    <select id="selectReportList" resultType="com.sololiving.domain.report.dto.response.ViewReportListResponseDto">
+    <select id="selectReportList" parameterType="map" resultType="com.sololiving.domain.report.dto.response.ViewReportListResponseDto">
         SELECT 
             r.report_id AS reportId,
             r.reporter AS reporter,
@@ -26,11 +25,11 @@
             r.created_at AS createdAt,
             r.updated_at AS updatedAt
         FROM REPORT r
-        LEFT JOIN ARTICLE a ON r.subject_id = a.article_id AND r.subject_type = 'ARTICLE'
-        LEFT JOIN COMMENT c ON r.subject_id = c.comment_id AND r.subject_type = 'COMMENT'
+        LEFT JOIN ARTICLE a ON r.subject_id = a.article_id 
+        LEFT JOIN COMMENT c ON r.subject_id = c.comment_id
         <where>
             <if test="reportType != null">
-                AND r.report_type = #{reportType}
+                r.report_type = #{reportType}
             </if>
             <if test="reportStatus != null">
                 AND r.report_status = #{reportStatus}

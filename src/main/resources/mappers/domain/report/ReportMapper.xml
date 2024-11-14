@@ -11,7 +11,7 @@
         VALUES (#{reporter}, #{subjectType}, #{subjectId}, #{reportType}, #{reportReason})
     </insert>
 
-    <!-- 신고 생성 -->
+    <!-- 신고 기록 삭제 -->
     <delete id="deleteReport">
         DELETE FROM REPORT
         WHERE report_id = #{reportId}
@@ -23,6 +23,26 @@
         FROM REPORT
         WHERE subject_id = #{subjectId}
         AND report_type IN ('SPAM', 'ABUSE', 'SEXUAL_CONTENT', 'IMPERSONATION_OR_FRAUD')
+    </select>
+
+    <select id="existsReport" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM REPORT
+            WHERE report_id = #{reportId}
+        )
+    </select>
+
+    <update id="updateReportStatus">
+        UPDATE REPORT
+        SET report_status = #{reportStatus}
+        WHERE report_id = #{reportId}
+    </update>
+
+    <select id="selectReportStatusByReportId">
+        SELECT report_status
+        FROM REPORT
+        WHERE report_id = #{reportId}
     </select>
 
 </mapper>

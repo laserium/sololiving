@@ -18,6 +18,7 @@ import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.user.exception.user_setting.UserSettingErrorCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.util.DecodeParameterUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,16 +137,10 @@ public class ArticleViewService {
     }
 
     private void decodeSearchParameters(ArticleSearchRequestDto requestDto) {
-        decodeSearchParameter(requestDto.getCategoryCode());
-        decodeSearchParameter(requestDto.getSearchContents());
-        decodeSearchParameter(requestDto.getSearchTitle());
-        decodeSearchParameter(requestDto.getSearchWriter());
-    }
-
-    private void decodeSearchParameter(String inputData) {
-        if (inputData != null) {
-            inputData = URLDecoder.decode(inputData, StandardCharsets.UTF_8);
-        }
+        DecodeParameterUtil.decodeSearchParameter(requestDto.getCategoryCode());
+        DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchContents());
+        DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchTitle());
+        DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchWriter());
     }
 
 }
