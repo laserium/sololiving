@@ -28,7 +28,7 @@ public class FollowController {
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         followService.follow(userId, requestDto.getTargetId());
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(FollowSuccessCode.FOLLOW_SUCCESS));
     }
 

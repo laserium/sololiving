@@ -24,6 +24,7 @@ import com.sololiving.domain.user.enums.Status;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserService;
+import com.sololiving.global.aop.admin.AdminOnly;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
@@ -60,7 +61,8 @@ public class UserController {
                         .createSuccessResponse(UserSuccessCode.USER_DELETE_SUCCESS));
     }
 
-    // 상태변경
+    // 상태변경 => 수정 예정
+    @AdminOnly
     @PatchMapping("/status/{status}")
     public ResponseEntity<?> updateUserStatus(@PathVariable Status status,
             HttpServletRequest httpServletRequest) {
@@ -113,7 +115,7 @@ public class UserController {
 
     // 회원 연락처 변경
     @PatchMapping("/contact")
-    public ResponseEntity<?> updateUserContact(@RequestBody UpdateUserContactRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> updateUserContact(@RequestBody UpdateUserContactRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         userService.updateUserContact(userId, requestDto);

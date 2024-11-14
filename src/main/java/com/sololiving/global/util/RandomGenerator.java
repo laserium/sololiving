@@ -7,6 +7,17 @@ public class RandomGenerator {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    public static String makeRandomNumber() {
+        Random rand = new Random();
+        String randomNum = "";
+        for (int i = 0; i < 6; i++) {
+            String random = Integer.toString(rand.nextInt(10));
+            randomNum += random;
+        }
+
+        return randomNum;
+    }
+
     // 랜덤 12자리 ID 생성
     public static String generateRandomId() {
         return "deletedUser_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);

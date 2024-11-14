@@ -47,7 +47,7 @@
                     AND cl.user_id = #{userId}
                 ) THEN TRUE
                 ELSE FALSE
-            END AS isLiked  <!-- 댓글 추천 여부 확인 -->
+            END AS isLiked,
             c.created_at AS createdAt,
             c.updated_at AS updatedAt,
             c.status

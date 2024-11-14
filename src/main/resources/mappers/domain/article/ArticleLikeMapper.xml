@@ -23,7 +23,7 @@
     <!-- 게시글 추천 취소 -->
     <delete id="deleteArticleLike">
         DELETE FROM ARTICLE_LIKE
-        WHERE article_id = #{articleId} AND user_id = #{userId};
+        WHERE article_id = #{articleId} AND user_id = #{userId}
     </delete>
 
 </mapper>

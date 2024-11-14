@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sololiving.domain.auth.dto.auth.request.VerifyPasswordRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.CheckSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
+import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.exception.UserSuccessCode;
 import com.sololiving.domain.user.service.UserAuthService;
@@ -37,11 +38,10 @@ public class UserAuthController {
 
     // 회원가입 시 휴대폰 인증번호 전송
     @PostMapping("/contact-verification/send")
-    public ResponseEntity<SuccessResponse> sendSignUpVerificationSms(
+    public ResponseEntity<ValidateUserContactResponseDto> sendSignUpVerificationSms(
             @RequestBody SendSignUpVerificationSmsRequestDto requestDto) {
-        userAuthService.sendSignUpVerificationSms(requestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(SmsSuccessCode.SUCCESS_TO_SEND));
+                .body(userAuthService.sendSignUpVerificationSms(requestDto));
     }
 
     // 회원가입 시 휴대폰 인증번호 검증
@@ -70,7 +70,7 @@ public class UserAuthController {
 
     // 비밀번호 검증
     @PostMapping("/password-verification")
-    public ResponseEntity<?> verifyUserPassword(@RequestBody VerifyPasswordRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> verifyUserPassword(@RequestBody VerifyPasswordRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.verifyUserPassword(requestDto.getUserPwd(), userId)) {

@@ -28,6 +28,9 @@ public interface ArticleMapper {
     // 게시글 삭제 - 게시글 상태를 삭제로 변경 UPDATE
     void updateArticleAsDeleted(@Param("articleId") Long articleId);
 
+    // 게시글 상태 - 블라인드로 업데이트
+    void updateArticleStatusToBlind(@Param("articleId") Long articleId);
+
     // 게시글 아이디로 게시글 존재 유무 확인
     boolean checkArticleExists(@Param("articleId") Long articleId);
 
