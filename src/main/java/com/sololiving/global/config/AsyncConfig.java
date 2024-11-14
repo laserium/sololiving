@@ -46,4 +46,16 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
+
+    // 문자 발송용 스레드 풀 구성
+    @Bean(name = "AiCommentTaskExecutor")
+    public Executor AICommentTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("AiThread-");
+        executor.initialize();
+        return executor;
+    }
 }

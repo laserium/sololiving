@@ -4,14 +4,10 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class ViewCommentsResponseDto {
 
@@ -21,6 +17,7 @@ public class ViewCommentsResponseDto {
     private String writer;
     private String content;
     private int likeCnt;
+    private boolean isLiked;
     private String timeAgo;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

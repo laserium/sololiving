@@ -15,6 +15,8 @@ import com.sololiving.domain.article.dto.request.ArticleSearchRequestDto;
 import com.sololiving.domain.article.dto.response.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.service.ArticleViewService;
+import com.sololiving.domain.user.exception.UserErrorCode;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewTopArticlesResponseDto;
 import com.sololiving.global.exception.GlobalErrorCode;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class ArticleViewController {
 
     private final ArticleViewService articleViewService;
+    private final UserAuthService userAuthService;
 
     // 전체 게시글 목록 조회
     @GetMapping("/all")
@@ -72,10 +75,10 @@ public class ArticleViewController {
         if (writer == null) {
             throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+
         String userId = SecurityUtil.getCurrentUserId();
         requestDto.setUserId(userId);
         requestDto.setWriter(writer);
-        // USER_SETTING 에 article_sharing_enabled 조건 추가
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(articleViewService.viewUserArticlesList(requestDto));
@@ -88,10 +91,12 @@ public class ArticleViewController {
         if (writer == null) {
             throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
+        if (!userAuthService.isUserIdAvailable(writer)) {
+            throw new ErrorException(UserErrorCode.USER_NOT_FOUND);
+        }
         String userId = SecurityUtil.getCurrentUserId();
         requestDto.setUserId(userId);
         requestDto.setWriter(writer);
-        // USER_SETTING 에 liked_sharing_enabled 조건 추가
         return ResponseEntity.status(HttpStatus.OK)
                 .body(articleViewService.viewUserLikeArticlesList(requestDto));
     }

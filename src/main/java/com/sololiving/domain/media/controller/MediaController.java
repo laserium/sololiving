@@ -51,7 +51,6 @@ public class MediaController {
                 String fileUrl = s3Uploader.uploadFileToS3(multipartFile, "media/articles/temp");
                 uploadedFileUrls.add(fileUrl);
             }
-
             // 성공 메시지와 함께 업로드된 파일들의 URL 리스트 반환
             return ResponseEntity.status(HttpStatus.OK).body(uploadedFileUrls);
 

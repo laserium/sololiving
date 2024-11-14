@@ -2,8 +2,6 @@ package com.sololiving.domain.media.vo;
 
 import java.time.LocalDateTime;
 
-import com.sololiving.domain.article.enums.MediaType;
-
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,7 +10,7 @@ import lombok.Getter;
 public class MediaVo {
     private Long mediaId;
     private Long articleId;
-    private MediaType mediaType;
+    private int mediaType;
     private String mediaUrl;
     private String mediaName;
     private long fileSize;
