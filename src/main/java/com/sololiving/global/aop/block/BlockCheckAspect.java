@@ -1,4 +1,4 @@
-package com.sololiving.global.aop;
+package com.sololiving.global.aop.block;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;

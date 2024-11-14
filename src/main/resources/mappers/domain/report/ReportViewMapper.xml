@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.report.mapper.ReportViewMapper">
+
+    <!-- 신고된 대상 작성자 (reportedUserId) 조회 로직 -->
+    <sql id="reportedUserIdCase">
+        CASE 
+            WHEN r.subject_type = 'ARTICLE' THEN a.writer
+            WHEN r.subject_type = 'COMMENT' THEN c.writer
+        END
+    </sql>
+
+    <select id="selectReportList" parameterType="map" resultType="com.sololiving.domain.report.dto.response.ViewReportListResponseDto">
+        SELECT 
+            r.report_id AS reportId,
+            r.reporter AS reporter,
+            r.subject_type AS subjectType,
+            <include refid="reportedUserIdCase" /> AS reportedUserId,
+            r.report_type AS reportType,
+            r.report_status AS reportStatus,
+            r.report_reason AS reportReason,
+            r.created_at AS createdAt,
+            r.updated_at AS updatedAt
+        FROM REPORT r
+        LEFT JOIN ARTICLE a ON r.subject_id = a.article_id 
+        LEFT JOIN COMMENT c ON r.subject_id = c.comment_id
+        <where>
+            <if test="reportType != null">
+                r.report_type = #{reportType}
+            </if>
+            <if test="reportStatus != null">
+                AND r.report_status = #{reportStatus}
+            </if>
+            <if test="subjectType != null">
+                AND r.subject_type = #{subjectType}
+            </if>
+            <if test="searchUserId != null and searchUserId != ''">
+                AND (r.reporter = #{searchUserId} OR <include refid="reportedUserIdCase" /> = #{searchUserId})
+            </if>
+        </where>
+        ORDER BY r.created_at DESC
+    </select>
+
+</mapper>

@@ -33,7 +33,7 @@ public class BlockController {
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         blockService.block(userId, requestDto.getTargetId());
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(BlockSuccessCode.BLOCK_SUCCESS));
     }
 

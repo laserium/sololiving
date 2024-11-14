@@ -52,7 +52,7 @@
         SET like_cnt = (
             SELECT COUNT(*) FROM COMMENT_LIKE WHERE comment_id = #{commentId}
         )
-        WHERE comment_id = #{commentId};
+        WHERE comment_id = #{commentId}
     </update>
 
     <!-- 댓글 작성자 조회 -->
@@ -77,5 +77,11 @@
         JOIN USER u ON a.writer = u.user_id
         WHERE c.comment_id = #{commentId}
     </select>
+
+    <update id="updateCommentStatusToBlind">
+        UPDATE COMMENT
+        SET status = 'BLIND'
+        WHERE comment_id = #{commentId}
+    </update>
 
 </mapper>

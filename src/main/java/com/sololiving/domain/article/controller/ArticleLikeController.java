@@ -38,7 +38,7 @@ public class ArticleLikeController {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
         articleLikeService.likeArticle(articleId, userId);
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_LIKE_ARTICLE));
     }
 

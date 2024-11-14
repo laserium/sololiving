@@ -22,7 +22,6 @@ import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
 import com.sololiving.domain.user.dto.response.ViewUserProfileImageResponseDto;
 import com.sololiving.domain.user.enums.Gender;
 import com.sololiving.domain.user.enums.Status;
-import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserMapper;
 import com.sololiving.domain.user.mapper.UserProfileMapper;
@@ -123,12 +122,8 @@ public class UserService {
     // 회원 상태 변경
     @Transactional
     public void updateStatus(String userId, Status status) {
-        validateUserId(userId);
         userAuthService.validateStatus(status);
-        if (userAuthService.selectUserTypeByUserId(userId) == UserType.ADMIN) {
-            userMapper.updateUserStatus(userId, status);
-        } else
-            throw new ErrorException(UserErrorCode.USER_TYPE_ERROR_NO_PERMISSION);
+        userMapper.updateUserStatus(userId, status);
     }
 
     // 유저 이메일 변경
@@ -169,7 +164,9 @@ public class UserService {
     // 회원 연락처 변경 전 인증 메일 전송
     public ValidateUserContactResponseDto checkUpdateUserContact(String userId, String contact) {
         validateUpdateUserContact(userId, contact);
-        smsService.sendSms(contact);
+        String randomNum = RandomGenerator.makeRandomNumber();
+        smsRedisService.createSmsCertification(contact, randomNum);
+        smsService.sendSms(contact, randomNum);
         return ValidateUserContactResponseDto.builder()
                 .code(smsRedisService.getSmsCertification(contact))
                 .build();

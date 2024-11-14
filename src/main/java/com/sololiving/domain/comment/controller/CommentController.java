@@ -13,6 +13,7 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,34 +37,34 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping
-    public ResponseEntity<?> addComment(@RequestBody AddCommentRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> addComment(@RequestBody AddCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
         commentService.addComment(requestDto, userId);
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_POST_COMMENT));
     }
 
     // 대댓글 작성
     @PostMapping("/re")
-    public ResponseEntity<?> addReComment(@RequestBody AddReCommentRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> addReComment(@RequestBody AddReCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
         commentService.addReComment(requestDto, userId);
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_POST_COMMENT));
 
     }
 
     // 댓글 삭제
     @DeleteMapping("")
-    public ResponseEntity<?> removeComment(@RequestBody DeleteCommentRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> removeComment(@RequestBody DeleteCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
@@ -77,7 +78,7 @@ public class CommentController {
 
     // 댓글 수정
     @PatchMapping("{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
+    public ResponseEntity<SuccessResponse> updateComment(@PathVariable Long commentId,
             @RequestBody UpdateCommentRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();

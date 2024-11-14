@@ -34,7 +34,7 @@ public class MediaController {
 
     // 미디어 파일 임시 저장
     @PostMapping("/upload/temp")
-    public ResponseEntity<?> uploadMedia(HttpServletRequest httpServletRequest,
+    public ResponseEntity<List<String>> uploadMedia(HttpServletRequest httpServletRequest,
             @RequestParam("multipartFiles") List<MultipartFile> multipartFiles) {
 
         // 회원 유무 검증
@@ -52,7 +52,7 @@ public class MediaController {
                 uploadedFileUrls.add(fileUrl);
             }
             // 성공 메시지와 함께 업로드된 파일들의 URL 리스트 반환
-            return ResponseEntity.status(HttpStatus.OK).body(uploadedFileUrls);
+            return ResponseEntity.status(HttpStatus.CREATED).body(uploadedFileUrls);
 
         } catch (Exception e) {
             throw new ErrorException(MediaErrorCode.FAIL_TO_UPLOAD_FILE);

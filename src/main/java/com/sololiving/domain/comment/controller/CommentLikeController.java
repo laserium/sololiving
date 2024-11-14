@@ -37,7 +37,7 @@ public class CommentLikeController {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
         commentLikeService.likeComment(commentId, userId);
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_LIKE_COMMENT));
     }
 

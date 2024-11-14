@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserProfileImage {
+public class UserProfileImageVo {
     private String userId;
     private String imageUrl;
     private String fileName;

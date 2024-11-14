@@ -23,13 +23,8 @@ public class SmsRedisService {
     }
 
     // 휴대전화 번호에 해당하는 인증번호 불러오기
-    // public String getSmsCertification(String phone) {
-    // return stringRedisTemplate.opsForValue().get(PREFIX + phone);
-    // }
     public String getSmsCertification(String phone) {
-        String key = PREFIX + phone;
-        String code = stringRedisTemplate.opsForValue().get(key);
-        return code;
+        return stringRedisTemplate.opsForValue().get(PREFIX + phone);
     }
 
     // 인증 완료 시, 인증번호 Redis에서 삭제

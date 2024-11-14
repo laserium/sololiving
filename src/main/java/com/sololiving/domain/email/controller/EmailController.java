@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sololiving.domain.email.service.EmailVerificationService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
 import com.sololiving.domain.user.service.UserService;
+import com.sololiving.global.exception.success.SuccessResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +27,7 @@ public class EmailController {
 
     @GetMapping("/confirmation/{token}")
     @ResponseBody
-    public ResponseEntity<?> confirmEmail(@PathVariable("token") String token) {
+    public ResponseEntity<SuccessResponse> confirmEmail(@PathVariable("token") String token) {
         EmailVerificationTokenVo verificationToken = emailVerificationService.getVerificationToken(token);
         userService.updateUserEmail(verificationToken);
         emailVerificationService.deleteVerificationToken(verificationToken);

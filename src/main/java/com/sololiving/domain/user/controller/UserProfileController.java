@@ -12,6 +12,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.service.UserProfileService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class UserProfileController {
     private final UserAuthService userAuthService;
 
     @PutMapping("/image")
-    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<SuccessResponse> uploadProfileImage(@RequestParam("file") MultipartFile file,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
@@ -45,7 +46,7 @@ public class UserProfileController {
     }
 
     @PatchMapping("/bio")
-    public ResponseEntity<?> updateUserBio(@RequestBody UpdateUserProfileBioRequestDto requestDto,
+    public ResponseEntity<SuccessResponse> updateUserBio(@RequestBody UpdateUserProfileBioRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {

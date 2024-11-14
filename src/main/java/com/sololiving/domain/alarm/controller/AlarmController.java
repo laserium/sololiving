@@ -11,6 +11,7 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +47,8 @@ public class AlarmController {
 
     // 알림 읽기
     @PatchMapping("/{alarmId}")
-    public ResponseEntity<?> readAlarm(@PathVariable Long alarmId, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<SuccessResponse> readAlarm(@PathVariable Long alarmId,
+            HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
@@ -58,7 +60,8 @@ public class AlarmController {
 
     // 알림 삭제
     @DeleteMapping("/{alarmId}")
-    public ResponseEntity<?> removeAlarm(@PathVariable Long alarmId, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<SuccessResponse> removeAlarm(@PathVariable Long alarmId,
+            HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);

@@ -12,6 +12,7 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,13 +45,13 @@ public class ArticleController {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
         List<String> tempMediaUrls = requestDto.getTempMediaUrls();
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(articleService.createArticle(requestDto, userId, tempMediaUrls));
     }
 
     // 게시글 수정
     @PutMapping("/{articleId}")
-    public ResponseEntity<?> modifyArticle(@PathVariable Long articleId,
+    public ResponseEntity<SuccessResponse> modifyArticle(@PathVariable Long articleId,
             @RequestBody UpdateArticleRequestDto requestDto, HttpServletRequest httpServletRequest) {
         // 작성자(회원) 검증
         String userId = SecurityUtil.getCurrentUserId();
@@ -64,7 +65,8 @@ public class ArticleController {
 
     // 게시글 삭제
     @DeleteMapping("/{articleId}")
-    public ResponseEntity<?> removeArticle(@PathVariable Long articleId, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<SuccessResponse> removeArticle(@PathVariable Long articleId,
+            HttpServletRequest httpServletRequest) {
         // 작성자(회원) 검증
         String userId = SecurityUtil.getCurrentUserId();
         articleService.validateWriter(articleId, userId);

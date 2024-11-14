@@ -6,15 +6,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
+import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
 import com.sololiving.domain.user.enums.Status;
-import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserAuthMapper;
 import com.sololiving.domain.user.vo.UserVo;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.security.jwt.service.TokenProvider;
+import com.sololiving.global.security.sms.service.SmsRedisService;
 import com.sololiving.global.security.sms.service.SmsService;
+import com.sololiving.global.util.RandomGenerator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,12 +28,18 @@ public class UserAuthService {
     private final SmsService smsService;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final SmsRedisService smsRedisService;
 
     // 회원가입 시 휴대폰 인증번호 전송
-    public void sendSignUpVerificationSms(SendSignUpVerificationSmsRequestDto requestDto) {
+    public ValidateUserContactResponseDto sendSignUpVerificationSms(SendSignUpVerificationSmsRequestDto requestDto) {
         String contact = requestDto.getContact();
         validateUniqueField(contact, this::isUserContactAvailable, UserErrorCode.CONTACT_ALREADY_EXISTS);
-        smsService.sendSms(contact);
+        // 인증 번호 생성 및 Redis 저장 (동기 처리)
+        String randomNum = RandomGenerator.makeRandomNumber();
+        smsRedisService.createSmsCertification(contact, randomNum); // 동기적으로 Redis에 인증번호 저장
+        smsService.sendSms(contact, randomNum);
+        return ValidateUserContactResponseDto.builder()
+                .code(smsRedisService.getSmsCertification(contact)).build();
     }
 
     // 회원가입 - 중복데이터 검증
@@ -156,11 +164,6 @@ public class UserAuthService {
         UserVo userVo = selectByEmail(userEmail);
 
         userAuthMapper.updatePassword(bCryptPasswordEncoder.encode(tempPassword), userVo.getUserId());
-    }
-
-    // userId 로 userType 확인
-    public UserType selectUserTypeByUserId(String userId) {
-        return userAuthMapper.selectUserTypeByUserId(userId);
     }
 
     // 비밀번호 검증

@@ -46,6 +46,12 @@ public class MybatisConfig {
                                 MybatisEnumHandler.class);
                 configuration.getTypeHandlerRegistry().register(com.sololiving.domain.article.enums.MediaType.class,
                                 MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.report.enums.ReportStatus.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.report.enums.ReportType.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.report.enums.SubjectType.class,
+                                MybatisEnumHandler.class);
 
                 sqlSessionFactoryBean.setConfiguration(configuration);
 
