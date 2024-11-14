@@ -26,6 +26,7 @@ import com.sololiving.domain.user.service.UserService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.success.SuccessResponse;
 import com.sololiving.global.security.sms.exception.SmsSuccessCode;
+import com.sololiving.global.security.sms.service.SmsRedisService;
 import com.sololiving.global.security.sms.service.SmsService;
 import com.sololiving.global.util.SecurityUtil;
 
@@ -40,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
     private final UserService userService;
+    private final SmsRedisService smsRedisService;
     private final SmsService smsService;
 
     // 회원가입
@@ -103,10 +105,11 @@ public class UserController {
             @RequestBody ValidateUpdateUserContactRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
-        smsService.sendSms(userService.validateUpdateUserContact(userId, requestDto));
+        userService.validateUpdateUserContact(userId, requestDto);
+        String contact = requestDto.getContact();
+        smsService.sendSms(contact);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage
-                        .createSuccessResponse(SmsSuccessCode.SUCCESS_TO_SEND));
+                .body(smsRedisService.getSmsCertification(contact));
     }
 
     // 회원 연락처 변경

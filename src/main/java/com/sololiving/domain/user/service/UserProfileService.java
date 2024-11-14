@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sololiving.domain.user.dto.response.UserProfileImageResponseDto;
+import com.sololiving.domain.user.dto.response.ViewUserProfileImageResponseDto;
 import com.sololiving.domain.user.mapper.UserProfileMapper;
 import com.sololiving.global.util.aws.S3Uploader;
 
@@ -35,7 +35,7 @@ public class UserProfileService {
                 throw new RuntimeException("UPLOAD PROFILE IMAGE TO S3 : FAILED", e);
             }
 
-            UserProfileImageResponseDto profileImageDto = UserProfileImageResponseDto.builder()
+            ViewUserProfileImageResponseDto profileImageDto = ViewUserProfileImageResponseDto.builder()
                     .userId(userId)
                     .imageUrl(imageUrl)
                     .fileName(file.getOriginalFilename())

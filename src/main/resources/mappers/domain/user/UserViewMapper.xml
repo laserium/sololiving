@@ -5,17 +5,16 @@
 
 <mapper namespace="com.sololiving.domain.user.mapper.UserViewMapper">
 
-    <select id="selectUserList" resultType="com.sololiving.domain.user.dto.response.ViewUserListResponseDto">
-        SELECT
-            user_id AS userId,
-            email,
-            contact,
-            status,
-            user_type AS userType,
-            created_at AS createdAt,
-            updated_at AS updatedAt,
-            last_sign_in_at AS lastSignInAt,
+    <select id="viewUserInformation" resultType="com.sololiving.domain.user.dto.response.ViewUserInfoResponseDto">
+        SELECT user_id AS userId,
+        email,
+        contact,
+        nickname,
+        address,
+        gender,
+        birth
         FROM USER
+        WHERE user_id = #{userId}
     </select>
 
     <select id="isUserDeleted" resultType="boolean" parameterType="string">

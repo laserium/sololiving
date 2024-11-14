@@ -21,8 +21,8 @@
     </select>
 
     <select id="selectByUserId" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">
-        SELECT * 
-        FROM USER 
+        SELECT *
+        FROM USER
         WHERE user_id = #{userId}
     </select>
     <select id="selectByOauth2UserId" parameterType="string" resultType="com.sololiving.domain.user.vo.UserVo">

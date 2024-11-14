@@ -20,8 +20,11 @@ public interface UserSettingMapper {
 
     ViewUserSettingResponseDto selectUserSetting(@Param("userId") String userId);
 
-    // 작성한 게시글 공유 여부 조회
+    // 푸쉬 알람 공유 여부 조회
     boolean isPushNotificationSharingEnabled(@Param("userId") String userId);
+
+    // 프로필 공유 여부 조회
+    boolean isProfileSharingEnabled(@Param("userId") String userId);
 
     // 작성한 게시글 공유 여부 조회
     boolean isArticleSharingEnabled(@Param("userId") String userId);
