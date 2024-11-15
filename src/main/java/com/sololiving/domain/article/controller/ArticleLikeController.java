@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleLikeService;
-import com.sololiving.domain.log.enums.BoardMethod;
-import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;

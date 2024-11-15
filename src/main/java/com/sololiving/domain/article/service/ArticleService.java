@@ -35,7 +35,6 @@ import com.sololiving.domain.media.service.MediaService;
 import com.sololiving.domain.media.service.MediaUploadService;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
-import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.aws.S3Uploader;
 
 import lombok.RequiredArgsConstructor;

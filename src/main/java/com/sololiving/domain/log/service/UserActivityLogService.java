@@ -19,71 +19,71 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserActivityLogService {
 
-    private final UserActivityLogMapper userActivityLogMapper;
+        private final UserActivityLogMapper userActivityLogMapper;
 
-    // AUTH
-    @Async("userLogTaskExecutor")
-    public void insertAuthLog(String userId, String ipAddress, AuthMethod authMethod) {
-        UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
-                .userId(userId)
-                .ipAddress(ipAddress)
-                .activityType(ActivityType.AUTH)
-                .build();
-        userActivityLogMapper
-                .insertActivityLog(userActivityLogVo);
-        userActivityLogMapper.insertAuthLog(userActivityLogVo.getId(), authMethod);
-    }
+        // AUTH
+        @Async("userLogTaskExecutor")
+        public void insertAuthLog(String userId, String ipAddress, AuthMethod authMethod) {
+                UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
+                                .userId(userId)
+                                .ipAddress(ipAddress)
+                                .activityType(ActivityType.AUTH)
+                                .build();
+                userActivityLogMapper
+                                .insertActivityLog(userActivityLogVo);
+                userActivityLogMapper.insertAuthLog(userActivityLogVo.getId(), authMethod);
+        }
 
-    // ARTICLE
-    @Async("userLogTaskExecutor")
-    public void insertArticleLog(String userId, String ipAddress, Long articleId, BoardMethod boardMethod) {
-        UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
-                .userId(userId)
-                .ipAddress(ipAddress)
-                .activityType(ActivityType.ARTICLE)
-                .build();
-        userActivityLogMapper
-                .insertActivityLog(userActivityLogVo);
-        userActivityLogMapper.insertArticleLog(userActivityLogVo.getId(), articleId, boardMethod);
-    }
+        // ARTICLE
+        @Async("userLogTaskExecutor")
+        public void insertArticleLog(String userId, String ipAddress, Long articleId, BoardMethod boardMethod) {
+                UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
+                                .userId(userId)
+                                .ipAddress(ipAddress)
+                                .activityType(ActivityType.ARTICLE)
+                                .build();
+                userActivityLogMapper
+                                .insertActivityLog(userActivityLogVo);
+                userActivityLogMapper.insertArticleLog(userActivityLogVo.getId(), articleId, boardMethod);
+        }
 
-    // COMMENT
-    @Async("userLogTaskExecutor")
-    public void insertCommentLog(String userId, String ipAddress, Long commentId, BoardMethod boardMethod) {
-        UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
-                .userId(userId)
-                .ipAddress(ipAddress)
-                .activityType(ActivityType.COMMENT)
-                .build();
-        userActivityLogMapper
-                .insertActivityLog(userActivityLogVo);
-        userActivityLogMapper.insertCommentLog(userActivityLogVo.getId(), commentId, boardMethod);
-    }
+        // COMMENT
+        @Async("userLogTaskExecutor")
+        public void insertCommentLog(String userId, String ipAddress, Long commentId, BoardMethod boardMethod) {
+                UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
+                                .userId(userId)
+                                .ipAddress(ipAddress)
+                                .activityType(ActivityType.COMMENT)
+                                .build();
+                userActivityLogMapper
+                                .insertActivityLog(userActivityLogVo);
+                userActivityLogMapper.insertCommentLog(userActivityLogVo.getId(), commentId, boardMethod);
+        }
 
-    // FOLLOW
-    @Async("userLogTaskExecutor")
-    public void insertFollowLog(String userId, String ipAddress, String targetId, FollowMethod followMethod) {
-        UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
-                .userId(userId)
-                .ipAddress(ipAddress)
-                .activityType(ActivityType.FOLLOW)
-                .build();
-        userActivityLogMapper
-                .insertActivityLog(userActivityLogVo);
-        userActivityLogMapper.insertFollowLog(userActivityLogVo.getId(), targetId, followMethod);
-    }
+        // FOLLOW
+        @Async("userLogTaskExecutor")
+        public void insertFollowLog(String userId, String ipAddress, String targetId, FollowMethod followMethod) {
+                UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
+                                .userId(userId)
+                                .ipAddress(ipAddress)
+                                .activityType(ActivityType.FOLLOW)
+                                .build();
+                userActivityLogMapper
+                                .insertActivityLog(userActivityLogVo);
+                userActivityLogMapper.insertFollowLog(userActivityLogVo.getId(), targetId, followMethod);
+        }
 
-    // BLOCK
-    @Async("userLogTaskExecutor")
-    public void insertBlockLog(String userId, String ipAddress, String targetId, BlockMethod blockMethod) {
-        UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
-                .userId(userId)
-                .ipAddress(ipAddress)
-                .activityType(ActivityType.BLOCK)
-                .build();
-        userActivityLogMapper
-                .insertActivityLog(userActivityLogVo);
-        userActivityLogMapper.insertBlockLog(userActivityLogVo.getId(), targetId, blockMethod);
-    }
+        // BLOCK
+        @Async("userLogTaskExecutor")
+        public void insertBlockLog(String userId, String ipAddress, String targetId, BlockMethod blockMethod) {
+                UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
+                                .userId(userId)
+                                .ipAddress(ipAddress)
+                                .activityType(ActivityType.BLOCK)
+                                .build();
+                userActivityLogMapper
+                                .insertActivityLog(userActivityLogVo);
+                userActivityLogMapper.insertBlockLog(userActivityLogVo.getId(), targetId, blockMethod);
+        }
 
 }

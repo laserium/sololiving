@@ -9,9 +9,6 @@ import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
 import com.sololiving.domain.article.enums.Status;
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleService;
-import com.sololiving.domain.log.enums.AuthMethod;
-import com.sololiving.domain.log.enums.BoardMethod;
-import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.aop.admin.AdminOnly;
@@ -40,57 +37,61 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/article")
 public class ArticleController {
 
-    private final UserAuthService userAuthService;
-    private final ArticleService articleService;
+        private final UserAuthService userAuthService;
+        private final ArticleService articleService;
 
-    // 게시글 작성
-    @PostMapping("/posting")
-    public ResponseEntity<CreateArticleResponseDto> addArticle(@RequestBody CreateArticleRequestDto requestDto,
-            HttpServletRequest httpServletRequest) {
-        String userId = SecurityUtil.getCurrentUserId();
-        if (userAuthService.isUserIdAvailable(userId)) {
-            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        // 게시글 작성
+        @PostMapping("/posting")
+        public ResponseEntity<CreateArticleResponseDto> addArticle(@RequestBody CreateArticleRequestDto requestDto,
+                        HttpServletRequest httpServletRequest) {
+                String userId = SecurityUtil.getCurrentUserId();
+                if (userAuthService.isUserIdAvailable(userId)) {
+                        throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+                }
+                List<String> tempMediaUrls = requestDto.getTempMediaUrls();
+                return ResponseEntity.status(HttpStatus.CREATED)
+                                .body(articleService.createArticle(requestDto, userId, tempMediaUrls,
+                                                IpAddressUtil.getClientIp(httpServletRequest)));
         }
-        List<String> tempMediaUrls = requestDto.getTempMediaUrls();
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(articleService.createArticle(requestDto, userId, tempMediaUrls,
-                        IpAddressUtil.getClientIp(httpServletRequest)));
-    }
 
-    // 게시글 수정
-    @PutMapping("/{articleId}")
-    public ResponseEntity<SuccessResponse> modifyArticle(@PathVariable Long articleId,
-            @RequestBody UpdateArticleRequestDto requestDto, HttpServletRequest httpServletRequest) {
-        String userId = SecurityUtil.getCurrentUserId();
-        // 수정
-        articleService.modifyArticle(requestDto, articleId, userId, IpAddressUtil.getClientIp(httpServletRequest));
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_UPDATE_ARTICLE));
-    }
+        // 게시글 수정
+        @PutMapping("/{articleId}")
+        public ResponseEntity<SuccessResponse> modifyArticle(@PathVariable Long articleId,
+                        @RequestBody UpdateArticleRequestDto requestDto, HttpServletRequest httpServletRequest) {
+                String userId = SecurityUtil.getCurrentUserId();
+                // 수정
+                articleService.modifyArticle(requestDto, articleId, userId,
+                                IpAddressUtil.getClientIp(httpServletRequest));
+                return ResponseEntity.status(HttpStatus.OK)
+                                .body(ResponseMessage
+                                                .createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_UPDATE_ARTICLE));
+        }
 
-    // 게시글 삭제
-    @DeleteMapping("/{articleId}")
-    public ResponseEntity<SuccessResponse> removeArticle(@PathVariable Long articleId,
-            HttpServletRequest httpServletRequest) {
-        // 작성자(회원) 검증
-        String userId = SecurityUtil.getCurrentUserId();
-        articleService.removeArticle(articleId, userId, IpAddressUtil.getClientIp(httpServletRequest));
+        // 게시글 삭제
+        @DeleteMapping("/{articleId}")
+        public ResponseEntity<SuccessResponse> removeArticle(@PathVariable Long articleId,
+                        HttpServletRequest httpServletRequest) {
+                // 작성자(회원) 검증
+                String userId = SecurityUtil.getCurrentUserId();
+                articleService.removeArticle(articleId, userId, IpAddressUtil.getClientIp(httpServletRequest));
 
-        // 사용자 행동 로그 처리s
+                // 사용자 행동 로그 처리s
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_DELETE_ARTICLE));
-    }
+                return ResponseEntity.status(HttpStatus.OK)
+                                .body(ResponseMessage
+                                                .createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_DELETE_ARTICLE));
+        }
 
-    // [관리자] 게시글 상태 변경
-    @AdminOnly
-    @PatchMapping("/{articleId}/{status}")
-    public ResponseEntity<SuccessResponse> updateArticleStatus(@PathVariable Long articleId,
-            @PathVariable Status status,
-            HttpServletRequest httpServletRequest) {
-        articleService.modifyArticleStatus(articleId, status);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_UPDATE_STATUS));
-    }
+        // [관리자] 게시글 상태 변경
+        @AdminOnly
+        @PatchMapping("/{articleId}/{status}")
+        public ResponseEntity<SuccessResponse> updateArticleStatus(@PathVariable Long articleId,
+                        @PathVariable Status status,
+                        HttpServletRequest httpServletRequest) {
+                articleService.modifyArticleStatus(articleId, status);
+                return ResponseEntity.status(HttpStatus.OK)
+                                .body(ResponseMessage
+                                                .createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_UPDATE_STATUS));
+        }
 
 }

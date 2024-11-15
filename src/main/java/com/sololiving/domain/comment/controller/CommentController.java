@@ -9,8 +9,6 @@ import com.sololiving.domain.comment.dto.request.DeleteCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentSuccessCode;
 import com.sololiving.domain.comment.service.CommentService;
-import com.sololiving.domain.log.enums.BoardMethod;
-import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
