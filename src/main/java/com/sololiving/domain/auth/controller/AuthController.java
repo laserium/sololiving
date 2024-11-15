@@ -17,6 +17,9 @@ import com.sololiving.domain.auth.exception.auth.AuthSuccessCode;
 import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
+import com.sololiving.domain.log.enums.AuthMethod;
+import com.sololiving.domain.log.mapper.UserActivityLogMapper;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.user.service.UserService;
@@ -28,6 +31,7 @@ import com.sololiving.global.security.jwt.dto.response.CreateTokenResponse;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.security.jwt.service.TokenProvider;
 import com.sololiving.global.util.CookieService;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,14 +50,20 @@ public class AuthController {
     private final EmailService authEmailService;
     private final CookieService cookieService;
     private final TokenProvider tokenProvider;
+    private final UserActivityLogService userActivityLogService;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody SignInRequestDto requestDto) {
+    public ResponseEntity<?> signIn(@RequestBody SignInRequestDto requestDto,
+            HttpServletRequest httpServletRequest) {
+        String userId = SecurityUtil.getCurrentUserId();
         CreateTokenResponse tokenResponse = authService.createTokenResponse(requestDto);
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
         SignInResponseDto signInResponse = authService.createSignInResponse(requestDto, tokenResponse);
         userService.setLastSignInAt(requestDto.getUserId());
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertAuthLog(userId, IpAddressUtil.getClientIp(httpServletRequest), AuthMethod.SIGNIN);
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .header("Set-Cookie", accessTokenCookie.toString())
@@ -62,11 +72,18 @@ public class AuthController {
 
     @PostMapping("/signout")
     public ResponseEntity<SuccessResponse> signOut(HttpServletRequest httpServletRequest) {
+        String userId = SecurityUtil.getCurrentUserId();
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
         String refreshTokenValue = cookieService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
             ResponseCookie refreshTokencookie = cookieService.deleteRefreshTokenCookie();
             ResponseCookie accessTokenCookie = cookieService.deleteAccessTokenCookie();
+            // 사용자 행동 로그 처리
+            userActivityLogService.insertAuthLog(userId, IpAddressUtil.getClientIp(httpServletRequest),
+                    AuthMethod.SIGNOUT);
             return ResponseEntity.status(HttpStatus.OK)
                     .header("Set-Cookie", refreshTokencookie.toString())
                     .header("Set-Cookie", accessTokenCookie.toString())

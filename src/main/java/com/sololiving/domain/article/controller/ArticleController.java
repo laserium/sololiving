@@ -9,12 +9,16 @@ import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
 import com.sololiving.domain.article.enums.Status;
 import com.sololiving.domain.article.exception.ArticleSuccessCode;
 import com.sololiving.domain.article.service.ArticleService;
+import com.sololiving.domain.log.enums.AuthMethod;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.aop.admin.AdminOnly;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,19 +53,17 @@ public class ArticleController {
         }
         List<String> tempMediaUrls = requestDto.getTempMediaUrls();
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(articleService.createArticle(requestDto, userId, tempMediaUrls));
+                .body(articleService.createArticle(requestDto, userId, tempMediaUrls,
+                        IpAddressUtil.getClientIp(httpServletRequest)));
     }
 
     // 게시글 수정
     @PutMapping("/{articleId}")
     public ResponseEntity<SuccessResponse> modifyArticle(@PathVariable Long articleId,
             @RequestBody UpdateArticleRequestDto requestDto, HttpServletRequest httpServletRequest) {
-        // 작성자(회원) 검증
         String userId = SecurityUtil.getCurrentUserId();
-        articleService.validateWriter(articleId, userId);
-
         // 수정
-        articleService.modifyArticle(requestDto, articleId, userId);
+        articleService.modifyArticle(requestDto, articleId, userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_UPDATE_ARTICLE));
     }
@@ -72,14 +74,15 @@ public class ArticleController {
             HttpServletRequest httpServletRequest) {
         // 작성자(회원) 검증
         String userId = SecurityUtil.getCurrentUserId();
-        articleService.validateWriter(articleId, userId);
-        articleService.removeArticle(articleId);
+        articleService.removeArticle(articleId, userId, IpAddressUtil.getClientIp(httpServletRequest));
+
+        // 사용자 행동 로그 처리s
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_DELETE_ARTICLE));
     }
 
     // [관리자] 게시글 상태 변경
-
     @AdminOnly
     @PatchMapping("/{articleId}/{status}")
     public ResponseEntity<SuccessResponse> updateArticleStatus(@PathVariable Long articleId,

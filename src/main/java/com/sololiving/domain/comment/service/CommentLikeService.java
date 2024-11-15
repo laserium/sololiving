@@ -9,6 +9,8 @@ import com.sololiving.domain.comment.exception.CommentErrorCode;
 import com.sololiving.domain.comment.mapper.CommentLikeMapper;
 import com.sololiving.domain.comment.mapper.CommentMapper;
 import com.sololiving.domain.comment.vo.CommentLikeVo;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -22,11 +24,15 @@ public class CommentLikeService {
     private final CommentLikeMapper commentLikeMapper;
     private final CommentMapper commentMapper;
     private final BlockMapper blockMapper;
+    private final UserActivityLogService userActivityLogService;
 
     // 댓글 추천
-    public void likeComment(Long commentId, String userId) {
+    public void likeComment(Long commentId, String userId, String ipAddress) {
         validateLikeComment(commentId, userId);
         insertLikeComment(commentId, userId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertCommentLog(userId, ipAddress, commentId, BoardMethod.LIKE);
     }
 
     private void validateLikeComment(Long commentId, String userId) {
@@ -67,8 +73,16 @@ public class CommentLikeService {
     }
 
     // 댓글 추천 취소
-    @Transactional
-    public void likeCommentCancle(Long commentId, String userId) {
+    public void unlike(Long commentId, String userId, String ipAddress) {
+        validateUnLikeComment(commentId, userId);
+        likeCommentCancle(commentId, userId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertCommentLog(userId, ipAddress, commentId, BoardMethod.UNLIKE);
+    }
+
+    private void validateUnLikeComment(Long commentId, String userId) {
+        // 입력값 NULL 검증
         if (!commentMapper.checkComment(commentId)) {
             throw new ErrorException(CommentErrorCode.NOT_FOUND_COMMENT);
         }
@@ -84,6 +98,10 @@ public class CommentLikeService {
         if (!commentLikeMapper.hasUserLikedComment(commentId, userId)) {
             throw new ErrorException(CommentErrorCode.NOT_LIKED_COMMENT);
         }
+    }
+
+    @Transactional
+    public void likeCommentCancle(Long commentId, String userId) {
         commentLikeMapper.deleteCommentLike(commentId, userId);
         commentMapper.updateCommentLikeCount(commentId);
     }

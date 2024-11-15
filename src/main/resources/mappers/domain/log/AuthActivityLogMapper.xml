@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.log.mapper.UserActivityLogMapper">
+ 
+    <insert id="insertActivityLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO USER_ACTIVITY_LOG (user_id, ip_address, activity_type)
+        VALUES (#{userId}, #{ipAddress}, #{activityType})
+    </insert>
+
+    <insert id="insertAuthLog">
+        INSERT INTO AUTH_LOG (log_id, auth_method)
+        VALUES (#{id}, #{authMethod})
+    </insert>
+
+    <insert id="insertArticleLog">
+        INSERT INTO ARTICLE (log_id, article_id, board_method)
+        VALUES (#{id}, #{articleId}, #{boardMethod})
+    </insert>
+
+    <insert id="insertCommentLog">
+        INSERT INTO COMMENT (log_id, comment_id, board_method)
+        VALUES (#{id}, #{commentId}, #{boardMethod})
+    </insert>
+
+    <insert id="insertFollwLog">
+        INSERT INTO FOLLOW (log_id, target_id, follow_method)
+        VALUES (#{id}, #{targetId}, #{boardMethod})
+    </insert>
+
+    <insert id="insertBlockLog">
+        INSERT INTO BLOCK (log_id, target_id, block_method)
+        VALUES (#{id}, #{targetId}, #{boardMethod})
+    </insert>
+
+</mapper>

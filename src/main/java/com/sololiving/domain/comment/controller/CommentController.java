@@ -9,11 +9,14 @@ import com.sololiving.domain.comment.dto.request.DeleteCommentRequestDto;
 import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentSuccessCode;
 import com.sololiving.domain.comment.service.CommentService;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,7 +46,7 @@ public class CommentController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentService.addComment(requestDto, userId);
+        commentService.addComment(requestDto, userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_POST_COMMENT));
     }
@@ -56,7 +59,7 @@ public class CommentController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentService.addReComment(requestDto, userId);
+        commentService.addReComment(requestDto, userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_POST_COMMENT));
 
@@ -70,7 +73,7 @@ public class CommentController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentService.removeComment(requestDto.getCommentId(), userId);
+        commentService.removeComment(requestDto.getCommentId(), userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_DELETE_COMMENT));
 
@@ -85,7 +88,7 @@ public class CommentController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentService.modifyComment(commentId, userId, requestDto);
+        commentService.modifyComment(commentId, userId, requestDto, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_UPDATE_COMMENT));
 

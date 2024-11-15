@@ -15,6 +15,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class CommentLikeController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentLikeService.likeComment(commentId, userId);
+        commentLikeService.likeComment(commentId, userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_LIKE_COMMENT));
     }
@@ -49,7 +50,7 @@ public class CommentLikeController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        commentLikeService.likeCommentCancle(commentId, userId);
+        commentLikeService.unlike(commentId, userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(CommentSuccessCode.SUCCESS_TO_CANCLE_LIKE_COMMENT));
     }

@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.block.exception.BlockErrorCode;
 import com.sololiving.domain.block.mapper.BlockMapper;
+import com.sololiving.domain.log.enums.BlockMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.GlobalErrorCode;
@@ -18,11 +20,15 @@ public class BlockService {
 
     private final UserAuthService userAuthService;
     private final BlockMapper blockMapper;
+    private final UserActivityLogService userActivityLogService;
 
     // 차단 하기
-    public void block(String userId, String targetId) {
+    public void block(String userId, String targetId, String ipAddress) {
         validateBlockRequest(userId, targetId);
         insertBlock(userId, targetId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertBlockLog(userId, ipAddress, targetId, BlockMethod.BLOCK);
     }
 
     private void validateBlockRequest(String userId, String targetId) {
@@ -50,9 +56,12 @@ public class BlockService {
     }
 
     // 차단 해제
-    public void unBlock(String userId, String targetId) {
+    public void unBlock(String userId, String targetId, String ipAddress) {
         validateUnblockRequest(userId, targetId);
         deleteBlock(userId, targetId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertBlockLog(userId, ipAddress, targetId, BlockMethod.UNBLOCK);
     }
 
     private void validateUnblockRequest(String userId, String targetId) {
