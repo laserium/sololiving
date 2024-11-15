@@ -11,6 +11,8 @@ import com.sololiving.domain.auth.service.AuthService;
 import com.sololiving.domain.email.dto.response.EmailResponseDto;
 import com.sololiving.domain.email.service.EmailService;
 import com.sololiving.domain.email.vo.EmailVerificationTokenVo;
+import com.sololiving.domain.log.enums.AuthMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserAddressRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserBirthRequestDto;
 import com.sololiving.domain.user.dto.request.UpdateUserRequestICDto.UpdateUserContactRequestDto;
@@ -32,8 +34,10 @@ import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.sms.exception.SmsErrorCode;
 import com.sololiving.global.security.sms.service.SmsRedisService;
 import com.sololiving.global.security.sms.service.SmsService;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.RandomGenerator;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,9 +60,10 @@ public class UserService {
     private final SmsRedisService smsRedisService;
     private final AuthService authService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserActivityLogService userActivityLogService;
 
     // 회원가입
-    public void signUp(SignUpRequestDto requestDto) {
+    public void signUp(SignUpRequestDto requestDto, HttpServletRequest httpServletRequest) {
         userAuthService.validateSignUpRequest(requestDto);
 
         // 빌더 생성
@@ -66,6 +71,10 @@ public class UserService {
         ViewUserProfileImageResponseDto userProfileImageResponseDto = createUserProfileImage(requestDto.getUserId());
         // 저장
         saveUser(userVo, userProfileImageResponseDto);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertAuthLog(userVo.getUserId(), IpAddressUtil.getClientIp(httpServletRequest),
+                AuthMethod.SIGNUP);
     }
 
     private UserVo createUser(SignUpRequestDto requestDto) {
@@ -97,9 +106,13 @@ public class UserService {
     }
 
     // 회원탈퇴
-    public void withdraw(String userId) {
+    public void withdraw(String userId, HttpServletRequest httpServletRequest) {
         validateUserId(userId);
         updateToDeletedUser(userId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertAuthLog(userId, IpAddressUtil.getClientIp(httpServletRequest),
+                AuthMethod.SIGNUP);
     }
 
     // 회원탈퇴- 논리적 삭제
@@ -117,12 +130,14 @@ public class UserService {
     // 로그인 시 최근 로그인 시간 변경
     public void setLastSignInAt(String userId) {
         userMapper.updateUserLastSignInAt(userId);
+
     }
 
     // 회원 상태 변경
     @Transactional
     public void updateStatus(String userId, Status status) {
         userAuthService.validateStatus(status);
+
         userMapper.updateUserStatus(userId, status);
     }
 

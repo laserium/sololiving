@@ -9,6 +9,7 @@ import com.sololiving.domain.block.exception.BlockSuccessCode;
 import com.sololiving.domain.block.service.BlockService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class BlockController {
     public ResponseEntity<SuccessResponse> block(@RequestBody BlockRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
-        blockService.block(userId, requestDto.getTargetId());
+        blockService.block(userId, requestDto.getTargetId(), IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(BlockSuccessCode.BLOCK_SUCCESS));
     }
@@ -42,7 +43,7 @@ public class BlockController {
     public ResponseEntity<SuccessResponse> unblock(@RequestBody UnblockRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
-        blockService.unBlock(userId, requestDto.getTargetId());
+        blockService.unBlock(userId, requestDto.getTargetId(), IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(BlockSuccessCode.UNBLOCK_SUCCESS));
     }

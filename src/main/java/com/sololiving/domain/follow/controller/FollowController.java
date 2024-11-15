@@ -6,6 +6,7 @@ import com.sololiving.domain.follow.exception.FollowSuccessCode;
 import com.sololiving.domain.follow.service.FollowService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ public class FollowController {
     public ResponseEntity<SuccessResponse> follow(@RequestBody FollowRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
-        followService.follow(userId, requestDto.getTargetId());
+        followService.follow(userId, requestDto.getTargetId(), IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(FollowSuccessCode.FOLLOW_SUCCESS));
     }
@@ -37,7 +38,7 @@ public class FollowController {
     public ResponseEntity<SuccessResponse> unfollow(@RequestBody UnfollowRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
-        followService.unfollow(userId, requestDto.getTargetId());
+        followService.unfollow(userId, requestDto.getTargetId(), IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(FollowSuccessCode.UNFOLLOW_SUCCESS));
     }

@@ -9,6 +9,8 @@ import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleLikeVo;
 import com.sololiving.domain.block.exception.BlockErrorCode;
 import com.sololiving.domain.block.mapper.BlockMapper;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserViewMapper;
 import com.sololiving.global.exception.GlobalErrorCode;
@@ -24,11 +26,15 @@ public class ArticleLikeService {
     private final ArticleMapper articleMapper;
     private final UserViewMapper userViewMapper;
     private final BlockMapper blockMapper;
+    private final UserActivityLogService userActivityLogService;
 
     // 게시글 추천
-    public void likeArticle(Long articleId, String userId) {
+    public void likeArticle(Long articleId, String userId, String ipAddress) {
         validateLikeArticle(articleId, userId);
         insertLikeArticle(articleId, userId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertArticleLog(userId, ipAddress, articleId, BoardMethod.LIKE);
     }
 
     private void validateLikeArticle(Long articleId, String userId) {
@@ -69,9 +75,12 @@ public class ArticleLikeService {
     }
 
     // 게시글 추천 취소
-    public void likeArticleCancle(Long articleId, String userId) {
+    public void likeArticleCancle(Long articleId, String userId, String ipAddress) {
         validateLikeArticleCancle(articleId, userId);
         insertLikeArticleCancle(articleId, userId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertArticleLog(userId, ipAddress, articleId, BoardMethod.UNLIKE);
     }
 
     private void validateLikeArticleCancle(Long articleId, String userId) {

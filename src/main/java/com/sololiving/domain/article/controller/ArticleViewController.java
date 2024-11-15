@@ -15,12 +15,15 @@ import com.sololiving.domain.article.dto.request.ArticleSearchRequestDto;
 import com.sololiving.domain.article.dto.response.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.service.ArticleViewService;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewTopArticlesResponseDto;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +36,7 @@ public class ArticleViewController {
 
     private final ArticleViewService articleViewService;
     private final UserAuthService userAuthService;
+    private final UserActivityLogService userActivityLogService;
 
     // 전체 게시글 목록 조회
     @GetMapping("/all")
@@ -58,6 +62,9 @@ public class ArticleViewController {
     public ResponseEntity<ViewArticleDetailsResponseDto> viewArticleDetails(@PathVariable Long articleId,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertArticleLog(userId, IpAddressUtil.getClientIp(httpServletRequest),
+                articleId, BoardMethod.VIEW);
         return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId, userId));
     }
 

@@ -52,6 +52,16 @@ public class MybatisConfig {
                                 MybatisEnumHandler.class);
                 configuration.getTypeHandlerRegistry().register(com.sololiving.domain.report.enums.SubjectType.class,
                                 MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.log.enums.ActivityType.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.log.enums.AuthMethod.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.log.enums.BoardMethod.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.log.enums.BlockMethod.class,
+                                MybatisEnumHandler.class);
+                configuration.getTypeHandlerRegistry().register(com.sololiving.domain.log.enums.FollowMethod.class,
+                                MybatisEnumHandler.class);
 
                 sqlSessionFactoryBean.setConfiguration(configuration);
 

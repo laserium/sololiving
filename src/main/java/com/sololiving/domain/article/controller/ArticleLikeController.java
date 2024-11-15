@@ -10,6 +10,7 @@ import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.ResponseMessage;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.exception.success.SuccessResponse;
+import com.sololiving.global.util.IpAddressUtil;
 import com.sololiving.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,7 +38,7 @@ public class ArticleLikeController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        articleLikeService.likeArticle(articleId, userId);
+        articleLikeService.likeArticle(articleId, userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_LIKE_ARTICLE));
     }
@@ -50,7 +51,7 @@ public class ArticleLikeController {
         if (userAuthService.isUserIdAvailable(userId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
-        articleLikeService.likeArticleCancle(articleId, userId);
+        articleLikeService.likeArticleCancle(articleId, userId, IpAddressUtil.getClientIp(httpServletRequest));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseMessage.createSuccessResponse(ArticleSuccessCode.SUCCESS_TO_CANCLE_LIKE_ARTICLE));
     }
