@@ -1,5 +1,6 @@
 package com.sololiving.domain.article.service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +10,13 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
 import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
@@ -31,6 +35,8 @@ import com.sololiving.global.util.aws.S3Uploader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.RetryBackoffSpec;
 
 @Service
 @Slf4j
@@ -113,18 +119,32 @@ public class ArticleService {
         requestBody.put("max_tokens", 500);
         requestBody.put("temperature", 0.7);
 
-        return webClientBuilder.build()
+        WebClient webClient = webClientBuilder
+                .baseUrl(url)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + chatGptApiKey)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+
+        return webClient
                 .post()
                 .uri(url)
-                .header("Authorization", "Bearer " + chatGptApiKey)
-                .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(Map.class)
+                .timeout(Duration.ofSeconds(10)) // 타임아웃 설정
+                .retryWhen(
+                        RetryBackoffSpec.backoff(3, Duration.ofSeconds(2)) // 최대 3회 재시도, 2초 간격
+                                .filter(throwable -> throwable instanceof WebClientResponseException) // 특정 예외에만 재시도 적용
+                                .onRetryExhaustedThrow((retryBackoffSpec,
+                                        retrySignal) -> new RuntimeException("재시도 초과로 요청 실패", retrySignal.failure())))
                 .map(responseBody -> {
                     List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
                     Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
                     return (String) message.get("content");
+                })
+                .onErrorResume(e -> {
+                    e.printStackTrace();
+                    return Mono.just("API 요청에 실패하였습니다.");
                 })
                 .block();
     }
