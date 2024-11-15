@@ -79,7 +79,7 @@ public class CommentService {
     // 대댓글 작성
     public void addReComment(AddReCommentRequestDto requestDto, String reCommentWriter) {
         // 검증
-        validateReCommentRequest(requestDto.getArticleId());
+        validateReCommentRequest(requestDto.getArticleId(), reCommentWriter);
 
         Long parentCommentId = requestDto.getParentCommentId();
         Long articleId = requestDto.getArticleId();
@@ -98,7 +98,10 @@ public class CommentService {
 
     }
 
-    private void validateReCommentRequest(Long articleId) {
+    private void validateReCommentRequest(Long articleId, String reCommentWriter) {
+        if (reCommentWriter == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
         // 게시글 존재 여부 확인
         if (!articleMapper.checkArticleExists(articleId)) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);

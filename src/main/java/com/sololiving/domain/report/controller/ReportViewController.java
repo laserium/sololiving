@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sololiving.domain.report.dto.request.ViewReportRequestDto;
+import com.sololiving.domain.report.dto.response.ViewReportCountsResponseDto;
 import com.sololiving.domain.report.dto.response.ViewReportListResponseDto;
 import com.sololiving.domain.report.service.ReportViewService;
 import com.sololiving.global.aop.admin.AdminOnly;
@@ -31,6 +32,14 @@ public class ReportViewController {
     public ResponseEntity<List<ViewReportListResponseDto>> viewReportList(
             @ModelAttribute ViewReportRequestDto requestDto, HttpServletRequest httpServletRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(reportViewService.viewReportList(requestDto));
+    }
+
+    // [관리자] 신고 개수 조회
+    @AdminOnly
+    @GetMapping("/counts")
+    public ResponseEntity<ViewReportCountsResponseDto> viewReporCounts(
+            @ModelAttribute ViewReportRequestDto requestDto, HttpServletRequest httpServletRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(reportViewService.viewReportCounts());
     }
 
 }

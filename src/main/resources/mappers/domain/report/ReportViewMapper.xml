@@ -44,4 +44,15 @@
         ORDER BY r.created_at DESC
     </select>
 
+        <!-- 전체 신고 수 조회 -->
+    <select id="selectReportCounts" resultType="com.sololiving.domain.report.dto.response.ViewReportCountsResponseDto">
+        SELECT 
+            COUNT(*) AS totalReports,
+            SUM(CASE WHEN report_status = 'PENDING' THEN 1 ELSE 0 END) AS pendingReports,
+            SUM(CASE WHEN report_status = 'RESOLVED' THEN 1 ELSE 0 END) AS resolvedReports,
+            SUM(CASE WHEN report_status = 'REJECTED' THEN 1 ELSE 0 END) AS rejectedReports
+        FROM REPORT
+    </select>
+
+
 </mapper>

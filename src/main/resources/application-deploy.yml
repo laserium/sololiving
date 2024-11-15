@@ -105,3 +105,5 @@ management:
 chatgpt:
   api:
     key: "${chatgpt.api.key}"
+  model:
+    value: "${chatgpt.model.value}"

@@ -2,6 +2,8 @@ package com.sololiving.domain.article.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import com.sololiving.domain.article.enums.Status;
 import com.sololiving.domain.article.vo.ArticleVo;
 
 @Mapper
@@ -48,5 +50,8 @@ public interface ArticleMapper {
 
     // 미디어 타입 업데이트
     void updateMediaType(@Param("articleId") Long articleId, @Param("mediaType") int mediaType);
+
+    // 미디어 타입 업데이트
+    void updateArticleUpdate(@Param("articleId") Long articleId, @Param("status") Status status);
 
 }
