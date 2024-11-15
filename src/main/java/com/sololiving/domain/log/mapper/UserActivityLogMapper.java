@@ -23,7 +23,7 @@ public interface UserActivityLogMapper {
 
         void insertCommentLog(
                         @Param("id") Long id,
-                        @Param("commentId") Long articleId,
+                        @Param("commentId") Long commentId,
                         @Param("boardMethod") BoardMethod boardMethod);
 
         void insertFollowLog(
@@ -33,7 +33,7 @@ public interface UserActivityLogMapper {
 
         void insertBlockLog(
                         @Param("id") Long id,
-                        @Param("articleId") String articleId,
+                        @Param("targetId") String targetId,
                         @Param("boardMethod") BlockMethod blockMethod);
 
 }

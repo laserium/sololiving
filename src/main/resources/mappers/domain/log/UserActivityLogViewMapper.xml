@@ -124,10 +124,10 @@
 
     <!-- 5. 최근 한달간 일별 신규 가입자 수 -->
     <select id="selectDailyNewUsersLastMonth" resultType="com.sololiving.domain.log.dto.response.DailyNewUserDto">
-        SELECT DATE(created_at) AS signupDate, COUNT(*) AS newUserCount
+        SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS signupDate, COUNT(*) AS newUserCount
         FROM USER
         WHERE created_at &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-        GROUP BY DATE(created_at)
+        GROUP BY signupDate
     </select>
 
     <!-- 6. 오늘 하루간 시간대별 접속자 수 -->

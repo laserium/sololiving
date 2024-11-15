@@ -44,6 +44,10 @@ public class CommentService {
         // 댓글 작성
         Long commentId = insertComment(articleId, null, writer, requestDto.getContent());
 
+        // commentId가 null인지 확인
+        if (commentId == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
         // 알람 생성
         if (userSettingMapper.isPushNotificationSharingEnabled(articleWriter)) {
             alarmService.addCommentAlarm(articleWriter, writer, articleId, commentId);
@@ -78,14 +82,14 @@ public class CommentService {
 
         commentMapper.insertComment(commentVo);
         articleMapper.incrementCommentCount(articleId);
-
+        System.out.println(commentVo.getCommentId());
         return commentVo.getCommentId();
     }
 
     // 대댓글 작성
     public void addReComment(AddReCommentRequestDto requestDto, String reCommentWriter, String ipAddress) {
         // 검증
-        validateReCommentRequest(requestDto.getArticleId(), reCommentWriter);
+        validateReCommentRequest(requestDto.getParentCommentId(), requestDto.getArticleId(), reCommentWriter);
 
         Long parentCommentId = requestDto.getParentCommentId();
         Long articleId = requestDto.getArticleId();
@@ -107,7 +111,7 @@ public class CommentService {
 
     }
 
-    private void validateReCommentRequest(Long articleId, String reCommentWriter) {
+    private void validateReCommentRequest(Long parentCommentId, Long articleId, String reCommentWriter) {
         if (reCommentWriter == null) {
             throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
@@ -119,6 +123,13 @@ public class CommentService {
         if (userViewMapper.isUserDeleted(articleMapper.selectWriterByArticleId(articleId))) {
             throw new ErrorException(UserErrorCode.IS_DELETED_USER);
         }
+        if (parentCommentId != null) {
+            Long parentCommentArticleId = commentMapper.selectArticleIdByCommentId(parentCommentId);
+            if (!articleId.equals(parentCommentArticleId)) {
+                throw new ErrorException(ArticleErrorCode.INVALID_PARENT_COMMENT);
+            }
+        }
+
     }
 
     // 댓글 삭제

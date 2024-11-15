@@ -81,7 +81,7 @@ public class FollowService {
         }
 
         // 언팔로우 대상 회원 존재 여부 검증
-        if (!userAuthService.isUserIdAvailable(targetId)) {
+        if (userAuthService.isUserIdAvailable(targetId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
 
