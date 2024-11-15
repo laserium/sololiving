@@ -19,7 +19,6 @@ import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewTopArticlesResponseDto;
-import com.sololiving.global.aop.admin.AdminOnly;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.SecurityUtil;
@@ -100,12 +99,6 @@ public class ArticleViewController {
         requestDto.setWriter(writer);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(articleViewService.viewUserLikeArticlesList(requestDto));
-    }
-
-    @AdminOnly
-    @GetMapping("/admin-only/list")
-    public String getMethodName(@RequestParam String param) {
-        return new String();
     }
 
 }

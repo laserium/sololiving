@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
 import com.sololiving.domain.user.enums.UserType;
+import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserAuthMapper;
 import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
@@ -21,6 +22,9 @@ public class AdminAuthorizationAspect {
     @Before("@annotation(AdminOnly)")
     public void checkAdminPermission() {
         String userId = SecurityUtil.getCurrentUserId(); // 현재 유저 ID 가져오기
+        if (!userAuthMapper.existsByUserId(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
         if (userAuthMapper.selectUserTypeByUserId(userId) != UserType.ADMIN) {
             throw new ErrorException(GlobalErrorCode.NO_PERMISSION); // 권한 없을 경우 예외 발생
         }

@@ -101,3 +101,9 @@ management:
   health:
     mail:
       enabled: "${management.health.mail.enabled}"
+
+chatgpt:
+  api:
+    key: "${chatgpt.api.key}"
+  model:
+    value: "${chatgpt.model.value}"

@@ -34,7 +34,7 @@
         VALUES (
             3,
             #{targetId},
-            #{userId},
+            #{userId}
         )
     </insert>
 

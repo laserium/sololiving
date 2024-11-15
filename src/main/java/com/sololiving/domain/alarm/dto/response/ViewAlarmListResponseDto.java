@@ -17,7 +17,7 @@ public class ViewAlarmListResponseDto {
     private String actorId;
     private Long articleId;
     private Long commentId;
-    private boolean is_read;
+    private boolean isRead;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

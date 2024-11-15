@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import com.sololiving.domain.article.dto.request.CreateArticleRequestDto;
 import com.sololiving.domain.article.dto.request.UpdateArticleRequestDto;
 import com.sololiving.domain.article.dto.response.CreateArticleResponseDto;
+import com.sololiving.domain.article.enums.Status;
 import com.sololiving.domain.article.event.ArticleCreatedEvent;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
 import com.sololiving.domain.article.mapper.ArticleMapper;
@@ -30,6 +31,7 @@ import com.sololiving.domain.comment.vo.CommentVo;
 import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.media.service.MediaService;
 import com.sololiving.domain.media.service.MediaUploadService;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.aws.S3Uploader;
 
@@ -228,4 +230,26 @@ public class ArticleService {
         redisTemplate.opsForValue().increment("ARTICLE:" + articleId + ":view_cnt");
     }
 
+    // [관리자] 게시글 상태 변경
+    public void modifyArticleStatus(Long articleId, Status status) {
+        validateUpdateArticleStatus(articleId, status);
+        updateArticleStatus(articleId, status);
+    }
+
+    private void validateUpdateArticleStatus(Long articleId, Status status) {
+        if (articleId == null || status == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
+        if (status != Status.NORMAL && status != Status.BLIND && status != Status.DELETED) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_TYPE_IS_WRONG);
+        }
+        if (!articleMapper.checkArticleExists(articleId)) {
+            throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    private void updateArticleStatus(Long articleId, Status status) {
+        articleMapper.updateArticleUpdate(articleId, status);
+    }
 }

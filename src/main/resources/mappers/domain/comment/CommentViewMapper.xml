@@ -50,8 +50,10 @@
             END AS isLiked,
             c.created_at AS createdAt,
             c.updated_at AS updatedAt,
+            pc.writer AS parentWriter,  <!-- 원댓글 작성자 -->
             c.status
         FROM COMMENT c
+        LEFT JOIN COMMENT pc ON c.parent_comment_id = pc.comment_id <!-- 부모 댓글과 조인 -->
         <where>
             c.article_id = #{articleId}
                 AND c.status = 'NORMAL'
