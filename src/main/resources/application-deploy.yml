@@ -107,3 +107,7 @@ chatgpt:
     key: "${chatgpt.api.key}"
   model:
     value: "${chatgpt.model.value}"
+
+logging:
+  level:
+    root: "${logging.level.root}"

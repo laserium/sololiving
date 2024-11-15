@@ -28,6 +28,8 @@ import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.vo.ArticleVo;
 import com.sololiving.domain.comment.mapper.CommentMapper;
 import com.sololiving.domain.comment.vo.CommentVo;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.media.service.MediaService;
 import com.sololiving.domain.media.service.MediaUploadService;
@@ -59,10 +61,11 @@ public class ArticleService {
     private final S3Uploader s3Uploader;
     private final CommentMapper commentMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserActivityLogService userActivityLogService;
 
     @Transactional
     public CreateArticleResponseDto createArticle(CreateArticleRequestDto requestDto, String userId,
-            List<String> tempMediaUrls) {
+            List<String> tempMediaUrls, String ipAddress) {
         ArticleVo articleVo = buildArticle(requestDto, userId);
         articleMapper.insertArticle(articleVo);
 
@@ -78,6 +81,8 @@ public class ArticleService {
                     .publishEvent(new ArticleCreatedEvent(this, articleVo.getArticleId(), requestDto.getContent()));
         }
 
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertArticleLog(userId, ipAddress, articleVo.getArticleId(), BoardMethod.CREATE);
         return CreateArticleResponseDto.builder().articleId(articleVo.getArticleId()).build();
     }
 
@@ -151,21 +156,6 @@ public class ArticleService {
                 .block();
     }
 
-    // 게시글 작성
-    @Transactional
-    private CreateArticleResponseDto addArticle(CreateArticleRequestDto requestDto, String userId,
-            List<String> tempMediaUrls) {
-        ArticleVo articleVo = buildArticle(requestDto, userId);
-        articleMapper.insertArticle(articleVo);
-
-        // 미디어 파일 처리 및 mediaTypeBitmask 결정
-        if (tempMediaUrls != null && !tempMediaUrls.isEmpty()) {
-            int mediaTypeBitmask = mediaUploadService.attachFilesToArticle(articleVo.getArticleId(), tempMediaUrls);
-            articleMapper.updateMediaType(articleVo.getArticleId(), mediaTypeBitmask);
-        }
-        return CreateArticleResponseDto.builder().articleId(articleVo.getArticleId()).build();
-    }
-
     private ArticleVo buildArticle(CreateArticleRequestDto requestDto, String userId) {
         return ArticleVo.builder()
                 .writer(userId)
@@ -175,9 +165,18 @@ public class ArticleService {
                 .build();
     }
 
+    // 게시글 삭제
+    public void modifyArticle(UpdateArticleRequestDto requestDto, Long articleId, String userId, String ipAddress) {
+        validateWriter(articleId, userId);
+        updateArticle(requestDto, articleId, userId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertArticleLog(userId, ipAddress, articleId, BoardMethod.UPDATE);
+    }
+
     // 게시글 수정
     @Transactional
-    public void modifyArticle(UpdateArticleRequestDto requestDto, Long articleId, String userId) {
+    private void updateArticle(UpdateArticleRequestDto requestDto, Long articleId, String userId) {
         ArticleVo articleVo = articleMapper.selectByArticleId(articleId);
         if (articleVo == null) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
@@ -195,8 +194,23 @@ public class ArticleService {
     }
 
     // 게시글 삭제
+    public void removeArticle(Long articleId, String userId, String ipAddress) {
+        validateWriter(articleId, userId);
+        deleteArticle(articleId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertArticleLog(userId, ipAddress, articleId, BoardMethod.DELETE);
+    }
+
+    // 작성자 검증
+    private void validateWriter(Long articleId, String userId) {
+        if (!articleMapper.verifyArticleWriter(articleId, userId)) {
+            throw new ErrorException(ArticleErrorCode.VERIFY_WRITER_FAILED);
+        }
+    }
+
     @Transactional
-    public void removeArticle(Long articleId) {
+    public void deleteArticle(Long articleId) {
 
         // 1. 미디어 파일 조회 및 삭제
         List<String> mediaUrls = mediaMapper.selectMediaUrlsByArticleId(articleId);
@@ -216,13 +230,6 @@ public class ArticleService {
         // 3. 게시글 정보 초기화 (삭제된 게시글 처리)
         articleMapper.updateArticleAsDeleted(articleId);
 
-    }
-
-    // 작성자 검증
-    public void validateWriter(Long articleId, String userId) {
-        if (!articleMapper.verifyArticleWriter(articleId, userId)) {
-            throw new ErrorException(ArticleErrorCode.VERIFY_WRITER_FAILED);
-        }
     }
 
     // 게시글 조회수 증가

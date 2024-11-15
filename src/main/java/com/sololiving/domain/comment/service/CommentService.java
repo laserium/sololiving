@@ -12,6 +12,8 @@ import com.sololiving.domain.comment.dto.request.UpdateCommentRequestDto;
 import com.sololiving.domain.comment.exception.CommentErrorCode;
 import com.sololiving.domain.comment.mapper.CommentMapper;
 import com.sololiving.domain.comment.vo.CommentVo;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.mapper.UserViewMapper;
@@ -31,9 +33,10 @@ public class CommentService {
     private final ArticleMapper articleMapper;
     private final UserViewMapper userViewMapper;
     private final UserSettingMapper userSettingMapper;
+    private final UserActivityLogService userActivityLogService;
 
     // 댓글 작성
-    public void addComment(AddCommentRequestDto requestDto, String writer) {
+    public void addComment(AddCommentRequestDto requestDto, String writer, String ipAddress) {
         Long articleId = requestDto.getArticleId();
         // 검증
         String articleWriter = validateCommentRequest(articleId);
@@ -45,6 +48,9 @@ public class CommentService {
         if (userSettingMapper.isPushNotificationSharingEnabled(articleWriter)) {
             alarmService.addCommentAlarm(articleWriter, writer, articleId, commentId);
         }
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertCommentLog(writer, ipAddress, commentId, BoardMethod.CREATE);
     }
 
     private String validateCommentRequest(Long articleId) {
@@ -77,7 +83,7 @@ public class CommentService {
     }
 
     // 대댓글 작성
-    public void addReComment(AddReCommentRequestDto requestDto, String reCommentWriter) {
+    public void addReComment(AddReCommentRequestDto requestDto, String reCommentWriter, String ipAddress) {
         // 검증
         validateReCommentRequest(requestDto.getArticleId(), reCommentWriter);
 
@@ -96,6 +102,9 @@ public class CommentService {
             alarmService.addReCommentAlarm(commentWriter, reCommentWriter, articleId, commentId);
         }
 
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertCommentLog(reCommentWriter, ipAddress, commentId, BoardMethod.CREATE);
+
     }
 
     private void validateReCommentRequest(Long articleId, String reCommentWriter) {
@@ -113,13 +122,16 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void removeComment(Long commentId, String writer) {
+    public void removeComment(Long commentId, String writer, String ipAddress) {
         Long articleId = commentMapper.selectArticleIdByCommentId(commentId);
         if (articleId == null) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
         validateRemoveComment(commentId, writer);
         deleteComment(articleId, commentId, writer);
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertCommentLog(writer, ipAddress, commentId, BoardMethod.DELETE);
+
     }
 
     private void validateRemoveComment(Long commentId, String writer) {
@@ -142,9 +154,12 @@ public class CommentService {
     }
 
     // 댓글 수정
-    public void modifyComment(Long commentId, String writer, UpdateCommentRequestDto requestDto) {
+    public void modifyComment(Long commentId, String writer, UpdateCommentRequestDto requestDto, String ipAddress) {
         validateRemoveComment(commentId, writer);
         updateComment(commentId, writer, requestDto);
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertCommentLog(writer, ipAddress, commentId, BoardMethod.UPDATE);
+
     }
 
     @Transactional

@@ -74,6 +74,7 @@ public class AuthService {
         if (rowsAffected == 0) {
             throw new ErrorException(TokenErrorCode.CANNOT_DELETE_REFRESH_TOKEN);
         }
+
     }
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
@@ -109,5 +110,4 @@ public class AuthService {
         verifyPassword(userVo.getUserPwd(), signInRequestDto.getUserPwd());
         return userVo;
     }
-
 }

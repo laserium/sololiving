@@ -3,6 +3,8 @@ package com.sololiving.domain.follow.service;
 import com.sololiving.domain.alarm.service.AlarmService;
 import com.sololiving.domain.follow.exception.FollowErrorCode;
 import com.sololiving.domain.follow.mapper.FollowMapper;
+import com.sololiving.domain.log.enums.FollowMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.service.UserAuthService;
@@ -22,13 +24,16 @@ public class FollowService {
     private final UserSettingMapper userSettingMapper;
     private final AlarmService alarmService;
     private final FollowMapper followMapper;
+    private final UserActivityLogService userActivityLogService;
 
     // 팔로우 하기
     @CheckBlockedUser
-    public void follow(String userId, String targetId) {
+    public void follow(String userId, String targetId, String ipAddress) {
         validateFollowRequest(userId, targetId);
         insertFollow(userId, targetId);
 
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertFollowLog(userId, ipAddress, targetId, FollowMethod.FOLLOW);
     }
 
     private void validateFollowRequest(String userId, String targetId) {
@@ -61,11 +66,12 @@ public class FollowService {
     }
 
     // 팔로우 끊기
-    public void unfollow(String userId, String targetId) {
-        // 검증 로직 분리
+    public void unfollow(String userId, String targetId, String ipAddress) {
         validateUnfollowRequest(userId, targetId);
-        // DB 삭제 로직 실행
         deleteFollow(userId, targetId);
+
+        // 사용자 행동 로그 처리
+        userActivityLogService.insertFollowLog(userId, ipAddress, targetId, FollowMethod.UNFOLLOW);
     }
 
     private void validateUnfollowRequest(String userId, String targetId) {
@@ -75,7 +81,7 @@ public class FollowService {
         }
 
         // 언팔로우 대상 회원 존재 여부 검증
-        if (userAuthService.isUserIdAvailable(targetId)) {
+        if (!userAuthService.isUserIdAvailable(targetId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
 

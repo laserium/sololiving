@@ -5,12 +5,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sololiving.domain.auth.dto.auth.request.SignUpRequestDto;
+import com.sololiving.domain.auth.exception.auth.AuthErrorCode;
 import com.sololiving.domain.user.dto.request.SignUpVerificationSmsRequestDto.SendSignUpVerificationSmsRequestDto;
 import com.sololiving.domain.user.dto.response.ValidateUserContactResponseDto;
 import com.sololiving.domain.user.enums.Status;
+import com.sololiving.domain.user.enums.UserType;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.mapper.UserAuthMapper;
 import com.sololiving.domain.user.vo.UserVo;
+import com.sololiving.global.exception.GlobalErrorCode;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.security.jwt.exception.TokenErrorCode;
 import com.sololiving.global.security.jwt.service.TokenProvider;
@@ -172,6 +175,16 @@ public class UserAuthService {
             return true;
         } else
             return false;
+    }
+
+    // 관리자 검증
+    public void isAdmin(String userId) {
+        if (userId == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
+        if (userAuthMapper.selectUserTypeByUserId(userId) != UserType.ADMIN) {
+            throw new ErrorException(GlobalErrorCode.NO_PERMISSION);
+        }
     }
 
 }
