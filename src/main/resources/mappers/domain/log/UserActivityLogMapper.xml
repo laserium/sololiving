@@ -16,22 +16,22 @@
     </insert>
 
     <insert id="insertArticleLog">
-        INSERT INTO ARTICLE (log_id, article_id, board_method)
+        INSERT INTO ARTICLE_LOG (log_id, article_id, board_method)
         VALUES (#{id}, #{articleId}, #{boardMethod})
     </insert>
 
     <insert id="insertCommentLog">
-        INSERT INTO COMMENT (log_id, comment_id, board_method)
+        INSERT INTO COMMENT_LOG (log_id, comment_id, board_method)
         VALUES (#{id}, #{commentId}, #{boardMethod})
     </insert>
 
     <insert id="insertFollwLog">
-        INSERT INTO FOLLOW (log_id, target_id, follow_method)
+        INSERT INTO FOLLOW_LOG (log_id, target_id, follow_method)
         VALUES (#{id}, #{targetId}, #{boardMethod})
     </insert>
 
     <insert id="insertBlockLog">
-        INSERT INTO BLOCK (log_id, target_id, block_method)
+        INSERT INTO BLOCK_LOG (log_id, target_id, block_method)
         VALUES (#{id}, #{targetId}, #{boardMethod})
     </insert>
 

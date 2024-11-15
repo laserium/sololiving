@@ -147,4 +147,12 @@ public class AuthController {
                 .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.VERIFY_SUCCESS));
     }
 
+    @PostMapping("/admin-verification")
+    public ResponseEntity<SuccessResponse> adminVerification(HttpServletRequest httpServletRequest) {
+        String userId = SecurityUtil.getCurrentUserId();
+        userAuthService.isAdmin(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseMessage.createSuccessResponse(AuthSuccessCode.ADMIN_VERIFY_SUCCESS));
+    }
+
 }

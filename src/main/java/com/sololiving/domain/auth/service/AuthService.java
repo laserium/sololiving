@@ -110,5 +110,4 @@ public class AuthService {
         verifyPassword(userVo.getUserPwd(), signInRequestDto.getUserPwd());
         return userVo;
     }
-
 }

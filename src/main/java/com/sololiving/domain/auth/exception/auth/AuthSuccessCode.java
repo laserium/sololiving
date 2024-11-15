@@ -14,7 +14,8 @@ public enum AuthSuccessCode implements SuccessCode {
     OAUTH2_SUCCESS("AUTH_S003", "OAuth2.0 인증 완료"),
     PASSWORD_RESET_SUCCESS("AUTH_S004", "비밀번호 초기화 - 임시 비밀번호 설정 메일 전송 완료"),
     ID_RECOVER_SUCCESS("AUTH_S005", "아이디 찾기 - 메일 전송 완료"),
-    VERIFY_SUCCESS("AUTH_S006", "회원 인증 완료");
+    VERIFY_SUCCESS("AUTH_S006", "회원 인증 완료"),
+    ADMIN_VERIFY_SUCCESS("AUTH_S007", "관리자 인증 완료");
 
     private final String code;
     private final String message;

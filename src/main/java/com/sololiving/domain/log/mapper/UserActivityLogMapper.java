@@ -12,28 +12,28 @@ import com.sololiving.domain.log.vo.UserActivityLogVo;
 @Mapper
 public interface UserActivityLogMapper {
 
-    void insertActivityLog(UserActivityLogVo userActivityLogVo);
+        void insertActivityLog(UserActivityLogVo userActivityLogVo);
 
-    void insertAuthLog(@Param("id") Long id, @Param("authMethod") AuthMethod authMethod);
+        void insertAuthLog(@Param("id") Long id, @Param("authMethod") AuthMethod authMethod);
 
-    void insertArticleLog(
-            @Param("id") Long id,
-            @Param("articleId") Long articleId,
-            @Param("boardMethod") BoardMethod boardMethod);
+        void insertArticleLog(
+                        @Param("id") Long id,
+                        @Param("articleId") Long articleId,
+                        @Param("boardMethod") BoardMethod boardMethod);
 
-    void insertCommentLog(
-            @Param("id") Long id,
-            @Param("commentId") Long articleId,
-            @Param("boardMethod") BoardMethod boardMethod);
+        void insertCommentLog(
+                        @Param("id") Long id,
+                        @Param("commentId") Long articleId,
+                        @Param("boardMethod") BoardMethod boardMethod);
 
-    void insertFollowLog(
-            @Param("id") Long id,
-            @Param("targetId") String targetId,
-            @Param("boardMethod") FollowMethod followMethod);
+        void insertFollowLog(
+                        @Param("id") Long id,
+                        @Param("targetId") String targetId,
+                        @Param("boardMethod") FollowMethod followMethod);
 
-    void insertBlockLog(
-            @Param("id") Long id,
-            @Param("articleId") String articleId,
-            @Param("boardMethod") BlockMethod blockMethod);
+        void insertBlockLog(
+                        @Param("id") Long id,
+                        @Param("articleId") String articleId,
+                        @Param("boardMethod") BlockMethod blockMethod);
 
 }
