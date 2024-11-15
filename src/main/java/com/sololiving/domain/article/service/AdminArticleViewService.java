@@ -1,8 +1,6 @@
 package com.sololiving.domain.article.service;
 
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 
 import com.sololiving.domain.article.dto.request.SearchArticleLogListRequestDto;
