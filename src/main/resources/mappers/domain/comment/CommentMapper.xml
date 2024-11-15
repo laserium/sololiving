@@ -6,7 +6,8 @@
 <mapper namespace="com.sololiving.domain.comment.mapper.CommentMapper">
 
     <!-- 댓글/대댓글 작성 -->
-    <insert id="insertComment" parameterType="com.sololiving.domain.comment.vo.CommentVo">
+    <insert id="insertComment" parameterType="com.sololiving.domain.comment.vo.CommentVo" 
+    useGeneratedKeys="true" keyProperty="commentId">
         INSERT INTO COMMENT (article_id, parent_comment_id, writer, content)
         VALUES (#{articleId}, #{parentCommentId}, #{writer}, #{content})
     </insert>

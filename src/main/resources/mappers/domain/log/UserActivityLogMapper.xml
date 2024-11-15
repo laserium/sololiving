@@ -25,14 +25,14 @@
         VALUES (#{id}, #{commentId}, #{boardMethod})
     </insert>
 
-    <insert id="insertFollwLog">
+    <insert id="insertFollowLog">
         INSERT INTO FOLLOW_LOG (log_id, target_id, follow_method)
-        VALUES (#{id}, #{targetId}, #{boardMethod})
+        VALUES (#{id}, #{targetId}, #{followMethod})
     </insert>
 
     <insert id="insertBlockLog">
         INSERT INTO BLOCK_LOG (log_id, target_id, block_method)
-        VALUES (#{id}, #{targetId}, #{boardMethod})
+        VALUES (#{id}, #{targetId}, #{blockMethod})
     </insert>
 
 </mapper>

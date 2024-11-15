@@ -62,8 +62,10 @@ public class ArticleViewController {
     public ResponseEntity<ViewArticleDetailsResponseDto> viewArticleDetails(@PathVariable Long articleId,
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
+
         // 사용자 행동 로그 처리
-        userActivityLogService.insertArticleLog(userId, IpAddressUtil.getClientIp(httpServletRequest),
+        userActivityLogService.insertArticleLog(userId,
+                IpAddressUtil.getClientIp(httpServletRequest),
                 articleId, BoardMethod.VIEW);
         return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId, userId));
     }
@@ -98,7 +100,7 @@ public class ArticleViewController {
         if (writer == null) {
             throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
-        if (!userAuthService.isUserIdAvailable(writer)) {
+        if (userAuthService.isUserIdAvailable(writer)) {
             throw new ErrorException(UserErrorCode.USER_NOT_FOUND);
         }
         String userId = SecurityUtil.getCurrentUserId();

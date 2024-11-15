@@ -54,7 +54,6 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequestDto requestDto,
             HttpServletRequest httpServletRequest) {
-        String userId = SecurityUtil.getCurrentUserId();
         CreateTokenResponse tokenResponse = authService.createTokenResponse(requestDto);
         ResponseCookie refreshTokenCookie = authService.createRefreshTokenCookie(tokenResponse.getRefreshToken());
         ResponseCookie accessTokenCookie = authService.createAccessTokenCookie(tokenResponse.getAccessToken());
@@ -62,7 +61,8 @@ public class AuthController {
         userService.setLastSignInAt(requestDto.getUserId());
 
         // 사용자 행동 로그 처리
-        userActivityLogService.insertAuthLog(userId, IpAddressUtil.getClientIp(httpServletRequest), AuthMethod.SIGNIN);
+        userActivityLogService.insertAuthLog(requestDto.getUserId(), IpAddressUtil.getClientIp(httpServletRequest),
+                AuthMethod.SIGNIN);
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .header("Set-Cookie", accessTokenCookie.toString())
