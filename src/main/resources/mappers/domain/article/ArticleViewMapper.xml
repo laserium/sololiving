@@ -122,7 +122,7 @@
     <!-- 게시글 목록 조회 -->
     <select id="selectArticlesByCategoryId" resultType="com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto">
         SELECT 
-            ROW_NUMBER() OVER (ORDER BY <include refid="articleSorting" />) AS displayNumber,
+            ((#{page} * #{limit}) - ROW_NUMBER() OVER (ORDER BY <include refid="articleSorting" />) + 1) AS displayNumber,
             a.article_id AS articleId,
             a.writer,
             a.title,
@@ -137,12 +137,14 @@
         LEFT JOIN (
             <include refid="filteredCommentCount" />
         ) fc ON a.article_id = fc.article_id
+        CROSS JOIN (SELECT COUNT(*) AS totalCount FROM ARTICLE WHERE category_code = #{categoryCode}) AS total
         WHERE a.category_code = #{categoryCode}
         <include refid="articleStatusFilter" />
         <include refid="articleSearchFilter" />
         ORDER BY <include refid="articleSorting" /> 
-        LIMIT #{limit} OFFSET #{page}
+        LIMIT #{limit} OFFSET #{offset}
     </select>
+
 
     <!-- 게시글 상세 조회 -->
     <select id="selectByArticleId" resultType="com.sololiving.domain.article.dto.response.ViewArticleDetailsResponseDto">

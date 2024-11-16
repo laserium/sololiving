@@ -116,7 +116,7 @@ public class KakaoOAuthService {
         return webClientBuilder.build()
                 .get()
                 .uri(kakaoOAuthProviderProperties.getUserInfoUri())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
                 .bodyToMono(KakaoUserInfoResponseDto.class)
