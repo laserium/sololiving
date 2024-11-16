@@ -10,13 +10,18 @@ import com.sololiving.domain.article.dto.response.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewTopArticlesResponseDto;
 import com.sololiving.domain.article.exception.ArticleErrorCode;
+import com.sololiving.domain.article.mapper.ArticleMapper;
 import com.sololiving.domain.article.mapper.ArticleViewMapper;
 import com.sololiving.domain.article.util.TimeAgoUtil;
+import com.sololiving.domain.log.enums.BoardMethod;
+import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.media.mapper.MediaMapper;
 import com.sololiving.domain.user.exception.user_setting.UserSettingErrorCode;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
+import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.DecodeParameterUtil;
+import com.sololiving.global.util.IpAddressUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +33,11 @@ public class ArticleViewService {
 
     private final ArticleService articleService;
     private final ArticleViewMapper articleViewMapper;
+    private final UserAuthService userAuthService;
     private final MediaMapper mediaMapper;
+    private final ArticleMapper articleMapper;
     private final UserSettingMapper userSettingMapper;
+    private final UserActivityLogService userActivityLogService;
 
     // 전체 게시글 조회
     public List<ViewAllArticlesListResponseDto> viewAllArticlesList(String userId, String sort) {
@@ -60,11 +68,18 @@ public class ArticleViewService {
     }
 
     // 게시글 상세 조회 API
-    public ViewArticleDetailsResponseDto viewArticleDetails(Long articleId, String userId) {
+    public ViewArticleDetailsResponseDto viewArticleDetails(Long articleId, String userId, String ipAddress) {
         // 1. 캐시된 게시글 정보 가져오기
         ViewArticleDetailsResponseDto responseDto = setArticleDetails(articleId, userId);
         // 2. 조회수 증가
         articleService.incrementArticleViewCount(articleId);
+
+        // 사용자 행동 로그 처리
+        if (userAuthService.isUserIdAvailable(userId)) {
+            userActivityLogService.insertArticleLog(ipAddress, ipAddress, articleId, BoardMethod.VIEW);
+        } else {
+            userActivityLogService.insertArticleLog(userId, ipAddress, articleId, BoardMethod.VIEW);
+        }
         return responseDto;
     }
 
@@ -73,7 +88,7 @@ public class ArticleViewService {
     // #articleId")
     private ViewArticleDetailsResponseDto setArticleDetails(Long articleId, String userId) {
         ViewArticleDetailsResponseDto responseDto = articleViewMapper.selectByArticleId(articleId, userId);
-        if (responseDto == null) {
+        if (responseDto == null || !articleMapper.checkArticleExists(articleId)) {
             throw new ErrorException(ArticleErrorCode.ARTICLE_NOT_FOUND);
         }
         responseDto.setMediaList(mediaMapper.selectByArticleId(articleId));

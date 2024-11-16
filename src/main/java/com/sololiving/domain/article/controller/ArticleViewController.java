@@ -63,11 +63,8 @@ public class ArticleViewController {
             HttpServletRequest httpServletRequest) {
         String userId = SecurityUtil.getCurrentUserId();
 
-        // 사용자 행동 로그 처리
-        userActivityLogService.insertArticleLog(userId,
-                IpAddressUtil.getClientIp(httpServletRequest),
-                articleId, BoardMethod.VIEW);
-        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId, userId));
+        return ResponseEntity.status(HttpStatus.OK).body(articleViewService.viewArticleDetails(articleId, userId,
+                IpAddressUtil.getClientIp(httpServletRequest)));
     }
 
     // 메인 페이지 : 하루 기준 인기 게시글 TOP 10 조회
