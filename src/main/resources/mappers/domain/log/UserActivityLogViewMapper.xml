@@ -53,7 +53,7 @@
         SELECT 
             <include refid="BaseColumns" />,
             cl.board_method AS method,
-            cl.comment_id AS targetId
+            cl.comment_id AS targetId,
         FROM 
             USER_ACTIVITY_LOG ual
         JOIN COMMENT_LOG cl ON ual.id = cl.log_id

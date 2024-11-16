@@ -16,6 +16,7 @@ public class ViewUALogListResponseDto {
     private String userId;
     private String ipAddress;
     private ActivityType activityType;
+    private String method;
     private Long boardId;
     private String targetId;
 
