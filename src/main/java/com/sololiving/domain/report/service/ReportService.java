@@ -68,7 +68,13 @@ public class ReportService {
         Long subjectId = requestDto.getSubjectId();
         ReportType reportType = requestDto.getReportType();
 
-        if (subjectId == null && subjectType == null && reportType == null) {
+        if (subjectType == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
+        if (subjectId == null) {
+            throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
+        }
+        if (reportType == null) {
             throw new ErrorException(GlobalErrorCode.REQUEST_IS_NULL);
         }
         if (subjectType == SubjectType.ARTICLE
