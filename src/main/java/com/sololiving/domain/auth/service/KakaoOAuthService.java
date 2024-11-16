@@ -101,6 +101,7 @@ public class KakaoOAuthService {
         return webClientBuilder.build()
                 .post()
                 .uri(kakaoOAuthProviderProperties.getTokenUri())
+                .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8")
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", kakaoOAuthRegistrationProperties.getClientId())
                         .with("redirect_uri", kakaoOAuthRegistrationProperties.getRedirectUri())
