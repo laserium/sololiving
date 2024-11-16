@@ -16,6 +16,8 @@ public class ViewUALogListResponseDto {
     private String userId;
     private String ipAddress;
     private ActivityType activityType;
+    private Long boardId;
+    private String targetId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
