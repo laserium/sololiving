@@ -29,11 +29,11 @@ public interface UserActivityLogMapper {
         void insertFollowLog(
                         @Param("id") Long id,
                         @Param("targetId") String targetId,
-                        @Param("boardMethod") FollowMethod followMethod);
+                        @Param("followMethod") FollowMethod followMethod);
 
         void insertBlockLog(
                         @Param("id") Long id,
                         @Param("targetId") String targetId,
-                        @Param("boardMethod") BlockMethod blockMethod);
+                        @Param("blockMethod") BlockMethod blockMethod);
 
 }

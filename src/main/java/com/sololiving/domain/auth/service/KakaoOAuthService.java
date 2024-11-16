@@ -103,9 +103,9 @@ public class KakaoOAuthService {
                 .uri(kakaoOAuthProviderProperties.getTokenUri())
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", kakaoOAuthRegistrationProperties.getClientId())
-                        .with("client_secret", kakaoOAuthRegistrationProperties.getClientSecret())
                         .with("redirect_uri", kakaoOAuthRegistrationProperties.getRedirectUri())
-                        .with("code", authCode))
+                        .with("code", authCode)
+                        .with("client_secret", kakaoOAuthRegistrationProperties.getClientSecret()))
                 .retrieve()
                 .bodyToMono(KakaoTokenResponseDto.class)
                 .block();

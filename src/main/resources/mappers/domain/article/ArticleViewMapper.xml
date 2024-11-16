@@ -221,7 +221,9 @@
         LEFT JOIN (
             <include refid="filteredCommentCount" />
         ) fc ON a.article_id = fc.article_id
-        WHERE a.category_code = #{categoryCode}
+        <if test="categoryCode != null and categoryCode != ''">
+            WHERE a.category_code = #{categoryCode}
+        </if>
         <include refid="articleStatusFilter" />
         <include refid="articleSearchFilter" />
         <if test="writer != null and writer != ''">
