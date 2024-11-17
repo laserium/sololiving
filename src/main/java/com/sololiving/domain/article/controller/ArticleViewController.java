@@ -15,8 +15,6 @@ import com.sololiving.domain.article.dto.request.ArticleSearchRequestDto;
 import com.sololiving.domain.article.dto.response.ViewAllArticlesListResponseDto;
 import com.sololiving.domain.article.dto.response.ViewArticleDetailsResponseDto;
 import com.sololiving.domain.article.service.ArticleViewService;
-import com.sololiving.domain.log.enums.BoardMethod;
-import com.sololiving.domain.log.service.UserActivityLogService;
 import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.domain.article.dto.response.ViewArticlesListResponseDto;
@@ -36,7 +34,6 @@ public class ArticleViewController {
 
     private final ArticleViewService articleViewService;
     private final UserAuthService userAuthService;
-    private final UserActivityLogService userActivityLogService;
 
     // 전체 게시글 목록 조회
     @GetMapping("/all")

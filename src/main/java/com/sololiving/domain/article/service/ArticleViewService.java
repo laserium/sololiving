@@ -21,7 +21,6 @@ import com.sololiving.domain.user.mapper.UserSettingMapper;
 import com.sololiving.domain.user.service.UserAuthService;
 import com.sololiving.global.exception.error.ErrorException;
 import com.sololiving.global.util.DecodeParameterUtil;
-import com.sololiving.global.util.IpAddressUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,11 +52,8 @@ public class ArticleViewService {
 
     // 게시글 목록 조회
     public List<ViewArticlesListResponseDto> viewArticlesList(ArticleSearchRequestDto requestDto) {
-
-        decodeSearchParameters(requestDto);
-
         List<ViewArticlesListResponseDto> articles = articleViewMapper.selectArticlesByCategoryId(
-                requestDto);
+                decodeSearchParameters(requestDto));
 
         articles.forEach(article -> {
             String timeAgo = TimeAgoUtil.getTimeAgo(article.getCreatedAt());
@@ -112,7 +108,7 @@ public class ArticleViewService {
 
     // 사용자가 작성한 게시글 목록 조회
     public List<ViewArticlesListResponseDto> viewUserArticlesList(ArticleSearchRequestDto requestDto) {
-        decodeSearchParameters(requestDto);
+        requestDto = decodeSearchParameters(requestDto);
 
         // 사용자 설정 필터
         if (!requestDto.getUserId().equals(requestDto.getWriter())
@@ -132,7 +128,7 @@ public class ArticleViewService {
     // 사용자가 추천한 게시글 목록 조회
     public List<ViewArticlesListResponseDto> viewUserLikeArticlesList(
             ArticleSearchRequestDto requestDto) {
-        decodeSearchParameters(requestDto);
+        requestDto = decodeSearchParameters(requestDto);
 
         // 사용자 설정 필터
         if (!requestDto.getUserId().equals(requestDto.getWriter())
@@ -149,11 +145,12 @@ public class ArticleViewService {
         return articles;
     }
 
-    private void decodeSearchParameters(ArticleSearchRequestDto requestDto) {
-        DecodeParameterUtil.decodeSearchParameter(requestDto.getCategoryCode());
-        DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchContents());
-        DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchTitle());
-        DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchWriter());
+    private ArticleSearchRequestDto decodeSearchParameters(ArticleSearchRequestDto requestDto) {
+        requestDto.setCategoryCode(DecodeParameterUtil.decodeSearchParameter(requestDto.getCategoryCode()));
+        requestDto.setSearchTitle(DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchTitle()));
+        requestDto.setSearchContents(DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchContents()));
+        requestDto.setSearchWriter(DecodeParameterUtil.decodeSearchParameter(requestDto.getSearchWriter()));
+        return requestDto;
     }
 
 }
