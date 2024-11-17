@@ -7,7 +7,13 @@
 
     <!-- 댓글 상태 필터(차단된 사용자 및 삭제된 댓글 제외) -->
     <sql id="commentStatusFilter">
-        WHERE c.status = 'NORMAL' 
+        WHERE c.status = 'NORMAL'
+        AND EXISTS (
+            SELECT 1 
+            FROM USER u 
+            WHERE u.user_id = c.writer 
+            AND u.status != 'DELETED'
+        )
         <if test="userId != null">
             AND NOT EXISTS (
                 SELECT 1 
@@ -18,9 +24,15 @@
         </if>
     </sql>
 
-    <!-- 게시글 상태 필터(삭제된 게시글, 블라인드 처리 된 게시글) -->
+    <!-- 게시글 상태 필터(삭제된 게시글, 블라인드 처리된 게시글, 삭제된 사용자 제외) -->
     <sql id="articleStatusFilter">
         AND a.status = 'NORMAL'
+        AND EXISTS (
+            SELECT 1 
+            FROM USER u 
+            WHERE u.user_id = a.writer 
+            AND u.status != 'DELETED'
+        )
         <if test="userId != null">
             AND NOT EXISTS (
                 SELECT 1
@@ -52,7 +64,7 @@
         <include refid="commentStatusFilter" />
         GROUP BY article_id
     </sql>
-    
+
     <!-- 추천 여부 확인 -->
     <sql id="isLikedCondition">
         CASE 
@@ -66,7 +78,7 @@
         END
     </sql>
 
-        <!-- 검색 조건 필터 --> 
+    <!-- 검색 조건 필터 --> 
     <sql id="articleSearchFilter">
         <if test="(searchTitle != null and searchTitle != '') 
                 or (searchContents != null and searchContents != '') 
@@ -157,20 +169,7 @@
             a.view_cnt AS viewCnt,
             a.score,
             a.media_type AS mediaType,
-            COALESCE((
-                SELECT COUNT(*)
-                FROM COMMENT c
-                WHERE c.article_id = a.article_id
-                AND c.status = 'NORMAL' 
-                <if test="userId != null">
-                    AND NOT EXISTS (
-                        SELECT 1 
-                        FROM BLOCK b 
-                        WHERE b.blocker_id = #{userId}
-                        AND b.blocking_id = c.writer
-                    )
-                </if>
-            ), 0) AS commentCount,
+            COALESCE((SELECT COUNT(*) FROM COMMENT c WHERE c.article_id = a.article_id AND c.status = 'NORMAL' AND EXISTS (SELECT 1 FROM USER u WHERE u.user_id = c.writer AND u.status != 'DELETED') <if test="userId != null"> AND NOT EXISTS (SELECT 1 FROM BLOCK b WHERE b.blocker_id = #{userId} AND b.blocking_id = c.writer) </if>), 0) AS commentCount,
             a.status,
             a.created_at AS createdAt,
             a.updated_at AS updatedAt
@@ -195,10 +194,8 @@
             a.media_type AS mediaType,
             a.created_at AS createdAt
         FROM ARTICLE a
-        LEFT JOIN MEDIA m ON a.article_id = m.article_id
-        AND m.media_type = 'IMAGE'
-        WHERE a.status = 'NORMAL'
-        AND a.score &gt;= 20
+        LEFT JOIN MEDIA m ON a.article_id = m.article_id AND m.media_type = 'IMAGE'
+        WHERE a.status = 'NORMAL' AND a.score >= 50 AND EXISTS (SELECT 1 FROM USER u WHERE u.user_id = a.writer AND u.status != 'DELETED')
         ORDER BY a.score DESC
         LIMIT 10
     </select>
@@ -221,7 +218,7 @@
         LEFT JOIN (
             <include refid="filteredCommentCount" />
         ) fc ON a.article_id = fc.article_id
-        WHERE a.category_code = #{categoryCode}
+        WHERE a.category_code = #{categoryCode} AND EXISTS (SELECT 1 FROM USER u WHERE u.user_id = a.writer AND u.status != 'DELETED')
         <include refid="articleStatusFilter" />
         <include refid="articleSearchFilter" />
         <if test="writer != null and writer != ''">
@@ -250,12 +247,11 @@
         LEFT JOIN (
             <include refid="filteredCommentCount" />
         ) fc ON a.article_id = fc.article_id
-        WHERE al.user_id = #{writer} <!-- 사용자가 추천한 게시글 필터링 -->
+        WHERE al.user_id = #{writer} AND EXISTS (SELECT 1 FROM USER u WHERE u.user_id = a.writer AND u.status != 'DELETED')
         <include refid="articleStatusFilter" />
         <include refid="articleSearchFilter" />
         ORDER BY <include refid="articleSorting" />
         LIMIT #{limit} OFFSET #{page}
     </select>
-
 
 </mapper>

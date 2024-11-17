@@ -23,7 +23,7 @@ public class ArticleScheduler {
     private final ArticleMapper articleMapper;
 
     // 게시글의 고유 점수 스케쥴링 : 3시간 마다
-    @Scheduled(cron = "0 0 0/3 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void updateArticleScores() {
         log.info("[SCHEDULED] : 게시글의 고유 점수 스케쥴링 => START");
         try {

@@ -7,9 +7,11 @@ import com.sololiving.domain.block.mapper.BlockMapper;
 import com.sololiving.domain.follow.mapper.FollowMapper;
 import com.sololiving.domain.user.dto.response.ViewProfileHedaerResponseDto;
 import com.sololiving.domain.user.dto.response.ViewUserProfileResponseDto;
+import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.exception.user_setting.UserSettingErrorCode;
 import com.sololiving.domain.user.mapper.UserProfileViewMapper;
 import com.sololiving.domain.user.mapper.UserSettingMapper;
+import com.sololiving.domain.user.mapper.UserViewMapper;
 import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class UserProfileViewService {
     private final FollowMapper followMapper;
     private final BlockMapper blockMapper;
     private final UserSettingMapper userSettingMapper;
+    private final UserViewMapper userViewMapper;
 
     // 유저 프로필 조회
     public ViewUserProfileResponseDto viewUserProfile(String userId, String targetId) {
@@ -35,6 +38,10 @@ public class UserProfileViewService {
             // 프로필 공유 여부 확인
             if (!userSettingMapper.isProfileSharingEnabled(targetId)) {
                 throw new ErrorException(UserSettingErrorCode.USER_PROFILE_SHARING_DISABLED);
+            }
+            // 탈퇴한 인원 확인
+            if (userViewMapper.isUserDeleted(targetId)) {
+                throw new ErrorException(UserErrorCode.IS_DELETED_USER);
             }
 
         }
