@@ -40,6 +40,9 @@ public class BlockService {
         if (userAuthService.isUserIdAvailable(targetId)) {
             throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
         }
+        if (userAuthService.isUserIdAvailable(userId)) {
+            throw new ErrorException(UserErrorCode.USER_ID_NOT_FOUND);
+        }
         // 본인 차단 불가
         if (userId.equals(targetId)) {
             throw new ErrorException(BlockErrorCode.CANNOT_BLOCK_MYSELF);
