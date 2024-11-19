@@ -9,7 +9,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class SoloLivingApiApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(SoloLivingApiApplication.class)
-                .profiles("deploy")
+                .profiles("develop")
                 .run(args);
     }
 
