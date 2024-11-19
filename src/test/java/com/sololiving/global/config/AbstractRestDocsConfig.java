@@ -19,7 +19,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
-@ActiveProfiles("deploy")
+@ActiveProfiles("develop")
 @AutoConfigureMockMvc
 public abstract class AbstractRestDocsConfig {
 
