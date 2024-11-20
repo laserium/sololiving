@@ -10,10 +10,7 @@ import com.sololiving.domain.log.enums.BoardMethod;
 import com.sololiving.domain.log.enums.FollowMethod;
 import com.sololiving.domain.log.mapper.UserActivityLogMapper;
 import com.sololiving.domain.log.vo.UserActivityLogVo;
-import com.sololiving.domain.user.exception.UserErrorCode;
 import com.sololiving.domain.user.service.UserAuthService;
-import com.sololiving.global.exception.GlobalErrorCode;
-import com.sololiving.global.exception.error.ErrorException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UserActivityLogService {
 
         private final UserActivityLogMapper userActivityLogMapper;
-        private final UserAuthService userAuthService;
 
         // AUTH
         @Async("userLogTaskExecutor")
@@ -54,7 +50,7 @@ public class UserActivityLogService {
         }
 
         // COMMENT
-        // @Async("userLogTaskExecutor")
+        @Async("userLogTaskExecutor")
         public void insertCommentLog(String userId, String ipAddress, Long commentId, BoardMethod boardMethod) {
                 UserActivityLogVo userActivityLogVo = UserActivityLogVo.builder()
                                 .userId(userId)
