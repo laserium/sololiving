@@ -4,7 +4,7 @@ import com.sololiving.global.handlers.MybatisEnumHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -14,8 +14,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan(basePackages = "com.sololiving.**.**.mapper")
+// @MapperScan(basePackages = "com.sololiving.**.**.mapper")
 public class MybatisConfig {
+
+        @Bean
+        public MapperScannerConfigurer mapperScannerConfigurer() {
+                MapperScannerConfigurer configurer = new MapperScannerConfigurer();
+                configurer.setBasePackage("com.sololiving"); // 최상위 패키지에서 시작
+                return configurer;
+        }
 
         @Bean
         public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {

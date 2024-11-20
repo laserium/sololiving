@@ -22,8 +22,8 @@ public class ArticleScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final ArticleMapper articleMapper;
 
-    // 게시글의 고유 점수 스케쥴링 : 3시간 마다
-    @Scheduled(cron = "0 0 0 * * *")
+    // 게시글의 고유 점수 스케쥴링 : 자정 마다
+    @Scheduled(cron = "0 0 0 1 * *")
     public void updateArticleScores() {
         log.info("[SCHEDULED] : 게시글의 고유 점수 스케쥴링 => START");
         try {
