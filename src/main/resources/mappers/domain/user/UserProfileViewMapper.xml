@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.user.mapper.UserProfileViewMapper">
+
+    <!-- 유저 프로필 조회(마이페이지) -->
+    <select id="selectUserProfile" resultType="com.sololiving.domain.user.dto.response.ViewUserProfileResponseDto">
+        SELECT 
+            u.user_id AS targetId,
+            u.nickname,
+            pi.image_url AS profileImageUrl,
+            u.profile_bio AS profileBio,
+            (SELECT COUNT(*) FROM FOLLOW WHERE following = u.user_id) AS followerCnt,
+            (SELECT COUNT(*) FROM FOLLOW WHERE follower = u.user_id) AS followingCnt
+        FROM USER u
+        JOIN USER_PROFILE_IMAGE pi ON u.user_id = pi.user_id
+        WHERE u.user_id = #{targetId}
+    </select>
+
+    <!-- 유저 헤더 프로필 조회(헤더) -->
+    <select id="selectUserProfileHeader" resultType="com.sololiving.domain.user.dto.response.ViewProfileHedaerResponseDto">
+        SELECT 
+            u.user_id AS userId,
+            u.nickname,
+            pi.image_url AS profileImageUrl
+        FROM USER u
+        JOIN USER_PROFILE_IMAGE pi ON u.user_id = pi.user_id
+        WHERE u.user_id = #{userId}
+    </select>
+    
+</mapper>

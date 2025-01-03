@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.follow.mapper.FollowMapper">
+
+    <!-- 팔로우 상태 검증 -->
+    <select id="existsFollowing" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM FOLLOW
+            WHERE follower = #{userId} AND following = #{targetId}
+        )
+    </select>
+    
+    <!-- 팔로우 하기 -->
+    <insert id="insertFollow">
+        INSERT INTO FOLLOW (follower, following)
+        VALUES (#{userId}, #{targetId})
+    </insert>
+
+    <!-- 팔로우 끊기 -->
+    <delete id="deleteFollow">
+        DELETE FROM FOLLOW
+        WHERE follower = #{userId}
+          AND following = #{targetId}
+    </delete>
+
+</mapper>

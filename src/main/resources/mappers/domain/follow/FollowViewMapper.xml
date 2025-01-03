@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.follow.mapper.FollowViewMapper">
+
+    <select id="selectFollowListByUserId" resultType="com.sololiving.domain.follow.dto.response.ViewFollowListResponseDto">
+        SELECT u.user_id AS followerId,
+            u.nickname AS followerNickname,
+            upi.image_url AS followerProfileImage
+        FROM FOLLOW f
+        JOIN USER u ON f.following = u.user_id
+        LEFT JOIN USER_PROFILE_IMAGE upi ON u.user_id = upi.user_id
+        WHERE f.follower = #{userId}
+    </select>
+
+    <select id="selectFollowerListByUserId" resultType="com.sololiving.domain.follow.dto.response.ViewFollowerListResponseDto">
+        SELECT u.user_id AS followerId,
+            u.nickname AS followerNickname,
+            upi.image_url AS followerProfileImage
+        FROM FOLLOW f
+        JOIN USER u ON f.follower = u.user_id
+        LEFT JOIN USER_PROFILE_IMAGE upi ON u.user_id = upi.user_id
+        WHERE f.following = #{userId}
+    </select>
+
+
+</mapper>

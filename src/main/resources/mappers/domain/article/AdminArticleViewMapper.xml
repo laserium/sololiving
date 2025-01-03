@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.article.mapper.AdminArticleViewMapper">
+
+    <select id="selectArticleLogs" resultType="com.sololiving.domain.article.dto.response.ViewArticleLogListResponseDto">
+        SELECT 
+            article_id AS articleId,
+            title,
+            category_code AS categoryCode,
+            writer,
+            view_cnt AS viewCnt,
+            like_cnt AS likeCnt,
+            created_at AS createdAt,
+            status
+        FROM ARTICLE
+        WHERE 1=1
+        
+        <!-- 상태 필터링 -->
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        
+        <!-- 카테고리 필터링 -->
+        <if test="categoryCode != null and categoryCode != ''">
+            AND category_code = #{categoryCode}
+        </if>
+        
+        <!-- 제목 검색 -->
+        <if test="searchTitle != null and searchTitle != ''">
+            AND title LIKE CONCAT('%', #{searchTitle}, '%')
+        </if>
+        
+        <!-- 작성자 검색 -->
+        <if test="searchWriter != null and searchWriter != ''">
+            AND writer LIKE CONCAT('%', #{searchWriter}, '%')
+        </if>
+        
+        <!-- 정렬 조건 -->
+        <choose>
+            <when test="sortBy == 'createdAt'">
+                ORDER BY created_at
+            </when>
+            <when test="sortBy == 'likeCnt'">
+                ORDER BY like_cnt
+            </when>
+            <when test="sortBy == 'viewCnt'">
+                ORDER BY view_cnt
+            </when>
+            <otherwise>
+                ORDER BY created_at
+            </otherwise>
+        </choose>
+        
+        <!-- 오름차순/내림차순 선택 -->
+        <if test="order == 'desc'">
+            DESC
+        </if>
+        <if test="order == 'asc'">
+            ASC
+        </if>
+    </select>
+
+    <!-- 전체 게시글 수와 오늘 작성된 게시글 수 조회 -->
+    <select id="selectArticleCounts" resultType="com.sololiving.domain.article.dto.response.ViewArticleCountsResponseDto">
+        SELECT 
+            (SELECT COUNT(*) FROM ARTICLE) AS totalArticleCount,
+            (SELECT COUNT(*) FROM ARTICLE WHERE DATE(created_at) = CURDATE()) AS todayArticleCount
+    </select>
+
+        <!-- 최근 30일 동안 날짜별 게시글 작성 수 -->
+    <select id="selectDailyArticleCounts" resultType="com.sololiving.domain.article.dto.response.DailyArticleCountDto">
+        SELECT 
+            DATE_FORMAT(created_at, '%m-%d') AS date,
+            COUNT(*) AS dailyCount
+        FROM ARTICLE
+        WHERE created_at &gt;= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        GROUP BY DATE_FORMAT(created_at, '%m-%d')
+        ORDER BY DATE_FORMAT(created_at, '%m-%d')
+    </select>
+
+    <!-- 최근 30일 동안 날짜 및 카테고리별 게시글 작성 수 -->
+    <select id="selectDailyArticleCountsByCategory" resultType="com.sololiving.domain.article.dto.response.DailyCategoryArticleCountDto">
+        SELECT 
+            DATE_FORMAT(created_at, '%m-%d') AS date,
+            category_code AS categoryCode,
+            COUNT(*) AS dailyCategoryCount
+        FROM ARTICLE
+        WHERE created_at &gt;= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+        GROUP BY DATE_FORMAT(created_at, '%m-%d'), category_code
+        ORDER BY DATE_FORMAT(created_at, '%m-%d'), category_code
+    </select>
+
+
+</mapper>

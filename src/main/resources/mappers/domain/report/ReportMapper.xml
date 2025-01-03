@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.report.mapper.ReportMapper">
+
+    <!-- 신고 생성 -->
+    <insert id="insertReport">
+        INSERT INTO REPORT (reporter, subject_type, subject_id, report_type, report_reason)
+        VALUES (#{reporter}, #{subjectType}, #{subjectId}, #{reportType}, #{reportReason})
+    </insert>
+
+    <!-- 신고 기록 삭제 -->
+    <delete id="deleteReport">
+        DELETE FROM REPORT
+        WHERE report_id = #{reportId}
+    </delete>
+
+       <!-- 대상의 총 신고 수 조회 -->
+    <select id="countReport" resultType="int">
+        SELECT COUNT(*)
+        FROM REPORT
+        WHERE subject_id = #{subjectId}
+        AND report_type IN ('SPAM', 'ABUSE', 'SEXUAL_CONTENT', 'IMPERSONATION_OR_FRAUD')
+    </select>
+
+    <select id="existsReport" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM REPORT
+            WHERE report_id = #{reportId}
+        )
+    </select>
+
+    <update id="updateReportStatus">
+        UPDATE REPORT
+        SET report_status = #{reportStatus}
+        WHERE report_id = #{reportId}
+    </update>
+
+    <select id="selectReportStatusByReportId">
+        SELECT report_status
+        FROM REPORT
+        WHERE report_id = #{reportId}
+    </select>
+
+</mapper>

@@ -1,0 +1,37 @@
+== UserController
+=== 회원가입
+==== Curl
+include::{snippets}/users/signup/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/users/signup/http-request.adoc[]
+===== Request Body
+include::{snippets}/users/signup/request-fields.adoc[]
+
+==== 응답(Response)
+include::{snippets}/users/signup/http-response.adoc[]
+
+==== 에러
+
+===== USER_E001 +
+===== USER_E002 +
+===== USER_E003
+
+=== 회원탈퇴
+==== Curl
+include::{snippets}/users/delete/user/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/users/delete/user/http-request.adoc[]
+===== 요청 헤더 (Request Header)
+include::{snippets}/users/delete/user/request-headers.adoc[]
+
+==== 응답(Response)
+include::{snippets}/users/delete/user/http-response.adoc[]
+
+==== 에러
+
+===== TOKEN_E001 +
+===== TOKEN_E004 +
+===== TOKEN_E006 +
+===== USER_E006

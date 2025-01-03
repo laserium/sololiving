@@ -1,0 +1,47 @@
+== UserAuthController
+=== 회원가입 시 휴대폰 인증번호 전송
+==== Curl
+include::{snippets}/users/auth/signup-contact-verification/send/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/users/auth/signup-contact-verification/send/http-request.adoc[]
+===== Request Body
+include::{snippets}/users/auth/signup-contact-verification/send/request-fields.adoc[]
+
+=== 응답(Response)
+==== 성공
+===== SMS_S001
+==== 에러
+===== USER_E003
+
+=== 회원가입 시 휴대폰 인증번호 검증
+==== Curl
+include::{snippets}/users/auth/signup-contact-verification/check/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/users/auth/signup-contact-verification/check/http-request.adoc[]
+===== Request Body
+include::{snippets}/users/auth/signup-contact-verification/check/request-fields.adoc[]
+
+=== 응답(Response)
+==== 성공 
+===== SMS_S002
+==== 에러
+===== SMS_E001
+
+=== 회원가입 시 아이디 중복 확인 검증
+==== Curl
+include::{snippets}/users/auth/id-duplicate-verification/curl-request.adoc[]
+
+==== 요청(Request)
+include::{snippets}/users/auth/id-duplicate-verification/http-request.adoc[]
+===== Request Parameter
+include::{snippets}/users/auth/id-duplicate-verification/request-fields.adoc[]
+
+=== 응답(Response)
+==== 성공 
+===== USER_S008
+
+==== 에러 
+===== USER_E001 +
+===== USER_E006 : request 값이 Null 일 경우

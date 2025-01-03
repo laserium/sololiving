@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.log.mapper.UserActivityLogViewMapper">
+ 
+     <!-- 공통 컬럼 선택 -->
+    <sql id="BaseColumns">
+        ual.id AS id,
+        ual.user_id AS userId,
+        ual.ip_address AS ipAddress,
+        ual.activity_type AS activityType,
+        ual.created_at AS createdAt
+    </sql>
+
+    <!-- 공통 WHERE 절: activity_type과 searchUser 조건 -->
+    <sql id="BaseWhereClause">
+        WHERE 
+            ual.activity_type = #{activityType}
+            <if test="searchUser != null">
+                AND ual.user_id = #{searchUser}
+            </if>
+    </sql>
+
+    <!-- AUTH 로그 조회 -->
+    <select id="getAuthLogs" resultType="com.sololiving.domain.log.dto.response.ViewUALogListResponseDto">
+        SELECT 
+            <include refid="BaseColumns" />,
+            al.auth_method AS method
+        FROM 
+            USER_ACTIVITY_LOG ual
+        JOIN AUTH_LOG al ON ual.id = al.log_id
+        <include refid="BaseWhereClause" />
+        ORDER BY ual.created_at DESC
+    </select>
+
+    <!-- ARTICLE 로그 조회 -->
+    <select id="getArticleLogs" resultType="com.sololiving.domain.log.dto.response.ViewUALogListResponseDto">
+        SELECT 
+            <include refid="BaseColumns" />,
+            artl.board_method AS method,
+            artl.article_id AS targetId
+        FROM 
+            USER_ACTIVITY_LOG ual
+        JOIN ARTICLE_LOG artl ON ual.id = artl.log_id
+        <include refid="BaseWhereClause" />
+        ORDER BY ual.created_at DESC
+    </select>
+
+    <!-- COMMENT 로그 조회 -->
+    <select id="getCommentLogs" resultType="com.sololiving.domain.log.dto.response.ViewUALogListResponseDto">
+        SELECT 
+            <include refid="BaseColumns" />,
+            cl.board_method AS method,
+            cl.comment_id AS targetId
+        FROM 
+            USER_ACTIVITY_LOG ual
+        JOIN COMMENT_LOG cl ON ual.id = cl.log_id
+        <include refid="BaseWhereClause" />
+        ORDER BY ual.created_at DESC
+    </select>
+
+    <!-- FOLLOW 로그 조회 -->
+    <select id="getFollowLogs" resultType="com.sololiving.domain.log.dto.response.ViewUALogListResponseDto">
+        SELECT 
+            <include refid="BaseColumns" />,
+            fl.follow_method AS method,
+            fl.target_id AS targetId
+        FROM 
+            USER_ACTIVITY_LOG ual
+        JOIN FOLLOW_LOG fl ON ual.id = fl.log_id
+        <include refid="BaseWhereClause" />
+        ORDER BY ual.created_at DESC
+    </select>
+
+    <!-- BLOCK 로그 조회 -->
+    <select id="getBlockLogs" resultType="com.sololiving.domain.log.dto.response.ViewUALogListResponseDto">
+        SELECT 
+            <include refid="BaseColumns" />,
+            bl.block_method AS method,
+            bl.target_id AS targetId
+        FROM 
+            USER_ACTIVITY_LOG ual
+        JOIN BLOCK_LOG bl ON ual.id = bl.log_id
+        <include refid="BaseWhereClause" />
+        ORDER BY ual.created_at DESC
+    </select>
+
+    <!-- 1. 오늘 기준 오늘 사용했던 사람들 수 조회 -->
+    <select id="selectTodayActiveUsers" resultType="int">
+        SELECT COUNT(DISTINCT ual.user_id)
+        FROM USER_ACTIVITY_LOG ual
+        JOIN AUTH_LOG al ON al.log_id = ual.id
+        WHERE al.auth_method = 'SIGNIN'
+        AND DATE(ual.created_at) = CURDATE()
+    </select>
+
+    <!-- 2. 현재 기준 달에 회원가입한 사람들 수 -->
+    <select id="selectMonthlyNewUsers" resultType="int">
+        SELECT COUNT(*)
+        FROM USER
+        WHERE MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())
+    </select>
+
+    <!-- 3. 현재 접속자 수 (최근 5분 내에 활동한 사용자) -->
+    <select id="selectCurrentOnlineUsers" resultType="int">
+        SELECT COUNT(DISTINCT ual.user_id)
+        FROM USER_ACTIVITY_LOG ual
+        JOIN AUTH_LOG al ON al.log_id = ual.id
+        WHERE al.auth_method = 'SIGNIN'
+        AND ual.created_at &gt;= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+    </select>
+
+    <!-- 4. 최근 한달간 일일 방문자 수 -->
+    <select id="selectDailyVisitsLastMonth" resultType="com.sololiving.domain.log.dto.response.DailyVisitDto">
+        SELECT DATE_FORMAT(ual.created_at, '%m-%d') AS visitDate, COUNT(DISTINCT ual.user_id) AS visitCount
+        FROM USER_ACTIVITY_LOG ual
+        JOIN AUTH_LOG al ON al.log_id = ual.id
+        WHERE al.auth_method = 'SIGNIN'
+        AND ual.created_at &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        GROUP BY DATE_FORMAT(ual.created_at, '%m-%d')
+    </select>
+
+    <!-- 5. 최근 한달간 일별 신규 가입자 수 -->
+    <select id="selectDailyNewUsersLastMonth" resultType="com.sololiving.domain.log.dto.response.DailyNewUserDto">
+        SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS signupDate, COUNT(*) AS newUserCount
+        FROM USER
+        WHERE created_at &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        GROUP BY signupDate
+    </select>
+
+    <!-- 6. 오늘 하루간 시간대별 접속자 수 -->
+    <select id="selectHourlyVisitsToday" resultType="com.sololiving.domain.log.dto.response.HourlyVisitDto">
+        SELECT HOUR(ual.created_at) AS hour, COUNT(DISTINCT ual.user_id) AS visitCount
+        FROM USER_ACTIVITY_LOG ual
+        JOIN AUTH_LOG al ON al.log_id = ual.id
+        WHERE al.auth_method = 'SIGNIN'
+        AND DATE(ual.created_at) = CURDATE()
+        GROUP BY HOUR(ual.created_at)
+    </select>
+
+</mapper>

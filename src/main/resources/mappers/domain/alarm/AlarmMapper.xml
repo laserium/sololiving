@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sololiving.domain.alarm.mapper.AlarmMapper">
+    <!-- 게시글에 댓글 작성될 경우 댓글 알림 생성 -->
+    <insert id="insertCommentAlarm">
+        INSERT INTO ALARM (alarm_type_id, user_id, actor_id, article_id, comment_id)
+        VALUES (
+            1,
+            #{articleWriter},
+            #{commentWriter},
+            #{articleId},
+            #{commentId}
+        )
+    </insert>
+
+    <!-- 댓글에 대댓글 작성될 경우 대댓글 알림 생성 -->
+    <insert id="insertReCommentAlarm">
+        INSERT INTO ALARM (alarm_type_id, user_id, actor_id, article_id, comment_id)
+        VALUES (
+            2,
+            #{commentWriter},
+            #{reCommentWriter},
+            #{articleId},
+            #{commentId}
+        )
+    </insert>
+
+    <!-- 누군가 나를 팔로우 했을 경우 알림 생성 -->
+    <insert id="insertFollowAlarm">
+        INSERT INTO ALARM (alarm_type_id, user_id, actor_id)
+        VALUES (
+            3,
+            #{targetId},
+            #{userId}
+        )
+    </insert>
+
+    <!-- 사용자 알림 목록 조회 -->
+    <select id="selectAlarmListByUserId" resultType="com.sololiving.domain.alarm.dto.response.ViewAlarmListResponseDto">
+        SELECT 
+            a.alarm_id AS alarmId,
+            at.alarm_type_name AS alarmTypeName,
+            a.user_id AS userId,
+            a.actor_id AS actorId,
+            a.article_id AS articleId,
+            a.comment_id AS commentId,
+            a.is_read,
+            a.created_at AS createdAt,
+            a.read_at AS readAt
+        FROM ALARM a
+        JOIN ALARM_TYPE at ON a.alarm_type_id = at.alarm_type_id
+        WHERE a.user_id = #{userId}
+        ORDER BY a.created_at DESC
+    </select>
+
+    <!-- 알림 읽기 -->
+    <update id="updateAlarmAsRead">
+        UPDATE ALARM
+        SET is_read = true,
+            read_at = CURRENT_TIMESTAMP
+        WHERE alarm_id = #{alarmId}
+          AND user_id = #{userId}
+    </update>
+
+    <!-- 특정 사용자 소유 알림 확인 -->
+    <select id="isAlarmOwnedByUser" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 
+            FROM ALARM 
+            WHERE alarm_id = #{alarmId} 
+              AND user_id = #{userId}
+        )
+    </select>
+
+    <!-- 알림 삭제 -->
+    <delete id="deleteAlarmById">
+        DELETE FROM ALARM 
+        WHERE alarm_id = #{alarmId}
+    </delete>
+
+    <!-- 새로운 알림 개수 조회 -->
+    <select id="countUnreadAlarms" resultType="int">
+        SELECT COUNT(*)
+        FROM ALARM
+        WHERE user_id = #{userId} AND is_read = false
+    </select>
+
+</mapper>

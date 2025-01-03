@@ -1,0 +1,16 @@
+= Spring REST Docs Test
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+include::exception/error-codes.adoc[]
+include::exception/success-codes.adoc[]
+
+include::auth/auth.adoc[]
+
+include::user/user.adoc[]
+include::user/user-auth.adoc[]
+include::user/user-view.adoc[]

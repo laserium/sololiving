@@ -1,7 +1,8 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.1'
+	id 'org.springframework.boot' version '3.3.2'
 	id 'io.spring.dependency-management' version '1.1.5'
+	id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 group = 'com.sololiving'
@@ -12,6 +13,7 @@ java {
 }
 
 configurations {
+	asciidoctorExt
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -22,42 +24,126 @@ repositories {
 }
 
 dependencies {
+	// JDBC
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+	// SECURITY
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// WEB
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// MYBATIS
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+	// BATCH
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+
+	// SSH Library
 	implementation 'com.jcraft:jsch:0.1.55'
+
+	// ASPECT AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.aspectj:aspectjweaver'
+
+	// LOG
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+
+	// SMS API
+	implementation 'net.nurigo:sdk:4.3.0'
+
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
+	// Thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	// Configuration Properties
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	// WebFlux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // AWS Security Manager
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.0.1'
+    
+    // AWS S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
+
+    // AWS ALB Health Check
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' 
-	// Oauth2
+
+	// OAuth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+	// Email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// Spring REST Docs
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+	// LOMBOK
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// MY SQL
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'com.mysql:mysql-connector-j'
+
+	// DEVTOOL
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// TEST
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.mockito:mockito-core'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+task createGeneratedSnippetsDir {
+    doLast {
+        file(snippetsDir).mkdirs()
+    }
+}
+
+asciidoctor {
+    configurations 'asciidoctorExt'
+    baseDirFollowsSourceFile()
+    inputs.dir snippetsDir
+    dependsOn test
+    doFirst {
+        delete file('src/main/resources/static/docs')
+    }
+    doLast {
+        copy {
+            from file('build/docs/asciidoc')
+            into file('src/main/resources/static/docs')
+        }
+    }
 }
 
 test {
     useJUnitPlatform()
-    systemProperty 'spring.profiles.active', 'test'
+    outputs.dir snippetsDir
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-tasks.withType(Test) {
-    enabled = false
+tasks.named('build') {
+    dependsOn asciidoctor
 }
 
 springBoot {
